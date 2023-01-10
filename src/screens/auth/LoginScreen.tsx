@@ -1,12 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
 import { Text } from '@rneui/themed';
-import { View } from 'components';
+import { Container, NavigationButton } from 'components';
 
 export function LoginScreen() {
-  const navigation = useNavigation();
   return (
-    <View>
+    <Container>
       <Text>LoginScreen</Text>
-    </View>
+      <NavigationButton name="RegisterScreen" />
+    </Container>
   );
 }
