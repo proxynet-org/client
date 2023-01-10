@@ -10,42 +10,9 @@ import {
   PreviewScreen,
   SettingsScreen,
 } from 'screens';
-
-const RootStack = createNativeStackNavigator<RootStackParams>();
-
-export function RootStackNavigator() {
-  return (
-    <RootStack.Navigator
-      initialRouteName="MapScreen"
-      screenOptions={{
-        presentation: 'transparentModal',
-      }}
-    >
-      <RootStack.Screen
-        name="MapScreen"
-        component={MapScreen}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen name="CreatePostScreen" component={CreatePostScreen} />
-      <RootStack.Screen
-        name="CreateChatRoomScreen"
-        component={CreateChatRoomScreen}
-      />
-      <RootStack.Screen name="PreviewScreen" component={PreviewScreen} />
-      <RootStack.Screen name="PostScreen" component={PostScreen} />
-      <RootStack.Screen name="ChatRoomScreen" component={ChatRoomScreen} />
-      <RootStack.Screen
-        name="DirectMessagesScreen"
-        component={DirectMessagesScreen}
-      />
-      <RootStack.Screen
-        name="DirectMessageScreen"
-        component={DirectMessageScreen}
-      />
-      <RootStack.Screen name="SettingsScreen" component={SettingsScreen} />
-    </RootStack.Navigator>
-  );
-}
+import { AuthTabNavigator } from './AuthTabNavigator';
+import { useAuth } from 'hooks';
+import { SplashScreen } from 'screens/SplashScreen';
 
 export type RootStackParams = {
   MapScreen: undefined;
@@ -57,4 +24,60 @@ export type RootStackParams = {
   DirectMessagesScreen: undefined;
   DirectMessageScreen: undefined;
   SettingsScreen: undefined;
+  AuthTabNavigator: undefined;
 };
+
+const RootStack = createNativeStackNavigator<RootStackParams>();
+
+export function RootStackNavigator() {
+  const { isLogged, status } = useAuth();
+
+  if (status === 'idle') {
+    return <SplashScreen />;
+  }
+
+  return (
+    <RootStack.Navigator
+      initialRouteName="MapScreen"
+      screenOptions={{
+        presentation: 'transparentModal',
+      }}
+    >
+      {isLogged ? (
+        <>
+          <RootStack.Screen
+            name="MapScreen"
+            component={MapScreen}
+            options={{ headerShown: false }}
+          />
+          <RootStack.Screen
+            name="CreatePostScreen"
+            component={CreatePostScreen}
+          />
+          <RootStack.Screen
+            name="CreateChatRoomScreen"
+            component={CreateChatRoomScreen}
+          />
+          <RootStack.Screen name="PreviewScreen" component={PreviewScreen} />
+          <RootStack.Screen name="PostScreen" component={PostScreen} />
+          <RootStack.Screen name="ChatRoomScreen" component={ChatRoomScreen} />
+          <RootStack.Screen
+            name="DirectMessagesScreen"
+            component={DirectMessagesScreen}
+          />
+          <RootStack.Screen
+            name="DirectMessageScreen"
+            component={DirectMessageScreen}
+          />
+          <RootStack.Screen name="SettingsScreen" component={SettingsScreen} />
+        </>
+      ) : (
+        <RootStack.Screen
+          name="AuthTabNavigator"
+          component={AuthTabNavigator}
+          options={{ headerShown: false }}
+        />
+      )}
+    </RootStack.Navigator>
+  );
+}

@@ -1,12 +1,14 @@
-import { Text } from '@rneui/themed';
-import { Container, NavigationButton } from 'components';
-import { useFocus } from 'hooks';
+import { Button, Text } from '@rneui/themed';
+import { NavigationButton } from 'components';
+import { useToggleScreen, useAuth } from 'hooks';
 import i18n from 'languages';
+import { View } from 'react-native';
 
 export function MapScreen() {
-  const isFocused = useFocus();
+  const isFocused = useToggleScreen();
+  const { signOut } = useAuth();
   return (
-    <Container style={{ backgroundColor: 'grey', flex: 1 }}>
+    <View className="flex-1 bg-gray-500">
       {isFocused && (
         <>
           <Text>
@@ -17,8 +19,9 @@ export function MapScreen() {
           <NavigationButton name="CreatePostScreen" />
           <NavigationButton name="DirectMessagesScreen" />
           <NavigationButton name="SettingsScreen" />
+          <Button title="Sign Out" onPress={signOut} />
         </>
       )}
-    </Container>
+    </View>
   );
 }

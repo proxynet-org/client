@@ -1,10 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from '@rneui/themed';
 
-import Navigation from 'navigation';
+import { Navigation } from 'navigation';
 import { useCachedResources } from 'hooks';
 import { GlobalTheme } from 'static';
+import { AuthProvider } from 'providers';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -15,8 +15,9 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <ThemeProvider theme={GlobalTheme}>
-          <Navigation />
-          <StatusBar />
+          <AuthProvider>
+            <Navigation />
+          </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     );
