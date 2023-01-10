@@ -10,10 +10,12 @@ import {
   PreviewScreen,
   SettingsScreen,
 } from 'screens';
+import { AuthTabNavigator } from './AuthTabNavigator';
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
 export function RootStackNavigator() {
+  const isLogged = false;
   return (
     <RootStack.Navigator
       initialRouteName="MapScreen"
@@ -21,28 +23,41 @@ export function RootStackNavigator() {
         presentation: 'transparentModal',
       }}
     >
-      <RootStack.Screen
-        name="MapScreen"
-        component={MapScreen}
-        options={{ headerShown: false }}
-      />
-      <RootStack.Screen name="CreatePostScreen" component={CreatePostScreen} />
-      <RootStack.Screen
-        name="CreateChatRoomScreen"
-        component={CreateChatRoomScreen}
-      />
-      <RootStack.Screen name="PreviewScreen" component={PreviewScreen} />
-      <RootStack.Screen name="PostScreen" component={PostScreen} />
-      <RootStack.Screen name="ChatRoomScreen" component={ChatRoomScreen} />
-      <RootStack.Screen
-        name="DirectMessagesScreen"
-        component={DirectMessagesScreen}
-      />
-      <RootStack.Screen
-        name="DirectMessageScreen"
-        component={DirectMessageScreen}
-      />
-      <RootStack.Screen name="SettingsScreen" component={SettingsScreen} />
+      {isLogged ? (
+        <>
+          <RootStack.Screen
+            name="MapScreen"
+            component={MapScreen}
+            options={{ headerShown: false }}
+          />
+          <RootStack.Screen
+            name="CreatePostScreen"
+            component={CreatePostScreen}
+          />
+          <RootStack.Screen
+            name="CreateChatRoomScreen"
+            component={CreateChatRoomScreen}
+          />
+          <RootStack.Screen name="PreviewScreen" component={PreviewScreen} />
+          <RootStack.Screen name="PostScreen" component={PostScreen} />
+          <RootStack.Screen name="ChatRoomScreen" component={ChatRoomScreen} />
+          <RootStack.Screen
+            name="DirectMessagesScreen"
+            component={DirectMessagesScreen}
+          />
+          <RootStack.Screen
+            name="DirectMessageScreen"
+            component={DirectMessageScreen}
+          />
+          <RootStack.Screen name="SettingsScreen" component={SettingsScreen} />
+        </>
+      ) : (
+        <RootStack.Screen
+          name="AuthTabNavigator"
+          component={AuthTabNavigator}
+          options={{ headerShown: false }}
+        />
+      )}
     </RootStack.Navigator>
   );
 }
@@ -57,4 +72,5 @@ export type RootStackParams = {
   DirectMessagesScreen: undefined;
   DirectMessageScreen: undefined;
   SettingsScreen: undefined;
+  AuthTabNavigator: undefined;
 };

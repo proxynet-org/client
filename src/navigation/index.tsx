@@ -14,3 +14,4 @@ export default function Navigation() {
 }
 
 export * from './RootStackNavigator';
+export * from './AuthTabNavigator';
