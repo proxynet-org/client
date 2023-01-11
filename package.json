@@ -17,9 +17,6 @@
     "build:android": "eas build --platform android",
     "build:ios": "eas build --platform ios"
   },
-  "jest": {
-    "preset": "jest-expo"
-  },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/bottom-tabs": "^6.0.5",
@@ -49,13 +46,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@types/jest": "^29.2.5",
+    "@types/node": "^18.11.18",
     "@types/react": "~18.0.24",
     "@types/react-native": "~0.70.6",
+    "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
