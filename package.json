@@ -39,6 +39,7 @@
     "expo-web-browser": "~12.0.0",
     "i18n-js": "^4.2.2",
     "formik": "^2.2.9",
+    "libphonenumber-js": "^1.10.18",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
