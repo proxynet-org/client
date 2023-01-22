@@ -1,6 +1,7 @@
 import { Text } from '@rneui/themed';
 import { Container, NavigationButton } from 'components';
 import { useFocus } from 'hooks';
+import i18n from 'languages';
 
 export function MapScreen() {
   const isFocused = useFocus();
@@ -8,7 +9,9 @@ export function MapScreen() {
     <Container style={{ backgroundColor: 'grey', flex: 1 }}>
       {isFocused && (
         <>
-          <Text>MapScreen</Text>
+          <Text>
+            {i18n.t('Welcome')} {i18n.t('welcome')}
+          </Text>
           <NavigationButton name="PreviewScreen" />
           <NavigationButton name="CreateChatRoomScreen" />
           <NavigationButton name="CreatePostScreen" />
