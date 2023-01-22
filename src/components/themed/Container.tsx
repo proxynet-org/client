@@ -9,8 +9,8 @@ export function Container(props: ViewProps) {
     <DefaultView
       style={[
         {
-          backgroundColor: 'transparent',
           flex: 1,
+          backgroundColor: 'transparent',
           justifyContent: 'center',
           alignItems: 'center',
         },
