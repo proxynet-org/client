@@ -14,8 +14,11 @@ export const GlobalTheme = createTheme({
       default: darkColors.platform.android,
       ios: darkColors.platform.ios,
     }),
+    primary: '#0DF5E3',
+    background: '#201A30',
+    searchBg: '#38304C',
   },
-  mode: 'light',
+  mode: 'dark',
 });
 
 export const NavigationTheme: Record<ThemeMode, Theme> = {
