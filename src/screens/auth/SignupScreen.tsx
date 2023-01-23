@@ -14,20 +14,8 @@ export function SignupScreen() {
   const { theme } = useTheme();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-      }}
-    >
-      <View
-        style={{
-          width: '100%',
-          padding: 20,
-        }}
-      >
+    <View className="flex-1 items-center justify-center p-5">
+      <View className="w-full p-5">
         <Text h1>{i18n.t('Signup')}</Text>
         <Text>Please signup to continue.</Text>
       </View>
@@ -45,13 +33,7 @@ export function SignupScreen() {
         validationSchema={SignupSchema}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-          <View
-            style={{
-              width: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <View className="w-full items-center justify-center">
             <FormInput
               placeholder="FIRST NAME"
               value={values.firstName}
@@ -149,7 +131,7 @@ export function SignupScreen() {
           </View>
         )}
       </Formik>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+      <View className="flex-row items-end">
         <Text>Already have an account ?</Text>
         <TouchableOpacity onPress={() => navigation.navigate('SigninScreen')}>
           <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
