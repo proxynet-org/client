@@ -7,9 +7,15 @@ export function FormInput({
   value,
   errorMessage,
   onChangeText,
+  onFocus,
   onBlur,
   secureTextEntry,
   leftIconName,
+  keyboardType,
+  autoCapitalize,
+  autoCorrect,
+  autoComplete,
+  textContentType,
 }: InputProps & {
   leftIconName: string;
 }) {
@@ -19,11 +25,19 @@ export function FormInput({
 
   return (
     <Input
+      keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize}
+      autoCorrect={autoCorrect}
+      autoComplete={autoComplete}
+      textContentType={textContentType}
       secureTextEntry={secureTextEntry}
       value={value}
       errorMessage={errorMessage}
       onChangeText={onChangeText}
-      onFocus={() => setIsFocused(true)}
+      onFocus={(e) => {
+        setIsFocused(true);
+        onFocus?.(e);
+      }}
       onBlur={(e) => {
         setIsFocused(false);
         onBlur?.(e);
@@ -37,13 +51,13 @@ export function FormInput({
         backgroundColor: isFocused ? theme.colors.searchBg : 'transparent',
         borderRadius: 25,
       }}
-      placeholderTextColor="white"
       labelStyle={{
         paddingLeft: 25,
         fontSize: 12,
         color: value ? theme.colors.black : 'transparent',
         fontWeight: 'bold',
       }}
+      placeholderTextColor={theme.colors.black}
       inputContainerStyle={{
         height: 25,
         borderBottomWidth: 0,

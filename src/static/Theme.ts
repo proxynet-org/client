@@ -19,6 +19,13 @@ export const GlobalTheme = createTheme({
     searchBg: '#38304C',
   },
   mode: 'dark',
+  components: {
+    Text: (props) => ({
+      style: {
+        fontWeight: props.bold ? 'bold' : 'normal',
+      },
+    }),
+  },
 });
 
 export const NavigationTheme: Record<ThemeMode, Theme> = {
