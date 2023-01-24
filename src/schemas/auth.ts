@@ -7,9 +7,15 @@ export const SigninSchema = Yup.object().shape({
 });
 
 export const SignupSchema = Yup.object().shape({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
-  birthDate: Yup.date().required('Birthdate is required'),
+  fullName: Yup.string().required('Full name is required'),
+  birthDate: Yup.date()
+    .test('age', 'You must be 18 or older', (value) => {
+      if (!value) return false;
+      const cutoff = new Date();
+      cutoff.setFullYear(cutoff.getFullYear() - 18);
+      return value <= cutoff;
+    })
+    .required('Birthdate is required'),
   email: Yup.string().email('Invalid email').required('Email is required'),
   phone: Yup.string()
     .test('valid-phone', 'Invalid phone number', (value) => {
