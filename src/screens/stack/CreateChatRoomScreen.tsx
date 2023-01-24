@@ -1,7 +1,8 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { Text } from '@rneui/themed';
-import { NavigationButton, Container } from 'components';
+import { NavigationButton } from 'components';
 import { useToggleScreen } from 'hooks';
+import { View } from 'react-native';
 
 export function CreateChatRoomScreen() {
   const navigation = useNavigation();
@@ -23,9 +24,9 @@ export function CreateChatRoomScreen() {
   });
 
   return (
-    <Container>
+    <View className="flex-1 bg-transparent">
       <Text>CreateChatRoomScreen</Text>
       <NavigationButton name="ChatRoomScreen" />
-    </Container>
+    </View>
   );
 }

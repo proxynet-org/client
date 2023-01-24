@@ -1,12 +1,12 @@
 import { Text } from '@rneui/themed';
-import { Container } from 'components';
 import { useToggleScreen } from 'hooks';
+import { View } from 'react-native';
 
 export function SettingsScreen() {
   useToggleScreen({ hideOnBlur: true });
   return (
-    <Container>
+    <View className="flex-1 bg-transparent">
       <Text>SettingsScreen</Text>
-    </Container>
+    </View>
   );
 }

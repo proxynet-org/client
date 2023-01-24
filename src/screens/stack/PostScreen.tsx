@@ -1,14 +1,15 @@
 import { Text } from '@rneui/themed';
-import { NavigationButton, Container } from 'components';
+import { NavigationButton } from 'components';
 import { useToggleScreen } from 'hooks';
+import { View } from 'react-native';
 
 export function PostScreen() {
   useToggleScreen({ hideOnBlur: true });
 
   return (
-    <Container>
+    <View className="flex-1 bg-transparent">
       <Text>PostScreen</Text>
       <NavigationButton name="DirectMessageScreen" />
-    </Container>
+    </View>
   );
 }
