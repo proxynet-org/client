@@ -1,60 +1,75 @@
-import { useState } from 'react';
+import { useState, PropsWithChildren, RefAttributes } from 'react';
 import { Input, InputProps, useTheme } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { NativeSyntheticEvent, TextInputFocusEventData } from 'react-native';
 
 export function FormInput({
-  placeholder,
-  value,
-  errorMessage,
-  onChangeText,
-  onFocus,
-  onBlur,
-  secureTextEntry,
+  name,
   leftIconName,
-  keyboardType,
-  autoCapitalize,
-  autoCorrect,
-  autoComplete,
-  textContentType,
-}: InputProps & {
-  leftIconName: string;
-}) {
+  values,
+  touched,
+  errors,
+  handleChange,
+  handleBlur,
+  setFieldTouched,
+  ...props
+}: RefAttributes<PropsWithChildren<InputProps>> &
+  InputProps & {
+    name: string;
+    leftIconName: string;
+    values: Record<string, string>;
+    touched: Record<string, boolean>;
+    errors: Record<string, string>;
+    handleChange: {
+      (e: React.ChangeEvent<string>): void;
+      <T = string | React.ChangeEvent<string>>(
+        field: T,
+      ): T extends React.ChangeEvent<string>
+        ? void
+        : (e: string | React.ChangeEvent<string>) => void;
+    };
+    handleBlur: {
+      (e: React.FocusEvent<TextInputFocusEventData, Element>): void;
+      <T = TextInputFocusEventData>(fieldOrEvent: T): T extends string
+        ? (e: NativeSyntheticEvent<TextInputFocusEventData>) => void
+        : void;
+    };
+    setFieldTouched: (name: string) => void;
+  }) {
   const [isFocused, setIsFocused] = useState(false);
 
   const { theme } = useTheme();
 
   return (
     <Input
-      keyboardType={keyboardType}
-      autoCapitalize={autoCapitalize}
-      autoCorrect={autoCorrect}
-      autoComplete={autoComplete}
-      textContentType={textContentType}
-      secureTextEntry={secureTextEntry}
-      value={value}
-      errorMessage={errorMessage}
-      onChangeText={onChangeText}
+      {...props}
+      value={values[name]}
+      errorMessage={touched[name] ? errors[name] : ''}
+      onChangeText={handleChange(name)}
       onFocus={(e) => {
         setIsFocused(true);
-        onFocus?.(e);
+        setFieldTouched(name);
+        props.onFocus?.(e);
       }}
       onBlur={(e) => {
         setIsFocused(false);
-        onBlur?.(e);
+        handleBlur(name)(e);
+        props.onBlur?.(e);
       }}
-      label={placeholder}
-      placeholder={placeholder}
+      label={props.label || props.placeholder}
+      placeholder={props.placeholder || (props.label as string)}
       leftIcon={
         <Icon name={leftIconName} size={20} color={theme.colors.black} />
       }
       containerStyle={{
         backgroundColor: isFocused ? theme.colors.searchBg : 'transparent',
         borderRadius: 25,
+        marginBottom: 10,
       }}
       labelStyle={{
         paddingLeft: 25,
         fontSize: 12,
-        color: value ? theme.colors.black : 'transparent',
+        color: values[name] ? theme.colors.black : 'transparent',
         fontWeight: 'bold',
       }}
       placeholderTextColor={theme.colors.black}

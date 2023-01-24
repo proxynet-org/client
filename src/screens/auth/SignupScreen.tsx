@@ -31,30 +31,50 @@ export function SignupScreen() {
         }}
         onSubmit={(values) => console.log(values)}
         validationSchema={SignupSchema}
+        validateOnMount={true}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          setFieldTouched,
+          touched,
+          values,
+          errors,
+        }) => (
           <View className="w-full items-center justify-center">
             <FormInput
+              name="firstName"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
+              leftIconName="account-outline"
               placeholder="FIRST NAME"
-              value={values.firstName}
-              errorMessage={errors.firstName}
-              onChangeText={handleChange('firstName')}
-              onBlur={handleBlur('firstName')}
-              leftIconName="account-outline"
             />
             <FormInput
+              name="lastName"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
+              leftIconName="account-outline"
               placeholder="LAST NAME"
-              value={values.lastName}
-              errorMessage={errors.lastName}
-              onChangeText={handleChange('lastName')}
-              onBlur={handleBlur('lastName')}
-              leftIconName="account-outline"
             />
             <FormInput
+              name="birthDate"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
+              leftIconName="cake-variant-outline"
               placeholder="BIRTH DATE"
-              value={values.birthDate}
-              errorMessage={errors.birthDate}
-              onChangeText={handleChange('birthDate')}
               onFocus={(e) => {
                 e.currentTarget.blur();
                 DateTimePickerAndroid.open({
@@ -65,26 +85,30 @@ export function SignupScreen() {
                   mode: 'date',
                 });
               }}
-              onBlur={handleBlur('birthDate')}
-              leftIconName="cake-variant-outline"
             />
             <FormInput
-              placeholder="PHONE"
-              value={values.phone}
-              errorMessage={errors.phone}
-              onChangeText={handleChange('phone')}
-              onBlur={handleBlur('phone')}
+              name="phone"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
               leftIconName="phone-outline"
+              placeholder="PHONE"
               keyboardType="phone-pad"
               autoComplete="tel"
               textContentType="telephoneNumber"
             />
             <FormInput
+              name="email"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
               placeholder="EMAIL"
-              value={values.email}
-              errorMessage={errors.email}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
               leftIconName="email-outline"
               keyboardType="email-address"
               autoCapitalize="none"
@@ -93,21 +117,27 @@ export function SignupScreen() {
               textContentType="emailAddress"
             />
             <FormInput
+              name="password"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
               placeholder="PASSWORD"
               secureTextEntry={true}
-              value={values.password}
-              errorMessage={errors.password}
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
               leftIconName="lock-outline"
             />
             <FormInput
+              name="confirmPassword"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
               placeholder="CONFIRM PASSWORD"
               secureTextEntry={true}
-              value={values.confirmPassword}
-              errorMessage={errors.confirmPassword}
-              onChangeText={handleChange('confirmPassword')}
-              onBlur={handleBlur('confirmPassword')}
               leftIconName="lock-outline"
             />
             <Button

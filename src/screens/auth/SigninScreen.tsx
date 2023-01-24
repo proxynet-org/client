@@ -23,16 +23,28 @@ export function SigninScreen() {
         initialValues={{ email: '', password: '' }}
         onSubmit={(values) => console.log(values)}
         validationSchema={SigninSchema}
+        validateOnMount={true}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          setFieldTouched,
+          values,
+          errors,
+          touched,
+        }) => (
           <View className="w-full items-center justify-center">
             <FormInput
-              placeholder="EMAIL"
-              value={values.email}
-              errorMessage={errors.email}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
+              name="email"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
               leftIconName="email-outline"
+              placeholder="EMAIL"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -40,13 +52,18 @@ export function SigninScreen() {
               textContentType="emailAddress"
             />
             <FormInput
+              name="password"
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldTouched={setFieldTouched}
+              leftIconName="lock-outline"
               placeholder="PASSWORD"
               secureTextEntry={true}
-              value={values.password}
-              errorMessage={errors.password}
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              leftIconName="lock-outline"
+              autoComplete="password"
+              textContentType="password"
             />
             <Button
               buttonStyle={{
