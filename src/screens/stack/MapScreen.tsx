@@ -1,10 +1,10 @@
 import { Text } from '@rneui/themed';
 import { Container, NavigationButton } from 'components';
-import { useFocus } from 'hooks';
+import { useToggleScreen } from 'hooks';
 import i18n from 'languages';
 
 export function MapScreen() {
-  const isFocused = useFocus();
+  const isFocused = useToggleScreen();
   return (
     <Container style={{ backgroundColor: 'grey', flex: 1 }}>
       {isFocused && (

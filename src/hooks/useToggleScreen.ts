@@ -7,7 +7,7 @@ type Params = {
   hideOnBlur?: boolean;
 };
 
-export function useFocus({ onBlur, onFocus, hideOnBlur }: Params = {}) {
+export function useToggleScreen({ onBlur, onFocus, hideOnBlur }: Params = {}) {
   const navigation = useNavigation();
 
   useEffect(() => {

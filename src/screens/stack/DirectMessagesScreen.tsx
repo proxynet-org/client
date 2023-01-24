@@ -1,9 +1,9 @@
 import { Text } from '@rneui/themed';
 import { NavigationButton, Container } from 'components';
-import { useFocus } from 'hooks';
+import { useToggleScreen } from 'hooks';
 
 export function DirectMessagesScreen() {
-  useFocus({ hideOnBlur: true });
+  useToggleScreen({ hideOnBlur: true });
   return (
     <Container>
       <Text>DirectMessagesScreen</Text>

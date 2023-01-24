@@ -1,11 +1,11 @@
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { Text } from '@rneui/themed';
 import { NavigationButton, Container } from 'components';
-import { useFocus } from 'hooks';
+import { useToggleScreen } from 'hooks';
 
 export function CreateChatRoomScreen() {
   const navigation = useNavigation();
-  useFocus({
+  useToggleScreen({
     hideOnBlur: true,
     onBlur: () => {
       navigation.dispatch((state) => {
