@@ -7,11 +7,13 @@ import { Formik } from 'formik';
 import { SigninSchema } from 'schemas';
 import { FormInput, View } from 'components';
 import i18n from 'languages';
+import { useAuth } from 'Auth';
 
 export function SigninScreen() {
   const navigation = useNavigation<NavigationProp<AuthTabParams>>();
 
   const { theme } = useTheme();
+  const { signIn } = useAuth();
 
   return (
     <View className="flex-1 items-center justify-center p-5">
@@ -21,7 +23,7 @@ export function SigninScreen() {
       </View>
       <Formik
         initialValues={{ email: '', password: '' }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={signIn}
         validationSchema={SigninSchema}
         validateOnMount={true}
       >

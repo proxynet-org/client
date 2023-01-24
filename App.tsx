@@ -4,6 +4,7 @@ import { ThemeProvider } from '@rneui/themed';
 import { Navigation } from 'navigation';
 import { useCachedResources } from 'hooks';
 import { GlobalTheme } from 'static';
+import { AuthProvider } from 'Auth';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -14,7 +15,9 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <ThemeProvider theme={GlobalTheme}>
-          <Navigation />
+          <AuthProvider>
+            <Navigation />
+          </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     );

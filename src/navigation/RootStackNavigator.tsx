@@ -11,11 +11,18 @@ import {
   SettingsScreen,
 } from 'screens';
 import { AuthTabNavigator } from './AuthTabNavigator';
-
+import { useAuth } from 'Auth';
+import { SplashScreen } from 'screens/SplashScreen';
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
 export function RootStackNavigator() {
-  const isLogged = false;
+  const { isLogged, status } = useAuth();
+
+  if (status === 'idle') {
+    // We haven't finished checking for the token yet
+    return <SplashScreen />;
+  }
+
   return (
     <RootStack.Navigator
       initialRouteName="MapScreen"

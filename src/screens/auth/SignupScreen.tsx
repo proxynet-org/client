@@ -8,11 +8,13 @@ import i18n from 'languages';
 import { SignupSchema } from 'schemas';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useAuth } from 'Auth';
 
 export function SignupScreen() {
   const navigation = useNavigation<NavigationProp<AuthTabParams>>();
 
   const { theme } = useTheme();
+  const { signUp } = useAuth();
 
   return (
     <KeyboardAwareScrollView
@@ -32,7 +34,7 @@ export function SignupScreen() {
             password: '',
             confirmPassword: '',
           }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={signUp}
           validationSchema={SignupSchema}
           validateOnMount={true}
         >
