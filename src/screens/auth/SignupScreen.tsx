@@ -2,16 +2,17 @@ import { Button, Text, useTheme } from '@rneui/themed';
 import { FormInput, View } from 'components';
 import { AuthTabParams } from 'navigation';
 import { TouchableOpacity } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import i18n from 'languages';
 import { SignupSchema } from 'schemas';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAuth } from 'hooks';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 export function SignupScreen() {
-  const navigation = useNavigation<NavigationProp<AuthTabParams>>();
+  const navigation = useNavigation<BottomTabNavigationProp<AuthTabParams>>();
 
   const { theme } = useTheme();
   const { signUp } = useAuth();
@@ -147,17 +148,16 @@ export function SignupScreen() {
                 }}
                 disabled={Object.keys(errors).length > 0}
               />
-              <TouchableOpacity>
-                <Text style={{ color: theme.colors.primary }}>
-                  Forgot Password ?
-                </Text>
-              </TouchableOpacity>
             </View>
           )}
         </Formik>
         <View className="flex-row items-end">
-          <Text>Already have an account ?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SigninScreen')}>
+          <Text>Already have an account ? </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.jumpTo('SigninStack', { screen: 'SigninScreen' })
+            }
+          >
             <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
               Sign in
             </Text>

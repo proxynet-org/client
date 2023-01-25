@@ -1,6 +1,7 @@
 import { Button, Text, useTheme } from '@rneui/themed';
 import { TouchableOpacity } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { AuthTabParams } from 'navigation';
 import { Formik } from 'formik';
 
@@ -10,7 +11,7 @@ import i18n from 'languages';
 import { useAuth } from 'hooks';
 
 export function SigninScreen() {
-  const navigation = useNavigation<NavigationProp<AuthTabParams>>();
+  const navigation = useNavigation<BottomTabNavigationProp<AuthTabParams>>();
 
   const { theme } = useTheme();
   const { signIn } = useAuth();
@@ -80,7 +81,13 @@ export function SigninScreen() {
               }}
               disabled={Object.keys(errors).length > 0}
             />
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('SigninStack', {
+                  screen: 'ForgotPasswordScreen',
+                })
+              }
+            >
               <Text style={{ color: theme.colors.primary }}>
                 Forgot Password ?
               </Text>
@@ -90,7 +97,7 @@ export function SigninScreen() {
       </Formik>
       <View className="w-full flex-row items-center justify-center">
         <Text>Don&apos;t have an account ? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
+        <TouchableOpacity onPress={() => navigation.jumpTo('SignupScreen')}>
           <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
             Sign up
           </Text>

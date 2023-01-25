@@ -13,13 +13,26 @@ import {
 import { AuthTabNavigator } from './AuthTabNavigator';
 import { useAuth } from 'hooks';
 import { SplashScreen } from 'screens/SplashScreen';
+
+export type RootStackParams = {
+  MapScreen: undefined;
+  CreatePostScreen: undefined;
+  CreateChatRoomScreen: undefined;
+  PreviewScreen: undefined;
+  PostScreen: undefined;
+  ChatRoomScreen: undefined;
+  DirectMessagesScreen: undefined;
+  DirectMessageScreen: undefined;
+  SettingsScreen: undefined;
+  AuthTabNavigator: undefined;
+};
+
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
 export function RootStackNavigator() {
   const { isLogged, status } = useAuth();
 
   if (status === 'idle') {
-    // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
 
@@ -68,16 +81,3 @@ export function RootStackNavigator() {
     </RootStack.Navigator>
   );
 }
-
-export type RootStackParams = {
-  MapScreen: undefined;
-  CreatePostScreen: undefined;
-  CreateChatRoomScreen: undefined;
-  PreviewScreen: undefined;
-  PostScreen: undefined;
-  ChatRoomScreen: undefined;
-  DirectMessagesScreen: undefined;
-  DirectMessageScreen: undefined;
-  SettingsScreen: undefined;
-  AuthTabNavigator: undefined;
-};
