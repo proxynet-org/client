@@ -2,6 +2,7 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SigninScreen, SignupScreen, ForgotPasswordScreen } from 'screens';
+import { useTheme } from '@rneui/themed';
 
 export type SigninStackParams = {
   SigninScreen: undefined;
@@ -11,17 +12,21 @@ export type SigninStackParams = {
 const SigninStack = createNativeStackNavigator<SigninStackParams>();
 
 function SigninStackNavigator() {
+  const { theme } = useTheme();
   return (
-    <SigninStack.Navigator
-      initialRouteName="SigninScreen"
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <SigninStack.Screen name="SigninScreen" component={SigninScreen} />
+    <SigninStack.Navigator initialRouteName="SigninScreen">
+      <SigninStack.Screen
+        name="SigninScreen"
+        component={SigninScreen}
+        options={{ headerShown: false }}
+      />
       <SigninStack.Screen
         name="ForgotPasswordScreen"
         component={ForgotPasswordScreen}
+        options={{
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTitle: '',
+        }}
       />
     </SigninStack.Navigator>
   );

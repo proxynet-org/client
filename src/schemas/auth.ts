@@ -1,11 +1,6 @@
 import * as Yup from 'yup';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
-export const SigninSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Required'),
-  password: Yup.string().required('Required'),
-});
-
 export const SignupSchema = Yup.object().shape({
   fullName: Yup.string().required('Full name is required'),
   birthDate: Yup.date()
@@ -34,4 +29,13 @@ export const SignupSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
     .required('Confirm password is required'),
+});
+
+export const SigninSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string().required('Required'),
+});
+
+export const ForgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Required'),
 });

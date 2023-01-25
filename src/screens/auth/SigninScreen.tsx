@@ -88,7 +88,7 @@ export function SigninScreen() {
                 })
               }
             >
-              <Text style={{ color: theme.colors.primary }}>
+              <Text style={{ color: theme.colors.primary, marginVertical: 10 }}>
                 Forgot Password ?
               </Text>
             </TouchableOpacity>

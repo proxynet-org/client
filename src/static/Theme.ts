@@ -23,6 +23,8 @@ export const GlobalTheme = createTheme({
     Text: (props) => ({
       style: {
         fontWeight: props.bold ? 'bold' : 'normal',
+        textAlign: props.center ? 'center' : 'left',
+        marginBottom: props.h1 ? 5 : 0,
       },
     }),
   },

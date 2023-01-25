@@ -20,6 +20,7 @@ export function SignupScreen() {
   return (
     <KeyboardAwareScrollView
       style={{ backgroundColor: theme.colors.background }}
+      contentContainerStyle={{ flexGrow: 1 }}
     >
       <View className="flex-1 items-center justify-center p-5">
         <View className="w-full p-5">
@@ -151,7 +152,7 @@ export function SignupScreen() {
             </View>
           )}
         </Formik>
-        <View className="flex-row items-end">
+        <View className="w-full flex-row items-center justify-center">
           <Text>Already have an account ? </Text>
           <TouchableOpacity
             onPress={() =>
