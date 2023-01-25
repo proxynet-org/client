@@ -1,9 +1,8 @@
 import { Button, Text } from '@rneui/themed';
 import { NavigationButton } from 'components';
-import { useToggleScreen } from 'hooks';
+import { useToggleScreen, useAuth } from 'hooks';
 import i18n from 'languages';
 import { View } from 'react-native';
-import { useAuth } from 'Auth';
 
 export function MapScreen() {
   const isFocused = useToggleScreen();

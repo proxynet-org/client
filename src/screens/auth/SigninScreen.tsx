@@ -7,7 +7,7 @@ import { Formik } from 'formik';
 import { SigninSchema } from 'schemas';
 import { FormInput, View } from 'components';
 import i18n from 'languages';
-import { useAuth } from 'Auth';
+import { useAuth } from 'hooks';
 
 export function SigninScreen() {
   const navigation = useNavigation<NavigationProp<AuthTabParams>>();

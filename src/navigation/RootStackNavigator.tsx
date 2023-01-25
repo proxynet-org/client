@@ -11,7 +11,7 @@ import {
   SettingsScreen,
 } from 'screens';
 import { AuthTabNavigator } from './AuthTabNavigator';
-import { useAuth } from 'Auth';
+import { useAuth } from 'hooks';
 import { SplashScreen } from 'screens/SplashScreen';
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
