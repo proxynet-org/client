@@ -2,40 +2,41 @@ import * as Yup from 'yup';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 export const SignupSchema = Yup.object().shape({
-  fullName: Yup.string().required('Full name is required'),
+  fullName: Yup.string().required('form.required'),
   birthDate: Yup.date()
-    .test('age', 'You must be 18 or older', (value) => {
+    .test('age', 'form.birthDate.errorAge', (value) => {
       if (!value) return false;
       const cutoff = new Date();
       cutoff.setFullYear(cutoff.getFullYear() - 18);
       return value <= cutoff;
     })
-    .required('Birthdate is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
+    .required('form.required'),
+  email: Yup.string().email('form.email.error').required('form.required'),
   phone: Yup.string()
-    .test('valid-phone', 'Invalid phone number', (value) => {
+    .test('valid-phone', 'form.phone.error', (value) => {
       if (!value) return false;
       const parsedPhoneNumber = parsePhoneNumberFromString(value);
       return Boolean(parsedPhoneNumber?.isValid());
     })
-    .required('Phone is required'),
+    .required('form.required'),
   password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
+    .min(8, 'form.password.errorLength')
     .matches(
       /^(?=.*[A-Z])(?=.*[!@#$%^&*?])(?=.*[0-9])(?=.*[a-z]).{8,}$/,
-      'Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
+      'form.password.errorAll',
     )
-    .required('Required'),
+    .oneOf([Yup.ref('confirmPassword'), null], 'form.confirmPassword.error')
+    .required('form.required'),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Confirm password is required'),
+    .oneOf([Yup.ref('password'), null], 'form.confirmPassword.error')
+    .required('form.required'),
 });
 
 export const SigninSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Required'),
-  password: Yup.string().required('Required'),
+  email: Yup.string().email('form.email.error').required('form.required'),
+  password: Yup.string().required('form.required'),
 });
 
 export const ForgotPasswordSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Required'),
+  email: Yup.string().email('form.email.error').required('form.required'),
 });

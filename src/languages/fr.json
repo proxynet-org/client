@@ -1,5 +1,63 @@
 {
-  "Welcome": "Bienvenue",
-  "Signin": "Connexion",
-  "Signup": "Inscription"
+  "welcome": "Bienvenue",
+  "auth": {
+    "signin": {
+      "title": "Connexion",
+      "subTitle": "Veuillez vous connecter pour continuer",
+      "noAccount": "Pas encore de compte ?",
+      "forgotPassword": "Mot de passe oublié ?",
+      "button": "Se connecter"
+    },
+    "signup": {
+      "title": "Inscription",
+      "subTitle": "Veuillez vous inscrire pour continuer",
+      "already": "Vous avez déjà un compte ?",
+      "button": "S'inscrire"
+    },
+    "signout": {
+      "title": "Déconnexion",
+      "subTitle": "Voulez-vous vraiment vous déconnecter ?",
+      "button": "Se déconnecter"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subTitle": "Veuillez saisir votre adresse email pour réinitialiser votre mot de passe",
+      "button": "Réinitialiser"
+    }
+  },
+  "form": {
+    "email": {
+      "field": "EMAIL",
+      "error": "Email invalide"
+    },
+    "password": {
+      "field": "MOT DE PASSE",
+      "error": "Mot de passe invalide",
+      "errorLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "errorNumber": "Le mot de passe doit contenir au moins un chiffre",
+      "errorUpper": "Le mot de passe doit contenir au moins une majuscule",
+      "errorLower": "Le mot de passe doit contenir au moins une minuscule",
+      "errorSpecial": "Le mot de passe doit contenir au moins un caractère spécial",
+      "errorConfirm": "Les mots de passe ne correspondent pas",
+      "errorReset": "Le mot de passe doit être différent de l'ancien",
+      "errorAll": "Le mot de passe doit contenir au moins 8 caractères, un chiffre, une majuscule, une minuscule et un caractère spécial"
+    },
+    "fullName": {
+      "field": "NOM ET PRÉNOM"
+    },
+    "phone": {
+      "field": "TÉLÉPHONE",
+      "error": "Numéro de téléphone invalide"
+    },
+    "birthDate": {
+      "field": "DATE DE NAISSANCE",
+      "error": "Date de naissance invalide",
+      "errorAge": "Vous devez avoir au moins 18 ans"
+    },
+    "confirmPassword": {
+      "field": "CONFIRMER LE MOT DE PASSE",
+      "error": "Les mots de passe ne correspondent pas"
+    },
+    "required": "Champ obligatoire"
+  }
 }

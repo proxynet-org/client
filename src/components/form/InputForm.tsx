@@ -2,8 +2,9 @@ import { useState, PropsWithChildren, RefAttributes } from 'react';
 import { Input, InputProps, useTheme } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NativeSyntheticEvent, TextInputFocusEventData } from 'react-native';
+import i18n from 'languages';
 
-export function FormInput({
+export function InputForm({
   name,
   leftIconName,
   values,
@@ -44,7 +45,7 @@ export function FormInput({
     <Input
       {...props}
       value={values[name]}
-      errorMessage={touched[name] ? errors[name] : ''}
+      errorMessage={touched[name] && errors[name] ? i18n.t(errors[name]) : ''}
       onChangeText={handleChange(name)}
       onFocus={(e) => {
         setIsFocused(true);
@@ -56,8 +57,8 @@ export function FormInput({
         handleBlur(name)(e);
         props.onBlur?.(e);
       }}
-      label={props.label || props.placeholder}
-      placeholder={props.placeholder || (props.label as string)}
+      label={i18n.t(`form.${name}.field`)}
+      placeholder={i18n.t(`form.${name}.field`)}
       leftIcon={
         <Icon name={leftIconName} size={20} color={theme.colors.black} />
       }
@@ -86,5 +87,3 @@ export function FormInput({
     />
   );
 }
-
-export default FormInput;

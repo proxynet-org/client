@@ -1,5 +1,5 @@
-import { Button, Text, useTheme } from '@rneui/themed';
-import { FormInput, View } from 'components';
+import { Text, useTheme } from '@rneui/themed';
+import { InputForm, SubmitButtonForm, View } from 'components';
 import { AuthTabParams } from 'navigation';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -24,8 +24,8 @@ export function SignupScreen() {
     >
       <View className="flex-1 items-center justify-center p-5">
         <View className="w-full p-5">
-          <Text h1>{i18n.t('Signup')}</Text>
-          <Text>Please signup to continue.</Text>
+          <Text h1>{i18n.t('auth.signup.title')}</Text>
+          <Text>{i18n.t('auth.signup.subTitle')}</Text>
         </View>
         <Formik
           initialValues={{
@@ -50,7 +50,7 @@ export function SignupScreen() {
             errors,
           }) => (
             <View className="w-full items-center justify-center">
-              <FormInput
+              <InputForm
                 name="fullName"
                 values={values}
                 errors={errors}
@@ -61,7 +61,7 @@ export function SignupScreen() {
                 leftIconName="account-outline"
                 placeholder="FULL NAME"
               />
-              <FormInput
+              <InputForm
                 name="birthDate"
                 values={values}
                 errors={errors}
@@ -82,7 +82,7 @@ export function SignupScreen() {
                   });
                 }}
               />
-              <FormInput
+              <InputForm
                 name="phone"
                 values={values}
                 errors={errors}
@@ -96,7 +96,7 @@ export function SignupScreen() {
                 autoComplete="tel"
                 textContentType="telephoneNumber"
               />
-              <FormInput
+              <InputForm
                 name="email"
                 values={values}
                 errors={errors}
@@ -112,7 +112,7 @@ export function SignupScreen() {
                 autoComplete="email"
                 textContentType="emailAddress"
               />
-              <FormInput
+              <InputForm
                 name="password"
                 values={values}
                 errors={errors}
@@ -124,7 +124,7 @@ export function SignupScreen() {
                 secureTextEntry
                 leftIconName="lock-outline"
               />
-              <FormInput
+              <InputForm
                 name="confirmPassword"
                 values={values}
                 errors={errors}
@@ -136,31 +136,23 @@ export function SignupScreen() {
                 secureTextEntry
                 leftIconName="lock-outline"
               />
-              <Button
-                buttonStyle={{
-                  width: 250,
-                  height: 75,
-                }}
-                containerStyle={{ borderRadius: 50 }}
-                title={i18n.t('Signup')}
-                titleProps={{ style: { fontWeight: 'bold', fontSize: 20 } }}
-                onPress={() => {
-                  handleSubmit();
-                }}
-                disabled={Object.keys(errors).length > 0}
+              <SubmitButtonForm
+                title="auth.signup.button"
+                handleSubmit={handleSubmit}
+                errors={errors}
               />
             </View>
           )}
         </Formik>
         <View className="w-full flex-row items-center justify-center">
-          <Text>Already have an account ? </Text>
+          <Text>{i18n.t('auth.signup.already')} </Text>
           <TouchableOpacity
             onPress={() =>
               navigation.jumpTo('SigninStack', { screen: 'SigninScreen' })
             }
           >
             <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
-              Sign in
+              {i18n.t('auth.signin.button')}
             </Text>
           </TouchableOpacity>
         </View>
