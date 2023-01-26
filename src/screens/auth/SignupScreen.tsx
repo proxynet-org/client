@@ -1,5 +1,5 @@
 import { Text, useTheme } from '@rneui/themed';
-import { InputForm, SubmitButtonForm, View } from 'components';
+import { InputForm, SafeAreaView, SubmitButtonForm, View } from 'components';
 import { AuthTabParams } from 'navigation';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -43,106 +43,104 @@ export function SignupScreen() {
       style={{ backgroundColor: theme.colors.background }}
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      <View className="flex-1 items-center justify-center p-5">
-        <View className="w-full p-5">
+      <SafeAreaView className="flex-1 justify-center px-6">
+        <View className="mb-7">
           <Text h1>{i18n.t('auth.signup.title')}</Text>
           <Text>{i18n.t('auth.signup.subTitle')}</Text>
         </View>
 
-        <View className="w-full items-center justify-center">
-          <InputForm
-            name="fullName"
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            setFieldTouched={setFieldTouched}
-            leftIconName="account-outline"
-            placeholder="FULL NAME"
-          />
-          <InputForm
-            name="birthDate"
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            setFieldTouched={setFieldTouched}
-            leftIconName="cake-variant-outline"
-            placeholder="BIRTH DATE"
-            onFocus={(e) => {
-              e.currentTarget.blur();
-              DateTimePickerAndroid.open({
-                value: new Date(),
-                onChange: (e, date) =>
-                  date && handleChange('birthDate')(date.toLocaleDateString()),
-                mode: 'date',
-              });
-            }}
-          />
-          <InputForm
-            name="phone"
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            setFieldTouched={setFieldTouched}
-            leftIconName="phone-outline"
-            placeholder="PHONE"
-            keyboardType="phone-pad"
-            autoComplete="tel"
-            textContentType="telephoneNumber"
-          />
-          <InputForm
-            name="email"
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            setFieldTouched={setFieldTouched}
-            placeholder="EMAIL"
-            leftIconName="email-outline"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoComplete="email"
-            textContentType="emailAddress"
-          />
-          <InputForm
-            name="password"
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            setFieldTouched={setFieldTouched}
-            placeholder="PASSWORD"
-            secureTextEntry
-            leftIconName="lock-outline"
-          />
-          <InputForm
-            name="confirmPassword"
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleChange={handleChange}
-            handleBlur={handleBlur}
-            setFieldTouched={setFieldTouched}
-            placeholder="CONFIRM PASSWORD"
-            secureTextEntry
-            leftIconName="lock-outline"
-          />
-          <SubmitButtonForm
-            title="auth.signup.button"
-            handleSubmit={handleSubmit}
-            errors={errors}
-          />
-        </View>
+        <InputForm
+          name="fullName"
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          setFieldTouched={setFieldTouched}
+          leftIconName="account-outline"
+          placeholder="FULL NAME"
+        />
+        <InputForm
+          name="birthDate"
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          setFieldTouched={setFieldTouched}
+          leftIconName="cake-variant-outline"
+          placeholder="BIRTH DATE"
+          onFocus={(e) => {
+            e.currentTarget.blur();
+            DateTimePickerAndroid.open({
+              value: new Date(),
+              onChange: (e, date) =>
+                date && handleChange('birthDate')(date.toLocaleDateString()),
+              mode: 'date',
+            });
+          }}
+        />
+        <InputForm
+          name="phone"
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          setFieldTouched={setFieldTouched}
+          leftIconName="phone-outline"
+          placeholder="PHONE"
+          keyboardType="phone-pad"
+          autoComplete="tel"
+          textContentType="telephoneNumber"
+        />
+        <InputForm
+          name="email"
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          setFieldTouched={setFieldTouched}
+          placeholder="EMAIL"
+          leftIconName="email-outline"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+        />
+        <InputForm
+          name="password"
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          setFieldTouched={setFieldTouched}
+          placeholder="PASSWORD"
+          secureTextEntry
+          leftIconName="lock-outline"
+        />
+        <InputForm
+          name="confirmPassword"
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          setFieldTouched={setFieldTouched}
+          placeholder="CONFIRM PASSWORD"
+          secureTextEntry
+          leftIconName="lock-outline"
+        />
+        <SubmitButtonForm
+          title="auth.signup.button"
+          handleSubmit={handleSubmit}
+          errors={errors}
+        />
 
-        <View className="w-full flex-row items-center justify-center">
+        <View className="flex-row justify-center">
           <Text>{i18n.t('auth.signup.already')} </Text>
           <TouchableOpacity
             onPress={() =>
@@ -156,7 +154,7 @@ export function SignupScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     </KeyboardAwareScrollView>
   );
 }

@@ -60,12 +60,17 @@ export function InputForm({
       label={i18n.t(`form.${name}.field`)}
       placeholder={i18n.t(`form.${name}.field`)}
       leftIcon={
-        <Icon name={leftIconName} size={20} color={theme.colors.black} />
+        <Icon
+          name={leftIconName}
+          size={20}
+          color={theme.colors.black}
+          style={{ marginRight: 5 }}
+        />
       }
       containerStyle={{
         backgroundColor: isFocused ? theme.colors.searchBg : 'transparent',
         borderRadius: 25,
-        marginBottom: 10,
+        marginBottom: 25,
       }}
       labelStyle={{
         paddingLeft: 25,

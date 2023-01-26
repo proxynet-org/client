@@ -11,13 +11,16 @@ type Props = {
 export function SubmitButtonForm({ title, handleSubmit, errors }: Props) {
   return (
     <Button
+      containerStyle={{ borderRadius: 50, marginBottom: 50 }}
       buttonStyle={{
-        width: 250,
-        height: 75,
+        padding: 20,
       }}
-      containerStyle={{ borderRadius: 50 }}
+      titleStyle={{
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 20,
+      }}
       title={i18n.t(title)}
-      titleProps={{ style: { fontWeight: 'bold', fontSize: 20 } }}
       onPress={() => {
         handleSubmit();
       }}
