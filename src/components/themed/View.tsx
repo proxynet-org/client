@@ -1,4 +1,4 @@
-import { View as DefaultView } from 'react-native';
+import { SafeAreaView as DefaultView } from 'react-native';
 import { useTheme } from '@rneui/themed';
 
 export type ViewProps = DefaultView['props'];
