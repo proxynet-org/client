@@ -6,7 +6,7 @@ import { useTheme } from '@rneui/themed';
 
 export type SigninStackParams = {
   SigninScreen: undefined;
-  ForgotPasswordScreen: undefined;
+  ForgotPasswordScreen: { email: string };
 };
 
 const SigninStack = createNativeStackNavigator<SigninStackParams>();
