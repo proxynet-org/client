@@ -5,7 +5,13 @@ import { View } from 'react-native';
 export function SettingsScreen() {
   useToggleScreen({ hideOnBlur: true });
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>SettingsScreen</Text>
     </View>
   );

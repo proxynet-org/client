@@ -24,7 +24,13 @@ export function CreateChatRoomScreen() {
   });
 
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>CreateChatRoomScreen</Text>
       <NavigationButton name="ChatRoomScreen" />
     </View>
