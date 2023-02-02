@@ -13,12 +13,13 @@ import {
 import { AuthTabNavigator } from './AuthTabNavigator';
 import { useAuth } from 'hooks';
 import { SplashScreen } from 'screens/SplashScreen';
+import { MapMarker } from 'types';
 
 export type RootStackParams = {
   MapScreen: undefined;
   CreatePostScreen: undefined;
   CreateChatRoomScreen: undefined;
-  PreviewScreen: undefined;
+  PreviewScreen: { marker: MapMarker };
   PostScreen: undefined;
   ChatRoomScreen: undefined;
   DirectMessagesScreen: undefined;

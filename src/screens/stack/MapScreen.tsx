@@ -1,133 +1,161 @@
-import { useEffect, useState } from 'react';
-import { Text, FAB, useTheme } from '@rneui/themed';
-import { SafeAreaView, View } from 'components';
-import { useToggleScreen, useAuth } from 'hooks';
-import MapView, { Region } from 'react-native-maps';
-import * as Location from 'expo-location';
+import { useRef, useCallback } from 'react';
+import { View } from 'react-native';
+import { Dialog, FAB, useTheme } from '@rneui/themed';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { MapMarkerProps } from 'react-native-maps';
 
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  Easing,
-} from 'react-native-reanimated';
+import {
+  SafeAreaView,
+  MapView,
+  MapViewHandle,
+  ChatView,
+  FABGroup,
+  FabGroupHandle,
+} from 'components';
+import { RootStackParams } from 'navigation';
+import { MapMarker } from 'types';
+import { useQuery } from 'react-query';
+import { useRefetchOnFocus } from 'hooks';
+
+const markerIcons = {
+  post: require('assets/images/map_icons/post.png'),
+  forum: require('assets/images/map_icons/chat.png'),
+};
+
+const markers: MapMarker[] = [
+  {
+    id: '0',
+    coordinate: { latitude: 48.825, longitude: 2.37 },
+    type: 'post',
+    img: 'https://picsum.photos/500',
+    title: 'Post title',
+  },
+  {
+    id: '1',
+    coordinate: { latitude: 48.825, longitude: 2.39 },
+    type: 'forum',
+    img: 'https://picsum.photos/500',
+    title: 'Forum title',
+  },
+];
 
 export function MapScreen() {
-  // const isFocused = useToggleScreen();
-  const { signOut } = useAuth();
   const { theme } = useTheme();
-  const [region, setRegion] = useState<Region>();
-  const [errorMsg, setErrorMsg] = useState<string>();
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
+  const mapViewRef = useRef<MapViewHandle>(null);
+  const fabGroupRef = useRef<FabGroupHandle>(null);
 
-      const location = await Location.getCurrentPositionAsync({});
-      setRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-    })();
-  }, []);
+  const toMarkerProps = useCallback(
+    (marker: MapMarker): [string, MapMarkerProps] => {
+      const { coordinate, type, id } = marker;
+      return [
+        id,
+        {
+          icon: markerIcons[type],
+          coordinate,
+          onPress: () => navigation.navigate('PreviewScreen', { marker }),
+        },
+      ];
+    },
+    [navigation],
+  );
 
-  const height = useSharedValue('50%');
-
-  const config = {
-    duration: 500,
-    easing: Easing.bezier(0.5, 0.01, 0, 1),
-  };
-
-  const style = useAnimatedStyle(() => {
-    return {
-      height: withTiming(height.value, config),
-    };
+  const { isLoading, error, data, refetch } = useQuery({
+    queryKey: ['posts', 'chatRooms'],
+    queryFn: () =>
+      new Promise<MapMarker[]>((resolve) =>
+        setTimeout(() => resolve(markers), 1000),
+      ),
+    onSuccess(data) {
+      mapViewRef.current?.setMarkers(new Map(data.map(toMarkerProps)));
+    },
   });
+
+  useRefetchOnFocus(refetch);
 
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        justifyContent: 'center',
+        flexDirection: 'column-reverse',
       }}
     >
-      <MapView
-        region={region}
-        onUserLocationChange={(e) => {
-          if (!e.nativeEvent.coordinate) return;
-          const { latitude, longitude } = e.nativeEvent.coordinate;
-          setRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          });
-        }}
-        showsMyLocationButton={false}
-        showsCompass={false}
-        showsScale={false}
-        style={{ width: '100%', height: '100%' }}
-        showsUserLocation
-        followsUserLocation
-        onTouchStart={() => {
-          height.value = '5%';
-        }}
-      />
+      <Dialog isVisible={isLoading}>
+        <Dialog.Loading />
+      </Dialog>
+      <MapView ref={mapViewRef} />
+      <ChatView />
       <View
         style={{
           width: '100%',
-          height: '100%',
-          position: 'absolute',
-          bottom: 0,
-          justifyContent: 'flex-end',
-          alignItems: 'flex-start',
-          backgroundColor: 'transparent',
+          borderWidth: 1,
+          borderColor: 'blue',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
         }}
-        pointerEvents="box-none"
       >
         <FAB
-          icon={{ name: 'add', color: 'white' }}
+          title="Chat"
+          icon={{ name: 'message', color: 'white', type: 'material-community' }}
           size="small"
-          style={{ margin: 16 }}
           color={theme.colors.success}
+          titleStyle={{ color: 'white' }}
         />
-        <Animated.View
-          style={[
-            {
-              width: '100%',
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              backgroundColor: theme.colors.background,
-            },
-            style,
-          ]}
-          onTouchStart={() => {
-            height.value = '50%';
+        <FAB
+          icon={{
+            name: 'crosshairs-gps',
+            color: 'white',
+            type: 'material-community',
           }}
-        >
-          <Text style={{ textAlign: 'center' }}>Chat</Text>
-        </Animated.View>
+          size="small"
+          color={theme.colors.success}
+          onPress={() => mapViewRef.current?.followUser()}
+        />
+        <FABGroup
+          fab={{
+            icon: { name: 'plus', color: 'white', type: 'material-community' },
+            size: 'large',
+            color: theme.colors.success,
+          }}
+          fabs={[
+            {
+              icon: {
+                name: 'forum',
+                color: 'white',
+                type: 'material-community',
+              },
+              size: 'small',
+              color: theme.colors.success,
+              onPress: () => navigation.navigate('CreateChatRoomScreen'),
+            },
+            {
+              icon: {
+                name: 'camera',
+                color: 'white',
+                type: 'material-community',
+              },
+              size: 'small',
+              color: theme.colors.success,
+              onPress: () => navigation.navigate('CreatePostScreen'),
+            },
+          ]}
+          direction="column-reverse"
+          space={theme.spacing.sm}
+        />
       </View>
+      <FAB
+        icon={{ name: 'cog', color: 'white', type: 'material-community' }}
+        size="small"
+        color={theme.colors.success}
+        style={{
+          position: 'absolute',
+          top: 2 * theme.spacing.xl,
+          right: theme.spacing.sm,
+        }}
+        onPress={() => navigation.navigate('SettingsScreen')}
+      />
     </SafeAreaView>
   );
 }
-
-// {isFocused && (
-//   <View style={{ position: 'absolute' }}>
-//     <Text>
-//       {i18n.t('welcome')} {i18n.t('welcome')}
-//     </Text>
-//     <NavigationButton name="PreviewScreen" />
-//     <NavigationButton name="CreateChatRoomScreen" />
-//     <NavigationButton name="CreatePostScreen" />
-//     <NavigationButton name="DirectMessagesScreen" />
-//     <NavigationButton name="SettingsScreen" />
-//     <Button title="Sign Out" onPress={signOut} />
-//   </View>
-// )}
