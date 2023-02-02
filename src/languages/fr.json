@@ -59,5 +59,10 @@
       "error": "Les mots de passe ne correspondent pas"
     },
     "required": "Champ obligatoire"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Veuillez saisir votre message...",
+    "button": "Envoyer"
   }
 }
