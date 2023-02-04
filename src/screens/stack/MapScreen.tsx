@@ -78,9 +78,18 @@ export function MapScreen() {
     function addMarker(marker: MapMarker) {
       mapViewRef.current?.addMarker(marker.id, toMarkerProps(marker)[1]);
     }
+    function deleteMarker(id: string) {
+      mapViewRef.current?.removeMarker(id);
+    }
     addCallback('newPost', addMarker);
+    addCallback('newChatRoom', addMarker);
+    addCallback('delPost', deleteMarker);
+    addCallback('delChatRoom', deleteMarker);
     return () => {
       removeCallback('newPost', addMarker);
+      removeCallback('newChatRoom', addMarker);
+      removeCallback('delPost', deleteMarker);
+      removeCallback('delChatRoom', deleteMarker);
     };
   }, [addCallback, removeCallback, toMarkerProps]);
 

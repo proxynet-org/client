@@ -5,9 +5,13 @@ type NewPostEvent = MapMarkerPost;
 
 type NewChatRoomEvent = MapMarkerChatRoom;
 
+type DelMarkerEvent = string;
+
 export type WebSocketContextEventMap = {
   newPost: NewPostEvent;
   newChatRoom: NewChatRoomEvent;
+  delPost: DelMarkerEvent;
+  delChatRoom: DelMarkerEvent;
 };
 
 interface WebSocketContextValue {
