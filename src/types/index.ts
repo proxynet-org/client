@@ -1,1 +1,1 @@
-export type { MapMarker } from './MapMarker';
+export type * from './MapMarker';

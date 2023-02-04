@@ -8,7 +8,7 @@ export type MapMarker = {
   img: string;
 };
 
-export type MarkerPost = MapMarker & {
+export type MapMarkerPost = MapMarker & {
   type: 'post';
   likes: number;
   dislikes: number;
@@ -16,7 +16,7 @@ export type MarkerPost = MapMarker & {
   timestamp: number;
 };
 
-export type MarkerForum = MapMarker & {
+export type MapMarkerChatRoom = MapMarker & {
   type: 'forum';
   people: number;
   verified: boolean;

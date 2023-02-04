@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { Dialog, FAB, useTheme } from '@rneui/themed';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -15,7 +15,7 @@ import {
 import { RootStackParams } from 'navigation';
 import { MapMarker } from 'types';
 import { useQuery } from 'react-query';
-import { useRefetchOnFocus } from 'hooks';
+import { useAuth, useRefetchOnFocus, useWebSocket } from 'hooks';
 
 const markerIcons = {
   post: require('assets/images/map_icons/post.png'),
@@ -41,6 +41,8 @@ const markers: MapMarker[] = [
 
 export function MapScreen() {
   const { theme } = useTheme();
+  const { signOut } = useAuth();
+  const { addCallback, removeCallback } = useWebSocket();
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
 
   const mapViewRef = useRef<MapViewHandle>(null);
@@ -71,6 +73,16 @@ export function MapScreen() {
       mapViewRef.current?.setMarkers(new Map(data.map(toMarkerProps)));
     },
   });
+
+  useEffect(() => {
+    function addMarker(marker: MapMarker) {
+      mapViewRef.current?.addMarker(marker.id, toMarkerProps(marker)[1]);
+    }
+    addCallback('newPost', addMarker);
+    return () => {
+      removeCallback('newPost', addMarker);
+    };
+  }, [addCallback, removeCallback, toMarkerProps]);
 
   useRefetchOnFocus(refetch);
 
@@ -155,6 +167,17 @@ export function MapScreen() {
           right: theme.spacing.sm,
         }}
         onPress={() => navigation.navigate('SettingsScreen')}
+      />
+      <FAB
+        icon={{ name: 'logout', color: 'white', type: 'material-community' }}
+        size="small"
+        color={theme.colors.success}
+        style={{
+          position: 'absolute',
+          top: 2 * theme.spacing.xl,
+          left: theme.spacing.sm,
+        }}
+        onPress={signOut}
       />
     </SafeAreaView>
   );

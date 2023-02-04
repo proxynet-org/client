@@ -31,7 +31,7 @@ export type RootStackParams = {
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
 export function RootStackNavigator() {
-  const { isLogged, status } = useAuth();
+  const { status, userToken } = useAuth();
 
   if (status === 'idle') {
     return <SplashScreen />;
@@ -44,7 +44,7 @@ export function RootStackNavigator() {
         presentation: 'transparentModal',
       }}
     >
-      {isLogged ? (
+      {userToken ? (
         <>
           <RootStack.Screen
             name="MapScreen"

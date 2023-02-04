@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(AuthReducer, {
     status: 'idle',
     userToken: null,
-    isLogged: false,
   });
 
   useEffect(() => {

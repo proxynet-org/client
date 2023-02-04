@@ -4,3 +4,4 @@ export * from './useToggleScreen';
 export * from './useAuth';
 export * from './useRefetchOnFocus';
 export * from './useAppState';
+export * from './useWebSocket';

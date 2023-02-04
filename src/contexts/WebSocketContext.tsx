@@ -1,86 +1,35 @@
-import { createContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createContext } from 'react';
+import { MapMarkerPost, MapMarkerChatRoom } from 'types';
+
+type NewPostEvent = MapMarkerPost;
+
+type NewChatRoomEvent = MapMarkerChatRoom;
+
+export type WebSocketContextEventMap = {
+  newPost: NewPostEvent;
+  newChatRoom: NewChatRoomEvent;
+};
 
 interface WebSocketContextValue {
   connected: boolean;
   error: Event | Error | null;
+  addCallback<K extends keyof WebSocketContextEventMap>(
+    type: K,
+    callback: (event: WebSocketContextEventMap[K]) => void,
+  ): void;
+  removeCallback<K extends keyof WebSocketContextEventMap>(
+    type: K,
+    callback: (event: WebSocketContextEventMap[K]) => void,
+  ): void;
+  connect(userToken: string): void;
+  disconnect(): void;
 }
 
-const WebSocketContext = createContext<WebSocketContextValue>({
+export const WebSocketContext = createContext<WebSocketContextValue>({
   connected: false,
   error: null,
+  addCallback: () => console.log('add callback'),
+  removeCallback: () => console.log('remove callback'),
+  connect: (userTokent) => console.log('connect with token', userTokent),
+  disconnect: () => console.log('disconnect'),
 });
-
-interface WebSocketProviderProps {
-  url: string;
-  children: React.ReactNode;
-}
-
-const RETRY_DELAY_MS = 1000;
-
-export const WebSocketProvider = ({
-  url,
-  children,
-}: WebSocketProviderProps) => {
-  const socket = useRef<WebSocket | null>(null);
-  const listeners = useRef<Map<string, Array<(event: Event) => void>>>(
-    new Map(),
-  );
-  const [connected, setConnected] = useState(false);
-  const [error, setError] = useState<Event | Error | null>(null);
-
-  function addListener(event: string, callback: (event: Event) => void) {
-    listeners.current.set(event, [
-      ...(listeners.current.get(event) || []),
-      callback,
-    ]);
-  }
-
-  function removeListener(event: string, callback: (event: Event) => void) {
-    const currentListeners = listeners.current.get(event) || [];
-    const newListeners = currentListeners.filter((l) => l !== callback);
-    listeners.current.set(event, newListeners);
-  }
-
-  const connect = useCallback(() => {
-    const newWebSocket = new WebSocket(url);
-
-    newWebSocket.onopen = () => {
-      setConnected(true);
-      setError(null);
-    };
-
-    newWebSocket.onmessage = (event) => {
-      const { type, payload } = JSON.parse(event.data);
-      listeners.current.get(type)?.forEach((callback) => callback(payload));
-    };
-
-    newWebSocket.onerror = (event) => {
-      setError(event);
-    };
-
-    newWebSocket.onclose = (event: CloseEvent) => {
-      setConnected(false);
-      if (event.wasClean) return;
-      setTimeout(connect, RETRY_DELAY_MS);
-    };
-
-    socket.current = newWebSocket;
-  }, [url]);
-
-  useEffect(() => {
-    connect();
-
-    return () => {
-      socket.current?.close();
-      socket.current = null;
-    };
-  }, [connect]);
-
-  return (
-    <WebSocketContext.Provider value={{ connected, error }}>
-      {children}
-    </WebSocketContext.Provider>
-  );
-};
-
-export default WebSocketContext;
