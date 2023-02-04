@@ -1,17 +1,11 @@
 import { createContext } from 'react';
-import { MapMarkerPost, MapMarkerChatRoom } from 'types';
-
-type NewPostEvent = MapMarkerPost;
-
-type NewChatRoomEvent = MapMarkerChatRoom;
-
-type DelMarkerEvent = string;
+import { MapMarker } from 'types';
 
 export type WebSocketContextEventMap = {
-  newPost: NewPostEvent;
-  newChatRoom: NewChatRoomEvent;
-  delPost: DelMarkerEvent;
-  delChatRoom: DelMarkerEvent;
+  newPost: MapMarker & { type: 'post' };
+  newChatRoom: MapMarker & { type: 'chatroom' };
+  delPost: { id: string };
+  delChatRoom: { id: string };
 };
 
 interface WebSocketContextValue {

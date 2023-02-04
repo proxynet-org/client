@@ -19,7 +19,7 @@ import { useAuth, useRefetchOnFocus, useWebSocket } from 'hooks';
 
 const markerIcons = {
   post: require('assets/images/map_icons/post.png'),
-  forum: require('assets/images/map_icons/chat.png'),
+  chatroom: require('assets/images/map_icons/chat.png'),
 };
 
 const markers: MapMarker[] = [
@@ -29,13 +29,19 @@ const markers: MapMarker[] = [
     type: 'post',
     img: 'https://picsum.photos/500',
     title: 'Post title',
+    likes: 10,
+    dislikes: 2,
+    comments: 5,
+    timestamp: 24,
   },
   {
     id: '1',
     coordinate: { latitude: 48.825, longitude: 2.39 },
-    type: 'forum',
+    type: 'chatroom',
     img: 'https://picsum.photos/500',
-    title: 'Forum title',
+    title: 'Chatroom title',
+    people: 10,
+    verified: true,
   },
 ];
 
@@ -64,7 +70,7 @@ export function MapScreen() {
   );
 
   const { isLoading, error, data, refetch } = useQuery({
-    queryKey: ['posts', 'chatRooms'],
+    queryKey: ['posts', 'chatrooms'],
     queryFn: () =>
       new Promise<MapMarker[]>((resolve) =>
         setTimeout(() => resolve(markers), 1000),
@@ -78,7 +84,7 @@ export function MapScreen() {
     function addMarker(marker: MapMarker) {
       mapViewRef.current?.addMarker(marker.id, toMarkerProps(marker)[1]);
     }
-    function deleteMarker(id: string) {
+    function deleteMarker({ id }: { id: string }) {
       mapViewRef.current?.removeMarker(id);
     }
     addCallback('newPost', addMarker);
