@@ -1,7 +1,11 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Dialog, FAB, SpeedDial, useTheme } from '@rneui/themed';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import {
+  NavigationProp,
+  useNavigation,
+  useIsFocused,
+} from '@react-navigation/native';
 import { MapMarkerProps } from 'react-native-maps';
 
 import { SafeAreaView, MapView, MapViewHandle, ChatView } from 'components';
@@ -71,6 +75,7 @@ export function MapScreen() {
       mapViewRef.current?.setMarkers(new Map(data.map(toMarkerProps)));
     },
   });
+  useRefetchOnFocus(refetch);
 
   useEffect(() => {
     function addMarker(marker: MapMarker) {
@@ -91,9 +96,17 @@ export function MapScreen() {
     };
   }, [addCallback, removeCallback, toMarkerProps]);
 
-  useRefetchOnFocus(refetch);
-
   const [open, setOpen] = useState(false);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      mapViewRef.current?.followUser();
+    } else {
+      setOpen(false);
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView
@@ -106,78 +119,86 @@ export function MapScreen() {
         <Dialog.Loading />
       </Dialog>
       <MapView ref={mapViewRef} />
-      <ChatView />
-      <View
-        style={{
-          width: '100%',
-          borderWidth: 1,
-          borderColor: 'blue',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-      >
-        <FAB
-          icon={{
-            name: 'crosshairs-gps',
-            color: 'white',
-            type: 'material-community',
-          }}
-          size="small"
-          color={theme.colors.success}
-          onPress={() => mapViewRef.current?.followUser()}
-        />
-      </View>
-      <SpeedDial
-        isOpen={open}
-        icon={{ name: 'plus', color: 'white', type: 'material-community' }}
-        openIcon={{ name: 'close', color: '#fff' }}
-        onOpen={() => setOpen(!open)}
-        onClose={() => setOpen(!open)}
-        color={theme.colors.success}
-      >
-        <SpeedDial.Action
-          icon={{
-            name: 'camera',
-            color: 'white',
-            type: 'material-community',
-          }}
-          title="New post"
-          onPress={() => navigation.navigate('CreatePostScreen')}
-          color={theme.colors.success}
-        />
-        <SpeedDial.Action
-          icon={{
-            name: 'forum',
-            color: 'white',
-            type: 'material-community',
-          }}
-          title="New forum"
-          onPress={() => navigation.navigate('CreateChatRoomScreen')}
-          color={theme.colors.success}
-        />
-      </SpeedDial>
-      <FAB
-        icon={{ name: 'cog', color: 'white', type: 'material-community' }}
-        size="small"
-        color={theme.colors.success}
-        style={{
-          position: 'absolute',
-          top: 2 * theme.spacing.xl,
-          right: theme.spacing.sm,
-        }}
-        onPress={() => navigation.navigate('SettingsScreen')}
-      />
-      <FAB
-        icon={{ name: 'logout', color: 'white', type: 'material-community' }}
-        size="small"
-        color={theme.colors.success}
-        style={{
-          position: 'absolute',
-          top: 2 * theme.spacing.xl,
-          left: theme.spacing.sm,
-        }}
-        onPress={signOut}
-      />
+      {isFocused && (
+        <>
+          <ChatView />
+          <View
+            style={{
+              width: '100%',
+              borderWidth: 1,
+              borderColor: 'blue',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <FAB
+              icon={{
+                name: 'crosshairs-gps',
+                color: 'white',
+                type: 'material-community',
+              }}
+              size="small"
+              color={theme.colors.success}
+              onPress={() => mapViewRef.current?.followUser()}
+            />
+          </View>
+          <SpeedDial
+            isOpen={open}
+            icon={{ name: 'plus', color: 'white', type: 'material-community' }}
+            openIcon={{ name: 'close', color: '#fff' }}
+            onOpen={() => setOpen(!open)}
+            onClose={() => setOpen(!open)}
+            color={theme.colors.success}
+          >
+            <SpeedDial.Action
+              icon={{
+                name: 'camera',
+                color: 'white',
+                type: 'material-community',
+              }}
+              title="New post"
+              onPress={() => navigation.navigate('CreatePostScreen')}
+              color={theme.colors.success}
+            />
+            <SpeedDial.Action
+              icon={{
+                name: 'forum',
+                color: 'white',
+                type: 'material-community',
+              }}
+              title="New forum"
+              onPress={() => navigation.navigate('CreateChatRoomScreen')}
+              color={theme.colors.success}
+            />
+          </SpeedDial>
+          <FAB
+            icon={{ name: 'cog', color: 'white', type: 'material-community' }}
+            size="small"
+            color={theme.colors.success}
+            style={{
+              position: 'absolute',
+              top: 2 * theme.spacing.xl,
+              right: theme.spacing.sm,
+            }}
+            onPress={() => navigation.navigate('SettingsScreen')}
+          />
+          <FAB
+            icon={{
+              name: 'logout',
+              color: 'white',
+              type: 'material-community',
+            }}
+            size="small"
+            color={theme.colors.success}
+            style={{
+              position: 'absolute',
+              top: 2 * theme.spacing.xl,
+              left: theme.spacing.sm,
+            }}
+            onPress={signOut}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 }
