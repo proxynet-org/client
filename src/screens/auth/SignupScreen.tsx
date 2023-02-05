@@ -43,8 +43,14 @@ export function SignupScreen() {
       style={{ backgroundColor: theme.colors.background }}
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      <SafeAreaView className="flex-1 justify-center px-6">
-        <View className="mb-7">
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          paddingHorizontal: 24,
+        }}
+      >
+        <View style={{ marginBottom: 28 }}>
           <Text h1>{i18n.t('auth.signup.title')}</Text>
           <Text>{i18n.t('auth.signup.subTitle')}</Text>
         </View>
@@ -140,7 +146,13 @@ export function SignupScreen() {
           errors={errors}
         />
 
-        <View className="flex-row justify-center">
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: 28,
+          }}
+        >
           <Text>{i18n.t('auth.signup.already')} </Text>
           <TouchableOpacity
             onPress={() =>

@@ -31,8 +31,18 @@ export function SigninScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 justify-center px-6">
-      <View className="mb-7">
+    <SafeAreaView
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 24,
+      }}
+    >
+      <View
+        style={{
+          marginBottom: 28,
+        }}
+      >
         <Text h1>{i18n.t('auth.signin.title')}</Text>
         <Text bold>{i18n.t('auth.signin.subTitle')}.</Text>
       </View>
@@ -91,7 +101,13 @@ export function SigninScreen() {
         </Text>
       </TouchableOpacity>
 
-      <View className="flex-row justify-center mb-7">
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          marginBottom: 28,
+        }}
+      >
         <Text>{i18n.t('auth.signin.noAccount')} </Text>
         <TouchableOpacity onPress={() => navigation.jumpTo('SignupScreen')}>
           <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>

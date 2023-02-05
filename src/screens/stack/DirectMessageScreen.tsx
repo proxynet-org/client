@@ -5,7 +5,13 @@ import { useToggleScreen } from 'hooks';
 export function DirectMessageScreen() {
   useToggleScreen({ hideOnBlur: true });
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>DirectMessageScreen</Text>
     </View>
   );

@@ -25,7 +25,13 @@ export function CreatePostScreen() {
   });
 
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>CreatePostScreen</Text>
       <NavigationButton name="PostScreen" />
     </View>

@@ -59,5 +59,10 @@
       "error": "Passwords do not match"
     },
     "required": "Required field"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Type a message...",
+    "button": "Send"
   }
 }

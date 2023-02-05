@@ -6,7 +6,13 @@ import { View } from 'react-native';
 export function DirectMessagesScreen() {
   useToggleScreen({ hideOnBlur: true });
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>DirectMessagesScreen</Text>
       <NavigationButton name="DirectMessageScreen" />
     </View>

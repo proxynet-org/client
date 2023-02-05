@@ -16,6 +16,7 @@ export const GlobalTheme = createTheme({
     }),
     primary: '#0DF5E3',
     background: '#201A30',
+    transparent: 'rgba(32, 26, 48, 0.75)',
     searchBg: '#38304C',
   },
   mode: 'dark',
@@ -24,9 +25,16 @@ export const GlobalTheme = createTheme({
       style: {
         fontWeight: props.bold ? 'bold' : 'normal',
         textAlign: props.center ? 'center' : 'left',
-        marginBottom: props.h1 ? 5 : 0,
       },
     }),
+  },
+
+  spacing: {
+    xs: 2,
+    sm: 4,
+    md: 8,
+    lg: 12,
+    xl: 24,
   },
 });
 

@@ -13,12 +13,13 @@ import {
 import { AuthTabNavigator } from './AuthTabNavigator';
 import { useAuth } from 'hooks';
 import { SplashScreen } from 'screens/SplashScreen';
+import { MapMarker } from 'types';
 
 export type RootStackParams = {
   MapScreen: undefined;
   CreatePostScreen: undefined;
   CreateChatRoomScreen: undefined;
-  PreviewScreen: undefined;
+  PreviewScreen: { marker: MapMarker };
   PostScreen: undefined;
   ChatRoomScreen: undefined;
   DirectMessagesScreen: undefined;
@@ -30,7 +31,7 @@ export type RootStackParams = {
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
 export function RootStackNavigator() {
-  const { isLogged, status } = useAuth();
+  const { status, userToken } = useAuth();
 
   if (status === 'idle') {
     return <SplashScreen />;
@@ -43,7 +44,7 @@ export function RootStackNavigator() {
         presentation: 'transparentModal',
       }}
     >
-      {isLogged ? (
+      {userToken ? (
         <>
           <RootStack.Screen
             name="MapScreen"

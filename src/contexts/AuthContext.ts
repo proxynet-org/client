@@ -3,7 +3,6 @@ import { createContext } from 'react';
 export interface AuthState {
   userToken: string | undefined | null;
   status: 'idle' | 'signOut' | 'signIn';
-  isLogged: boolean;
 }
 
 export type AuthAction =
@@ -30,7 +29,6 @@ export interface AuthContextType extends AuthState, AuthContextActions {}
 export const AuthContext = createContext<AuthContextType>({
   status: 'idle',
   userToken: null,
-  isLogged: false,
   signUp: (data) => console.log('signUp', data),
   signIn: (data) => console.log('signIn', data),
   signOut: () => console.log('signOut'),

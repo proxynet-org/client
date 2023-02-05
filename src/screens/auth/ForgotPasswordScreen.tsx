@@ -30,8 +30,14 @@ export function ForgotPasswordScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 justify-center px-6">
-      <View className="mb-7">
+    <SafeAreaView
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 24,
+      }}
+    >
+      <View style={{ marginBottom: 28 }}>
         <Text h1>{i18n.t('auth.forgotPassword.title')}</Text>
         <Text>{i18n.t('auth.forgotPassword.subTitle')}</Text>
       </View>
@@ -58,7 +64,13 @@ export function ForgotPasswordScreen() {
         errors={errors}
       />
 
-      <View className="flex-row justify-center mb-7">
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          marginBottom: 28,
+        }}
+      >
         <Text>{i18n.t('auth.signin.noAccount')} </Text>
         <TouchableOpacity
           onPress={() => {

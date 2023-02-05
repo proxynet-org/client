@@ -7,7 +7,13 @@ export function PostScreen() {
   useToggleScreen({ hideOnBlur: true });
 
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>PostScreen</Text>
       <NavigationButton name="DirectMessageScreen" />
     </View>

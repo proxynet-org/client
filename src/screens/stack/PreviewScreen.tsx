@@ -6,7 +6,13 @@ import { View } from 'react-native';
 export function PreviewScreen() {
   useToggleScreen({ hideOnBlur: true });
   return (
-    <View className="flex-1 bg-transparent">
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
       <Text>PreviewScreen</Text>
       <NavigationButton name="PostScreen" />
       <NavigationButton name="ChatRoomScreen" />
