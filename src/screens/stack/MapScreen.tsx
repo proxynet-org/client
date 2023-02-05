@@ -1,17 +1,10 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Dialog, FAB, useTheme } from '@rneui/themed';
+import { Dialog, FAB, SpeedDial, useTheme } from '@rneui/themed';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { MapMarkerProps } from 'react-native-maps';
 
-import {
-  SafeAreaView,
-  MapView,
-  MapViewHandle,
-  ChatView,
-  FABGroup,
-  FabGroupHandle,
-} from 'components';
+import { SafeAreaView, MapView, MapViewHandle, ChatView } from 'components';
 import { RootStackParams } from 'navigation';
 import { MapMarker } from 'types';
 import { useQuery } from 'react-query';
@@ -52,7 +45,6 @@ export function MapScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
 
   const mapViewRef = useRef<MapViewHandle>(null);
-  const fabGroupRef = useRef<FabGroupHandle>(null);
 
   const toMarkerProps = useCallback(
     (marker: MapMarker): [string, MapMarkerProps] => {
@@ -101,6 +93,8 @@ export function MapScreen() {
 
   useRefetchOnFocus(refetch);
 
+  const [open, setOpen] = useState(false);
+
   return (
     <SafeAreaView
       style={{
@@ -120,16 +114,8 @@ export function MapScreen() {
           borderColor: 'blue',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'flex-end',
         }}
       >
-        <FAB
-          title="Chat"
-          icon={{ name: 'message', color: 'white', type: 'material-community' }}
-          size="small"
-          color={theme.colors.success}
-          titleStyle={{ color: 'white' }}
-        />
         <FAB
           icon={{
             name: 'crosshairs-gps',
@@ -140,38 +126,36 @@ export function MapScreen() {
           color={theme.colors.success}
           onPress={() => mapViewRef.current?.followUser()}
         />
-        <FABGroup
-          fab={{
-            icon: { name: 'plus', color: 'white', type: 'material-community' },
-            size: 'large',
-            color: theme.colors.success,
-          }}
-          fabs={[
-            {
-              icon: {
-                name: 'forum',
-                color: 'white',
-                type: 'material-community',
-              },
-              size: 'small',
-              color: theme.colors.success,
-              onPress: () => navigation.navigate('CreateChatRoomScreen'),
-            },
-            {
-              icon: {
-                name: 'camera',
-                color: 'white',
-                type: 'material-community',
-              },
-              size: 'small',
-              color: theme.colors.success,
-              onPress: () => navigation.navigate('CreatePostScreen'),
-            },
-          ]}
-          direction="column-reverse"
-          space={theme.spacing.sm}
-        />
       </View>
+      <SpeedDial
+        isOpen={open}
+        icon={{ name: 'plus', color: 'white', type: 'material-community' }}
+        openIcon={{ name: 'close', color: '#fff' }}
+        onOpen={() => setOpen(!open)}
+        onClose={() => setOpen(!open)}
+        color={theme.colors.success}
+      >
+        <SpeedDial.Action
+          icon={{
+            name: 'camera',
+            color: 'white',
+            type: 'material-community',
+          }}
+          title="New post"
+          onPress={() => navigation.navigate('CreatePostScreen')}
+          color={theme.colors.success}
+        />
+        <SpeedDial.Action
+          icon={{
+            name: 'forum',
+            color: 'white',
+            type: 'material-community',
+          }}
+          title="New forum"
+          onPress={() => navigation.navigate('CreateChatRoomScreen')}
+          color={theme.colors.success}
+        />
+      </SpeedDial>
       <FAB
         icon={{ name: 'cog', color: 'white', type: 'material-community' }}
         size="small"
