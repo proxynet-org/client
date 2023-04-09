@@ -1,0 +1,151 @@
+{
+  "welcome": "Bienvenue",
+  "auth": {
+    "signin": {
+      "title": "Connexion",
+      "subTitle": "Veuillez vous connecter pour continuer",
+      "noAccount": "Pas encore de compte ?",
+      "forgotPassword": "Mot de passe oublié ?",
+      "button": "Se connecter"
+    },
+    "signup": {
+      "title": "Inscription",
+      "subTitle": "Veuillez vous inscrire pour continuer",
+      "already": "Vous avez déjà un compte ?",
+      "button": "S'inscrire"
+    },
+    "signout": {
+      "title": "Déconnexion",
+      "subTitle": "Voulez-vous vraiment vous déconnecter ?",
+      "button": "Se déconnecter"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subTitle": "Veuillez saisir votre adresse email pour réinitialiser votre mot de passe",
+      "button": "Réinitialiser"
+    }
+  },
+  "form": {
+    "username": {
+      "field": "NOM D'UTILISATEUR"
+    },
+    "email": {
+      "field": "EMAIL",
+      "error": "Email invalide"
+    },
+    "password": {
+      "field": "MOT DE PASSE",
+      "error": "Mot de passe invalide",
+      "errorLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "errorNumber": "Le mot de passe doit contenir au moins un chiffre",
+      "errorUpper": "Le mot de passe doit contenir au moins une majuscule",
+      "errorLower": "Le mot de passe doit contenir au moins une minuscule",
+      "errorSpecial": "Le mot de passe doit contenir au moins un caractère spécial",
+      "errorConfirm": "Les mots de passe ne correspondent pas",
+      "errorReset": "Le mot de passe doit être différent de l'ancien",
+      "errorAll": "Le mot de passe doit contenir au moins 8 caractères, un chiffre, une majuscule, une minuscule et un caractère spécial"
+    },
+    "fullname": {
+      "field": "NOM ET PRÉNOM"
+    },
+    "phone": {
+      "field": "TÉLÉPHONE",
+      "error": "Numéro de téléphone invalide"
+    },
+    "birthDate": {
+      "field": "DATE DE NAISSANCE",
+      "error": "Date de naissance invalide",
+      "errorAge": "Vous devez avoir au moins 18 ans"
+    },
+    "confirmPassword": {
+      "field": "CONFIRMER LE MOT DE PASSE",
+      "error": "Les mots de passe ne correspondent pas"
+    },
+    "title": {
+      "field": "TITRE"
+    },
+    "description": {
+      "field": "DESCRIPTION",
+      "error": {
+        "maxLength": "La description doit contenir au plus 100 caractères"
+      }
+    },
+    "caption": {
+      "field": "LÉGENDE"
+    },
+    "capacity": {
+      "field": "LIMITE D'UTILISATEURS"
+    },
+    "lifetime": {
+      "field": "DURÉE D'EXISTENCE"
+    },
+    "name": {
+      "field": "NOM"
+    },
+    "required": "Champ obligatoire"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Veuillez saisir votre message...",
+    "button": "Envoyer"
+  },
+  "time": {
+    "now": "À l'instant",
+    "seconds": {
+      "one": "Il y a {{count}} seconde",
+      "other": "Il y a {{count}} secondes"
+    },
+    "minutes": {
+      "one": "Il y a {{count}} minute",
+      "other": "Il y a {{count}} minutes"
+    },
+    "hours": {
+      "one": "Il y a {{count}} heure",
+      "other": "Il y a {{count}} heures"
+    },
+    "days": {
+      "one": "Il y a {{count}} jour",
+      "other": "Il y a {{count}} jours"
+    },
+    "weeks": {
+      "one": "Il y a {{count}} semaine",
+      "other": "Il y a {{count}} semaines"
+    },
+    "months": {
+      "one": "Il y a {{count}} mois",
+      "other": "Il y a {{count}} mois"
+    },
+    "years": {
+      "one": "Il y a {{count}} an",
+      "other": "Il y a {{count}} ans"
+    }
+  },
+  "post": {
+    "comments": {
+      "title": "Commentaires",
+      "placeholder": "Veuillez saisir votre commentaire...",
+      "button": "Envoyer",
+      "reply": "Répondre",
+      "see": {
+        "zero": "Aucun commentaire",
+        "one": "Voir %{count} commentaire",
+        "other": "Voir les %{count} commentaires",
+
+        "replies": {
+          "zero": "Aucune réponse",
+          "one": "Voir %{count} réponse",
+          "other": "Voir les %{count} réponses"
+        }
+      },
+      "zero": "Aucun commentaire",
+      "one": "%{count} commentaire",
+      "other": "%{count} commentaires",
+
+      "replies": {
+        "zero": "Aucune réponse",
+        "one": "%{count} réponse",
+        "other": "%{count} réponses"
+      }
+    }
+  }
+}
