@@ -4,7 +4,7 @@ import { Button, IconButton, Menu } from 'react-native-paper';
 import { FlatGrid } from 'react-native-super-grid';
 import { requestPermissionsAsync, Album } from 'expo-media-library';
 
-import { useToggle } from 'usehooks-ts';
+import useToggle from '@/hooks/useToggle';
 
 import { View } from './Themed';
 import dimensions from '@/constants/dimensions';

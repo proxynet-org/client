@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react';
 import { FlatList } from 'react-native';
-import { useToggle } from 'usehooks-ts';
 import { Button, Card, Paragraph, IconButton } from 'react-native-paper';
 import i18n from '@/languages';
 import { PostComment } from '@/types/post';
 import useAxios from '@/hooks/useAxios';
 import { getPostCommentReplies } from '@/api/post';
+import useToggle from '@/hooks/useToggle';
 import Separator from './Separator';
 
 type Props = {
