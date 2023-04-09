@@ -1,7 +1,9 @@
 const moduleResolver = [
   'module-resolver',
   {
-    root: ['./src'],
+    alias: {
+      '@': './',
+    },
     extensions: [
       '.ios.ts',
       '.android.ts',
@@ -21,5 +23,10 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: ['react-native-reanimated/plugin', moduleResolver],
+    env: {
+      production: {
+        plugins: ['react-native-paper/babel'],
+      },
+    },
   };
 };

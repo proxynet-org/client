@@ -1,0 +1,151 @@
+{
+  "welcome": "Welcome",
+  "auth": {
+    "signin": {
+      "title": "Sign In",
+      "subTitle": "Please sign in to continue",
+      "noAccount": "No account yet?",
+      "forgotPassword": "Forgot password?",
+      "button": "Sign In"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subTitle": "Please sign up to continue",
+      "already": "Already have an account?",
+      "button": "Sign Up"
+    },
+    "signout": {
+      "title": "Sign Out",
+      "subTitle": "Are you sure you want to sign out?",
+      "button": "Sign Out"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subTitle": "Please enter your email address to reset your password",
+      "button": "Reset"
+    }
+  },
+  "form": {
+    "username": {
+      "field": "USERNAME"
+    },
+    "email": {
+      "field": "EMAIL",
+      "error": "Invalid email"
+    },
+    "password": {
+      "field": "PASSWORD",
+      "error": "Invalid password",
+      "errorLength": "Password must be at least 8 characters",
+      "errorNumber": "Password must contain at least one number",
+      "errorUpper": "Password must contain at least one uppercase letter",
+      "errorLower": "Password must contain at least one lowercase letter",
+      "errorSpecial": "Password must contain at least one special character",
+      "errorConfirm": "Passwords do not match",
+      "errorReset": "Password must be different from the old one",
+      "errorAll": "Password must contain at least 8 characters, one number, one uppercase letter, one lowercase letter, and one special character"
+    },
+    "fullname": {
+      "field": "FULL NAME"
+    },
+    "phone": {
+      "field": "PHONE",
+      "error": "Invalid phone number"
+    },
+    "birthDate": {
+      "field": "BIRTH DATE",
+      "error": "Invalid birth date",
+      "errorAge": "You must be at least 18 years old"
+    },
+    "confirmPassword": {
+      "field": "CONFIRM PASSWORD",
+      "error": "Passwords do not match"
+    },
+    "title": {
+      "field": "TITLE"
+    },
+    "name": {
+      "field": "NAME"
+    },
+    "lifetime": {
+      "field": "LIFETIME"
+    },
+    "capacity": {
+      "field": "MAX USERS"
+    },
+    "description": {
+      "field": "DESCRIPTION",
+      "error": {
+        "maxLength": "Description must be less than 100 characters"
+      }
+    },
+    "caption": {
+      "field": "CAPTION"
+    },
+    "required": "Required field"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Type a message...",
+    "button": "Send"
+  },
+  "time": {
+    "now": "Just now",
+    "seconds": {
+      "one": "%{count} second ago",
+      "other": "%{count} seconds ago"
+    },
+    "minutes": {
+      "one": "%{count} minute ago",
+      "other": "%{count} minutes ago"
+    },
+    "hours": {
+      "one": "%{count} hour ago",
+      "other": "%{count} hours ago"
+    },
+    "days": {
+      "one": "%{count} day ago",
+      "other": "%{count} days ago"
+    },
+    "weeks": {
+      "one": "%{count} week ago",
+      "other": "%{count} weeks ago"
+    },
+    "months": {
+      "one": "%{count} month ago",
+      "other": "%{count} months ago"
+    },
+    "years": {
+      "one": "%{count} year ago",
+      "other": "%{count} years ago"
+    }
+  },
+  "post": {
+    "comments": {
+      "title": "Comments",
+      "placeholder": "Type a comment...",
+      "button": "Comment",
+      "reply": "Reply",
+      "see": {
+        "zero": "No comments",
+        "one": "See %{count} comment",
+        "other": "See %{count} comments",
+
+        "replies": {
+          "zero": "No replies",
+          "one": "See %{count} reply",
+          "other": "See %{count} replies"
+        }
+      },
+      "zero": "No comments",
+      "one": "%{count} comment",
+      "other": "%{count} comments",
+
+      "replies": {
+        "zero": "No replies",
+        "one": "%{count} reply",
+        "other": "%{count} replies"
+      }
+    }
+  }
+}

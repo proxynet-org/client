@@ -1,0 +1,71 @@
+{
+  "chatrooms": [
+    {
+      "id": "1",
+      "title": "Test Chat",
+      "media": "https://picsum.photos/700",
+      "description": "This is a test chat, in this chat you can talk about anything you want",
+      "people": 72,
+      "coordinates": {
+        "latitude": 37.7924,
+        "longitude": -122.4296
+      }
+    }
+  ],
+  "chats": [],
+  "posts": [
+    {
+      "id": "3",
+      "title": "Test Post from Typicode",
+      "media": "https://picsum.photos/700",
+      "likes": 50,
+      "dislikes": 15,
+      "comments": 3,
+      "coordinates": {
+        "latitude": 37.7924,
+        "longitude": -122.4402
+      }
+    }
+  ],
+  "comments": [
+    {
+      "id": "1",
+      "postId": "3",
+      "parentId": null,
+      "text": "Shankle non consectetur chislic.  Buffalo dolore ribeye excepteur ad, lorem incididunt enim frankfurter picanha capicola.  Filet mignon turkey et meatball in.  Jowl filet mignon tempor, pig kevin ball tip deserunt in nisi sint hamburger.  Hamburger labore duis meatloaf, short loin ullamco exercitation in picanha sirloin tempor.",
+      "replies": 0,
+      "likes": 5,
+      "dislikes": 1
+    },
+    {
+      "id": "2",
+      "postId": "3",
+      "parentId": null,
+      "text": "In beef ribs excepteur frankfurter pork.  Pancetta officia pig short loin, incididunt landjaeger ball tip jerky ham.  Pork magna ea in ground round filet mignon ribeye sausage andouille cillum frankfurter.  Sint sunt salami drumstick burgdoggen, alcatra capicola ham hock ut cupidatat ad quis reprehenderit venison.  Kielbasa incididunt short ribs ad, deserunt irure shankle ex jowl et non pork loin ut cillum cupim.  Beef ribs tri-tip rump qui lorem shoulder.  Bacon qui quis excepteur ham brisket velit pig magna incididunt pastrami dolore consequat occaecat.",
+      "replies": 2,
+      "likes": 0,
+      "dislikes": 13
+    },
+    {
+      "id": "3",
+      "postId": "3",
+      "parentId": "2",
+      "text": "In jowl culpa irure laborum fugiat rump consectetur ut meatloaf kevin aliqua.  Dolore ut velit cupim pork porchetta.  Sunt dolore rump, sed velit sirloin minim chuck in.  Dolore minim in chislic capicola, pig eiusmod rump corned beef officia alcatra pastrami pork chop.  In cupidatat eiusmod, id pariatur bacon dolore pork chop hamburger cow drumstick labore nulla pork belly corned beef.  Deserunt in buffalo do jerky kielbasa.  Tenderloin qui ut, prosciutto minim commodo deserunt.",
+      "replies": 0,
+      "likes": 1,
+      "dislikes": 7
+    },
+    {
+      "id": "4",
+      "postId": "3",
+      "parentId": "2",
+      "text": "Beef ham pancetta chislic kevin, turkey turducken.  Sed labore tri-tip pastrami, cillum landjaeger ex velit mollit prosciutto fatback tenderloin incididunt.  Deserunt salami culpa, reprehenderit tongue bresaola ut andouille velit.  Ball tip chuck biltong jerky pancetta, adipisicing voluptate beef ribs.  Pancetta ground round chuck, consectetur chislic dolor kevin flank sint chicken.",
+      "replies": 0,
+      "likes": 100,
+      "dislikes": 0
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

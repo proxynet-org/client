@@ -1,58 +1,60 @@
-import { useEffect } from 'react';
-import { AppState, AppStateStatus, Platform } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-gesture-handler';
+import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ThemeProvider } from '@rneui/themed';
 import {
-  QueryClient,
-  QueryClientProvider,
-  onlineManager,
-  focusManager,
-} from 'react-query';
-import NetInfo from '@react-native-community/netinfo';
+  NavigationContainer,
+  DefaultTheme as NavigationLightTheme,
+  DarkTheme as NavigationDarkTheme,
+} from '@react-navigation/native';
+import {
+  MD3DarkTheme as DarkTheme,
+  MD3LightTheme as LightTheme,
+  Provider as PaperProvider,
+  adaptNavigationTheme,
+} from 'react-native-paper';
+import { enGB, fr, registerTranslation } from 'react-native-paper-dates';
 
-import { Navigation } from 'navigation';
-import { useCachedResources } from 'hooks';
-import { GlobalTheme } from 'static';
-import { AuthProvider } from 'providers';
-import { SplashScreen } from 'screens';
+import useCachedResources from '@/hooks/useCachedResources';
+import Routes from '@/routes/Routes';
+import { AuthProvider } from './contexts/AuthContext';
 
-const queryClient = new QueryClient();
+const adaptedTheme = adaptNavigationTheme({
+  reactNavigationLight: NavigationLightTheme,
+  materialLight: LightTheme,
+  reactNavigationDark: NavigationDarkTheme,
+  materialDark: DarkTheme,
+});
 
-function onAppStateChange(status: AppStateStatus) {
-  if (Platform.OS !== 'web') {
-    focusManager.setFocused(status === 'active');
-  }
-}
+const themes = {
+  light: {
+    paper: LightTheme,
+    navigation: adaptedTheme.LightTheme,
+  },
+  dark: {
+    paper: DarkTheme,
+    navigation: adaptedTheme.DarkTheme,
+  },
+};
+
+registerTranslation('en', enGB);
+registerTranslation('fr', fr);
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
+  const [loaded, error] = useCachedResources();
+  const colorScheme = useColorScheme();
+  const theme = themes[colorScheme ?? 'light'];
 
-  onlineManager.setEventListener((setOnline) => {
-    return NetInfo.addEventListener((state) => {
-      setOnline(Boolean(state.isConnected));
-    });
-  });
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onAppStateChange);
-
-    return () => subscription.remove();
-  }, []);
-
-  if (!isLoadingComplete) return <SplashScreen />;
+  if (!loaded || error) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <ThemeProvider theme={GlobalTheme}>
-          <AuthProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <Navigation />
-            </GestureHandlerRootView>
-          </AuthProvider>
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <PaperProvider theme={theme.paper}>
+          <NavigationContainer theme={theme.navigation}>
+            <Routes />
+          </NavigationContainer>
+        </PaperProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
