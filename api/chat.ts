@@ -11,6 +11,7 @@ export function connectToChat(
   const ws = new WebSocket(`${BASE_URL_WS}${CHAT_ENDPOINT}`);
 
   const sendMessage = (message: string) => {
+    console.log('Sending message...', message);
     ws.send(
       JSON.stringify({
         message,
@@ -24,6 +25,7 @@ export function connectToChat(
   };
 
   ws.onmessage = (e: MessageEvent<string>) => {
+    console.log('Message received: ', e.data);
     const data = JSON.parse(e.data);
     onMessage(data);
   };

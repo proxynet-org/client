@@ -10,11 +10,13 @@ const api = axios.create({
 });
 
 export const setAccessToken = async (token: Token) => {
+  console.log('Setting access token...');
   api.defaults.headers.Authorization = `Bearer ${token.access_token}`;
   await setSecureItem('refresh_token', token.refresh_token);
 };
 
 const refreshAccessToken = async () => {
+  console.log('Refreshing access token...');
   const refreshToken = await getSecureItem('refresh_token');
   const response = await api.post<Token>('/refresh', {
     refresh_token: refreshToken,

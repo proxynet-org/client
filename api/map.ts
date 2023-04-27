@@ -16,6 +16,7 @@ export function openMap(
   const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}`);
 
   const sendPosition = (position: LatLng) => {
+    console.log('Sending position...', position);
     ws.send(
       JSON.stringify({
         position,

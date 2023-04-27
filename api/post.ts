@@ -6,10 +6,12 @@ export const POSTS_ENDPOINT = '/posts';
 export const COMMENTS_ENDPOINT = '/comments';
 
 export function getPosts() {
+  console.log('Getting posts...');
   return api.get(POSTS_ENDPOINT);
 }
 
 export function getPost(id: string) {
+  console.log('Getting post...', id);
   return api.get(POSTS_ENDPOINT, {
     params: {
       id,
@@ -18,6 +20,7 @@ export function getPost(id: string) {
 }
 
 export function createPost(post: PostPayload) {
+  console.log('Creating post...');
   const data = new FormData();
 
   data.append('media', {
@@ -42,6 +45,7 @@ export function createPost(post: PostPayload) {
 }
 
 export function getPostComments(postId: string) {
+  console.log('Getting post comments...', postId);
   return api.get(COMMENTS_ENDPOINT, {
     params: {
       postId,
@@ -50,6 +54,7 @@ export function getPostComments(postId: string) {
 }
 
 export function getPostCommentReplies(postId: string, id: string) {
+  console.log('Getting post comment replies...', postId, id);
   return api.get(COMMENTS_ENDPOINT, {
     params: {
       postId,
@@ -63,6 +68,7 @@ export function createPostComment(
   text: string,
   parentId?: string,
 ) {
+  console.log('Creating post comment...', postId, text, parentId);
   return api.post<PostComment>(`/comments`, {
     postId,
     parentId,
