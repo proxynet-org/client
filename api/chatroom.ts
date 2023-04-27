@@ -32,3 +32,41 @@ export function createChatroom(chatroom: ChatroomPayload) {
     },
   });
 }
+
+export function joinChatroom(
+  chatroom: Chatroom,
+  onMessage: (message: string) => void,
+) {
+  const ws = new WebSocket(
+    `ws://
+    ${api.defaults.baseURL?.replace('http://', '')}
+    ${CHATROOMS_ENDPOINT}/${chatroom.id}`,
+  );
+
+  const sendMessage = (message: string) => {
+    ws.send(
+      JSON.stringify({
+        message,
+      }),
+    );
+  };
+
+  const leaveChatroom = () => {
+    ws.close();
+  };
+
+  ws.onmessage = (e: MessageEvent<string>) => {
+    const data = JSON.parse(e.data);
+    onMessage(data);
+  };
+
+  ws.onopen = () => {
+    console.log('connected');
+  };
+
+  ws.onclose = () => {
+    console.log('disconnected');
+  };
+
+  return { sendMessage, leaveChatroom };
+}
