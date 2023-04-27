@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { MD3Theme, useTheme } from 'react-native-paper';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { View } from '@/components/Themed';
-import connectToChat from '@/api/chat';
+import { connectToChat } from '@/api/chat';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -24,7 +24,7 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    const { disconnect } = connectToChat((message: string) => {
+    const onMessage = (message: string) => {
       const msg: IMessage = {
         _id: Math.random(),
         text: message,
@@ -36,7 +36,17 @@ export default function Chat() {
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, [msg]),
       );
-    });
+    };
+
+    const onOpen = () => {
+      console.log('connected to chat hide loading');
+    };
+
+    const onClose = () => {
+      console.log('disconnected from go back to map');
+    };
+
+    const { disconnect } = connectToChat(onMessage, onOpen, onClose);
 
     return () => {
       disconnect();

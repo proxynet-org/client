@@ -2,8 +2,11 @@ import axios from 'axios';
 import { getSecureItem, setSecureItem } from '@/utils/secureStore';
 import { Token } from '@/types/auth';
 
+export const BASE_URL = 'http://192.168.1.15:3001';
+export const BASE_URL_WS = `ws://${BASE_URL.replace('http://', '')}/ws`;
+
 const api = axios.create({
-  baseURL: 'http://192.168.1.15:3001',
+  baseURL: BASE_URL,
 });
 
 export const setAccessToken = async (token: Token) => {

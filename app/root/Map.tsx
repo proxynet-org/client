@@ -11,7 +11,7 @@ import MapView from '@/components/MapView';
 import { RootStackParams } from '@/routes/params';
 import { Post } from '@/types/post';
 import { Chatroom } from '@/types/chatroom';
-import openMap from '@/api/map';
+import { openMap } from '@/api/map';
 import { getPosts } from '@/api/post';
 
 import useAxios from '@/hooks/useAxios';
@@ -93,7 +93,20 @@ export default function MapScreen() {
       setChatroomMarkers((prev) => [...prev, chatroom]);
     };
 
-    const { closeMap, sendPosition } = openMap(onNewPost, onNewChatroom);
+    const onOpen = () => {
+      console.log('Map opened nothing to do here');
+    };
+
+    const onClose = () => {
+      console.log('Map closed nothing to do here');
+    };
+
+    const { closeMap, sendPosition } = openMap(
+      onNewPost,
+      onNewChatroom,
+      onOpen,
+      onClose,
+    );
 
     // Send position every 10 seconds
     const interval = setInterval(() => {

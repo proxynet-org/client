@@ -2,15 +2,17 @@ import { LatLng } from 'react-native-maps';
 import { Post } from '@/types/post';
 import { Chatroom } from '@/types/chatroom';
 
-import api from './api';
+import { BASE_URL_WS } from './api';
 
-export default function openMap(
+export const MAP_ENDPOINT = '/map';
+
+export function openMap(
   onNewPost: (post: Post) => void,
   onNewChatRoom: (chatroom: Chatroom) => void,
+  onOpen: () => void,
+  onClose: () => void,
 ) {
-  const ws = new WebSocket(
-    `ws://${api.defaults.baseURL?.replace('http://', '')}/ws/map`,
-  );
+  const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}`);
 
   const sendPosition = (position: LatLng) => {
     ws.send(
@@ -38,12 +40,13 @@ export default function openMap(
     }
   };
 
-  ws.onopen = () => {
-    console.log('ws opened');
-  };
-
-  ws.onclose = () => {
-    console.log('ws closed');
+  ws.onopen = onOpen;
+  ws.onclose = (ev) => {
+    console.log(
+      "Retry connection... (before calling map's socket closed)",
+      ev.code,
+    );
+    onClose();
   };
 
   return { sendPosition, closeMap };

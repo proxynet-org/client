@@ -89,7 +89,15 @@ export default function ChatRoom() {
       );
     };
 
-    const { leaveChatroom } = joinChatroom(chat, onMessage);
+    const onOpen = () => {
+      console.log('chatroom open hide loading');
+    };
+
+    const onClose = () => {
+      console.log('chatroom closed go back to map');
+    };
+
+    const { leaveChatroom } = joinChatroom(chat, onMessage, onOpen, onClose);
 
     return () => {
       leaveChatroom();

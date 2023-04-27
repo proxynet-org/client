@@ -1,9 +1,13 @@
-import api from './api';
+import { BASE_URL_WS } from './api';
 
-export default function connectToChat(onMessage: (message: string) => void) {
-  const ws = new WebSocket(
-    `ws://${api.defaults.baseURL?.replace('http://', '')}/ws/chat`,
-  );
+export const CHAT_ENDPOINT = '/chat';
+
+export function connectToChat(
+  onMessage: (message: string) => void,
+  onOpen: () => void,
+  onClose: () => void,
+) {
+  const ws = new WebSocket(`${BASE_URL_WS}${CHAT_ENDPOINT}`);
 
   const sendMessage = (message: string) => {
     ws.send(
@@ -22,12 +26,13 @@ export default function connectToChat(onMessage: (message: string) => void) {
     onMessage(data);
   };
 
-  ws.onopen = () => {
-    console.log('connected');
-  };
-
-  ws.onclose = () => {
-    console.log('disconnected');
+  ws.onopen = onOpen;
+  ws.onclose = (ev) => {
+    console.log(
+      "Retry connection... (before calling chat's socket closed)",
+      ev.code,
+    );
+    onClose();
   };
 
   return { sendMessage, disconnect };

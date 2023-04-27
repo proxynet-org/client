@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { Chatroom, ChatroomPayload } from '@/types/chatroom';
-import api from './api';
+import api, { BASE_URL_WS } from './api';
 
 export const CHATROOMS_ENDPOINT = '/chatrooms';
 
@@ -36,12 +36,12 @@ export function createChatroom(chatroom: ChatroomPayload) {
 export function joinChatroom(
   chatroom: Chatroom,
   onMessage: (message: string) => void,
+  onOpen: () => void,
+  onClose: () => void,
 ) {
-  const ws = new WebSocket(
-    `ws://
-    ${api.defaults.baseURL?.replace('http://', '')}
-    ${CHATROOMS_ENDPOINT}/${chatroom.id}`,
-  );
+  const { id } = chatroom;
+
+  const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/${id}`);
 
   const sendMessage = (message: string) => {
     ws.send(
@@ -60,12 +60,13 @@ export function joinChatroom(
     onMessage(data);
   };
 
-  ws.onopen = () => {
-    console.log('connected');
-  };
-
-  ws.onclose = () => {
-    console.log('disconnected');
+  ws.onopen = onOpen;
+  ws.onclose = (ev) => {
+    console.log(
+      "Retry connection... (before calling chatroom's socket closed)",
+      ev.code,
+    );
+    onClose();
   };
 
   return { sendMessage, leaveChatroom };
