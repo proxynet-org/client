@@ -101,24 +101,19 @@ export default function MapScreen() {
       console.log('Map closed nothing to do here');
     };
 
-    const { closeMap, sendPosition } = openMap(
-      onNewPost,
-      onNewChatroom,
-      onOpen,
-      onClose,
-    );
+    const { closeMap } = openMap(onNewPost, onNewChatroom, onOpen, onClose);
 
     // Send position every 10 seconds
-    const interval = setInterval(() => {
-      sendPosition({
-        latitude: 0,
-        longitude: 0,
-      });
-    }, 10000);
+    // const interval = setInterval(() => {
+    //   sendPosition({
+    //     latitude: 0,
+    //     longitude: 0,
+    //   });
+    // }, 10000);
 
     return () => {
       closeMap();
-      clearInterval(interval);
+      // clearInterval(interval);
     };
   }, []);
 

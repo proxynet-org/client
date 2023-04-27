@@ -6,7 +6,13 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import { StyleSheet, Image } from 'react-native';
-import { Badge, MD3Theme, Text, useTheme } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Badge,
+  MD3Theme,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
@@ -33,6 +39,13 @@ function makeStyle(theme: MD3Theme) {
     headerBackgroud: {
       flex: 1,
     },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+    },
   });
 }
 
@@ -42,6 +55,7 @@ export default function ChatRoom() {
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'ChatRoom'>>();
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const { chat } = route.params;
 
@@ -91,10 +105,12 @@ export default function ChatRoom() {
 
     const onOpen = () => {
       console.log('chatroom open hide loading');
+      setLoading(false);
     };
 
     const onClose = () => {
       console.log('chatroom closed go back to map');
+      navigation.goBack();
     };
 
     const { leaveChatroom } = joinChatroom(chat, onMessage, onOpen, onClose);
@@ -102,10 +118,16 @@ export default function ChatRoom() {
     return () => {
       leaveChatroom();
     };
-  }, [chat]);
+  }, [navigation, chat]);
 
   return (
     <View style={styles.container}>
+      <ActivityIndicator
+        animating={loading}
+        hidesWhenStopped
+        size="large"
+        style={styles.loader}
+      />
       <GiftedChat
         messages={messages}
         onSend={onSend}

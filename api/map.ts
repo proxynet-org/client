@@ -12,6 +12,7 @@ export function openMap(
   onOpen: () => void,
   onClose: () => void,
 ) {
+  console.log('Opening map...');
   const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}`);
 
   const sendPosition = (position: LatLng) => {
@@ -23,6 +24,7 @@ export function openMap(
   };
 
   const closeMap = () => {
+    console.log('Closing map...');
     ws.close();
   };
 
@@ -41,12 +43,12 @@ export function openMap(
   };
 
   ws.onopen = onOpen;
-  ws.onclose = (ev) => {
-    console.log(
-      "Retry connection... (before calling map's socket closed)",
-      ev.code,
-    );
+  ws.onclose = () => {
+    console.log("Retry connection... (before calling map's socket closed)");
     onClose();
+  };
+  ws.onerror = (e) => {
+    console.log('Error: ', e);
   };
 
   return { sendPosition, closeMap };

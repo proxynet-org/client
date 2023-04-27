@@ -39,6 +39,7 @@ export function joinChatroom(
   onOpen: () => void,
   onClose: () => void,
 ) {
+  console.log('Joining chatroom...');
   const { id } = chatroom;
 
   const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/${id}`);
@@ -52,6 +53,7 @@ export function joinChatroom(
   };
 
   const leaveChatroom = () => {
+    console.log('Leaving chatroom...');
     ws.close();
   };
 
@@ -61,12 +63,14 @@ export function joinChatroom(
   };
 
   ws.onopen = onOpen;
-  ws.onclose = (ev) => {
+  ws.onclose = () => {
     console.log(
       "Retry connection... (before calling chatroom's socket closed)",
-      ev.code,
     );
     onClose();
+  };
+  ws.onerror = (e) => {
+    console.log('Error: ', e);
   };
 
   return { sendMessage, leaveChatroom };
