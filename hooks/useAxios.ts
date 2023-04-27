@@ -27,7 +27,7 @@ export default function useAxios<T>({
     async (params?: AxiosRequestConfig) => {
       try {
         const result = await (axiosRequest?.() ||
-          (axiosInstance || axios).request(params ?? {}));
+          (axiosInstance || axios).request<T>(params ?? {}));
         setResponse(result);
       } catch (err) {
         setError(err as AxiosError);

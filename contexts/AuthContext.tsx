@@ -20,9 +20,9 @@ interface AuthContextActions {
   signOut: () => void;
 }
 
-export interface AuthContextType extends AuthContextState, AuthContextActions {}
+interface AuthContextType extends AuthContextState, AuthContextActions {}
 
-export const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   signUp: (data) => {
     throw new Error(`signUp with ${data} is not implemented`);
@@ -35,7 +35,7 @@ export const AuthContext = createContext<AuthContextType>({
   },
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const signUp = useCallback(async (data: SignUpPayload) => {
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
@@ -90,3 +90,5 @@ export function useAuth() {
 
   return context;
 }
+
+export { AuthProvider, useAuth };

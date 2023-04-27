@@ -23,11 +23,6 @@ export default function FabGroup({ icon, actions }: Props) {
       icon={icon(open)}
       actions={styledActions}
       onStateChange={toggleOpen}
-      onPress={() => {
-        if (open) {
-          // do something if the speed dial is open
-        }
-      }}
     />
   );
 }

@@ -16,7 +16,7 @@ import { enGB, fr, registerTranslation } from 'react-native-paper-dates';
 
 import useCachedResources from '@/hooks/useCachedResources';
 import Routes from '@/routes/Routes';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const adaptedTheme = adaptNavigationTheme({
   reactNavigationLight: NavigationLightTheme,
