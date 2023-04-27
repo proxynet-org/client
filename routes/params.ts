@@ -2,14 +2,19 @@ import { Chatroom } from '@/types/chatroom';
 import { Post } from '@/types/post';
 
 export type RootStackParams = {
-  Map: undefined;
-  PostCreate: undefined;
-  ChatCreate: undefined;
-  PostPreview: { post: Post };
-  ChatPreview: { chat: Chatroom };
-  PostComments: { post: Post };
-  ChatRoom: { chat: Chatroom };
   Auth: undefined;
+
+  Chat: undefined;
+  Map: undefined;
+
+  PostCreate: undefined;
+  PostPreview: { post: Post };
+  PostComments: { post: Post };
+
+  ChatCreate: undefined;
+  ChatPreview: { chat: Chatroom };
+  ChatRoom: { chat: Chatroom };
+
   Settings: undefined;
 };
 

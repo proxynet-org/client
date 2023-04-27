@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { FAB } from 'react-native-paper';
@@ -11,7 +11,7 @@ import MapView from '@/components/MapView';
 import { RootStackParams } from '@/routes/params';
 import { Post } from '@/types/post';
 import { Chatroom } from '@/types/chatroom';
-
+import openMap from '@/api/map';
 import { getPosts } from '@/api/post';
 
 import useAxios from '@/hooks/useAxios';
@@ -28,10 +28,18 @@ function makeStyles(insets: EdgeInsets) {
       top: insets.top,
       right: insets.right,
     },
+    chatButton: {
+      position: 'absolute',
+      margin: 16,
+      bottom: insets.bottom,
+      left: insets.left,
+    },
   });
 }
 
 export default function MapScreen() {
+  const [postMarkers, setPostMarkers] = useState<Post[]>([]);
+  const [chatroomMarkers, setChatroomMarkers] = useState<Chatroom[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => makeStyles(insets), [insets]);
@@ -60,10 +68,46 @@ export default function MapScreen() {
               icon: require('@/assets/images/map-marker/chat.png'),
               onPress: () => navigation.navigate('ChatPreview', { chat }),
             })),
+            ...postMarkers.map((post) => ({
+              id: post.id,
+              coordinate: post.coordinates,
+              icon: require('@/assets/images/map-marker/post.png'),
+              onPress: () => navigation.navigate('PostPreview', { post }),
+            })),
+            ...chatroomMarkers.map((chat) => ({
+              id: chat.id,
+              coordinate: chat.coordinates,
+              icon: require('@/assets/images/map-marker/chat.png'),
+              onPress: () => navigation.navigate('ChatPreview', { chat }),
+            })),
           ]
         : [],
-    [postResponse, chatroomResponse, navigation],
+    [postResponse, chatroomResponse, navigation, postMarkers, chatroomMarkers],
   );
+
+  useEffect(() => {
+    const onNewPost = (post: Post) => {
+      setPostMarkers((prev) => [...prev, post]);
+    };
+    const onNewChatroom = (chatroom: Chatroom) => {
+      setChatroomMarkers((prev) => [...prev, chatroom]);
+    };
+
+    const { closeMap, sendPosition } = openMap(onNewPost, onNewChatroom);
+
+    // Send position every 10 seconds
+    const interval = setInterval(() => {
+      sendPosition({
+        latitude: 0,
+        longitude: 0,
+      });
+    }, 10000);
+
+    return () => {
+      closeMap();
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -88,6 +132,12 @@ export default function MapScreen() {
             label: 'Post',
           },
         ]}
+      />
+      <FAB
+        icon="message"
+        onPress={() => navigation.navigate('Chat')}
+        size="small"
+        style={styles.chatButton}
       />
     </View>
   );

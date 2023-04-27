@@ -7,9 +7,10 @@ import {
 } from '@react-navigation/native';
 import { StyleSheet, Image } from 'react-native';
 import { Badge, MD3Theme, Text, useTheme } from 'react-native-paper';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
+import { joinChatroom } from '@/api/chatroom';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -35,12 +36,12 @@ function makeStyle(theme: MD3Theme) {
   });
 }
 
-export default function Chat() {
+export default function ChatRoom() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'ChatRoom'>>();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   const { chat } = route.params;
 
@@ -59,6 +60,10 @@ export default function Chat() {
     );
   }, [chat, styles]);
 
+  const onSend = useCallback((msg: IMessage[]) => {
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, msg));
+  }, []);
+
   useEffect(() => {
     navigation.setOptions({
       headerTintColor: styles.text.color,
@@ -69,15 +74,33 @@ export default function Chat() {
     });
   }, [chat, headerRight, navigation, headerBackground, styles]);
 
-  const onSend = useCallback((msg = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, msg));
-  }, []);
+  useEffect(() => {
+    const onMessage = (message: string) => {
+      const msg: IMessage = {
+        _id: Math.random(),
+        text: message,
+        createdAt: new Date(),
+        user: {
+          _id: 0,
+        },
+      };
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [msg]),
+      );
+    };
+
+    const { leaveChatroom } = joinChatroom(chat, onMessage);
+
+    return () => {
+      leaveChatroom();
+    };
+  }, [chat]);
 
   return (
     <View style={styles.container}>
       <GiftedChat
         messages={messages}
-        onSend={(msg) => onSend(msg)}
+        onSend={onSend}
         user={{
           _id: 1,
         }}

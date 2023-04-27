@@ -18,6 +18,7 @@ import ForgotPassword from '@/app/auth/ForgotPassword';
 
 import { RootStackParams, AuthTabParams } from './params';
 import { useAuth } from '@/contexts/AuthContext';
+import Chat from '@/app/root/Chat';
 
 const RootStack = createStackNavigator<RootStackParams>();
 const AuthTab = createMaterialBottomTabNavigator<AuthTabParams>();
@@ -58,6 +59,8 @@ export default function Routes() {
               title: '',
             }}
           >
+            <RootStack.Screen name="Chat" component={Chat} />
+
             <RootStack.Screen name="Settings" component={Settings} />
             <RootStack.Screen name="PostCreate" component={PostCreate} />
             <RootStack.Screen name="PostPreview" component={PostPreview} />
