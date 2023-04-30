@@ -54,7 +54,7 @@ export default function SignIn() {
     validateOnMount: true,
     validationSchema: SigninSchema,
     initialValues: {
-      email: '',
+      username: '',
       password: '',
     },
     onSubmit: signIn,
@@ -69,12 +69,9 @@ export default function SignIn() {
         label={i18n.t('form.email.field')}
         style={styles.input}
         mode="outlined"
-        onChangeText={formik.handleChange('email')}
-        value={formik.values.email}
-        inputMode="email"
-        keyboardType="email-address"
+        onChangeText={formik.handleChange('username')}
+        value={formik.values.username}
         autoCapitalize="none"
-        autoComplete="email"
       />
       <TextInput
         label={i18n.t('form.password.field')}

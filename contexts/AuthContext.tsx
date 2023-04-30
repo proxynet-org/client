@@ -46,8 +46,6 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (data: SignInPayload) => {
-    setIsLoggedIn(true);
-    return;
     const res = await singin(data);
     setIsLoggedIn(Boolean(res));
   }, []);

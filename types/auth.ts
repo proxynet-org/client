@@ -8,11 +8,11 @@ export type SignUpPayload = {
 };
 
 /**
- * @param id - phone, email, or username
+ * @param id - username
  */
-export type SignInPayload = { email: string; password: string };
+export type SignInPayload = { username: string; password: string };
 
 export type Token = {
-  access_token: string;
-  refresh_token: string;
+  access: string;
+  refresh: string;
 };

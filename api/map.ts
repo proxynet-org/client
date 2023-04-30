@@ -1,19 +1,25 @@
 import { LatLng } from 'react-native-maps';
-import { Post } from '@/types/post';
+import { Publication } from '@/types/publications';
 import { Chatroom } from '@/types/chatroom';
 
-import { BASE_URL_WS } from './api';
+import api, { BASE_URL_WS } from './api';
 
 export const MAP_ENDPOINT = '/map';
 
+export function updatePostion(position: LatLng) {
+  console.log('Updating position...');
+
+  api.post('/users/location/', position);
+}
+
 export function openMap(
-  onNewPost: (post: Post) => void,
+  onNewPost: (post: Publication) => void,
   onNewChatRoom: (chatroom: Chatroom) => void,
   onOpen: () => void,
   onClose: () => void,
 ) {
   console.log('Opening map...');
-  const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}`);
+  const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}/`);
 
   const sendPosition = (position: LatLng) => {
     console.log('Sending position...', position);

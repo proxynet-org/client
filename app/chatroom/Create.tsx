@@ -9,7 +9,6 @@ import {
   IconButton,
   Card,
 } from 'react-native-paper';
-import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   useNavigation,
@@ -91,11 +90,7 @@ export default function Create() {
       capacity: 0,
     },
     onSubmit: async (values) => {
-      const location = await Location.getCurrentPositionAsync();
-      const res = await createChatroom({
-        ...values,
-        coordinates: location.coords,
-      });
+      const res = await createChatroom(values);
       navigation.navigate('ChatRoom', { chat: res.data });
     },
   });

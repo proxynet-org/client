@@ -2,16 +2,20 @@ import { BASE_URL_WS } from './api';
 
 export const CHAT_ENDPOINT = '/chat';
 
+// post
+// ---> ws.send
+
 export function connectToChat(
   onMessage: (message: string) => void,
   onOpen: () => void,
   onClose: () => void,
 ) {
   console.log('Connecting to chat...');
-  const ws = new WebSocket(`${BASE_URL_WS}${CHAT_ENDPOINT}`);
+  const ws = new WebSocket(`${BASE_URL_WS}${CHAT_ENDPOINT}/`);
 
   const sendMessage = (message: string) => {
     console.log('Sending message...', message);
+
     ws.send(
       JSON.stringify({
         message,

@@ -1,37 +1,35 @@
+import { LatLng } from 'react-native-maps';
 import { Media } from '@/types/gallery';
 
-export type Post = {
+// get
+export type Publication = {
   id: string;
   title: string;
   media: string;
   likes: number;
   dislikes: number;
   comments: number;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
+  coordinates: LatLng;
 };
 
-export type PostPayload = {
+// post
+export type PublicationPayload = {
   title: string;
   media: Media;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
 };
 
-export type PostComment = {
+// get
+export type PublicationComment = {
   id: string;
   postId: string;
   parentId?: string;
   text: string;
+  replies: number;
   likes: number;
   dislikes: number;
-  replies: number;
 };
 
+// post
 export type PostCommentPayload = {
   postId: string;
   parentId?: string;

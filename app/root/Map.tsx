@@ -9,7 +9,7 @@ import FabGroup from '@/components/FabGroup';
 import MapView from '@/components/MapView';
 
 import { RootStackParams } from '@/routes/params';
-import { Post } from '@/types/post';
+import { Publication } from '@/types/publications';
 import { Chatroom } from '@/types/chatroom';
 import { openMap } from '@/api/map';
 import { getPosts } from '@/api/post';
@@ -38,7 +38,7 @@ function makeStyles(insets: EdgeInsets) {
 }
 
 export default function MapScreen() {
-  const [postMarkers, setPostMarkers] = useState<Post[]>([]);
+  const [postMarkers, setPostMarkers] = useState<Publication[]>([]);
   const [chatroomMarkers, setChatroomMarkers] = useState<Chatroom[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const insets = useSafeAreaInsets();
@@ -48,7 +48,7 @@ export default function MapScreen() {
     axiosRequest: getChatrooms,
   });
 
-  const { response: postResponse } = useAxios<Post[]>({
+  const { response: postResponse } = useAxios<Publication[]>({
     axiosRequest: getPosts,
   });
 
@@ -86,7 +86,7 @@ export default function MapScreen() {
   );
 
   useEffect(() => {
-    const onNewPost = (post: Post) => {
+    const onNewPost = (post: Publication) => {
       setPostMarkers((prev) => [...prev, post]);
     };
     const onNewChatroom = (chatroom: Chatroom) => {
@@ -103,13 +103,12 @@ export default function MapScreen() {
 
     const { closeMap } = openMap(onNewPost, onNewChatroom, onOpen, onClose);
 
-    // Send position every 10 seconds
     // const interval = setInterval(() => {
-    //   sendPosition({
+    //   updatePostion({
     //     latitude: 0,
     //     longitude: 0,
     //   });
-    // }, 10000);
+    // }, 1000 * 10);
 
     return () => {
       closeMap();

@@ -4,7 +4,7 @@ import { FlatList, StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme, MD3Theme } from 'react-native-paper';
 import { View } from '@/components/Themed';
-import { PostComment } from '@/types/post';
+import { PublicationComment } from '@/types/publications';
 import useAxios from '@/hooks/useAxios';
 import { createPostComment, getPostComments } from '@/api/post';
 import { RootStackParams } from '@/routes/params';
@@ -31,14 +31,14 @@ export default function Comments() {
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const route = useRoute<RouteProp<RootStackParams, 'PostComments'>>();
 
-  const [myReplies, setMyReplies] = useState<PostComment[]>([]);
+  const [myReplies, setMyReplies] = useState<PublicationComment[]>([]);
   const [replyId, setReplyId] = useState<string>();
 
   const axiosRequest = useCallback(
     () => getPostComments(route.params.post.id),
     [route],
   );
-  const { response } = useAxios<PostComment[]>({ axiosRequest });
+  const { response } = useAxios<PublicationComment[]>({ axiosRequest });
 
   const cancelReply = useCallback(() => {
     setReplyId(undefined);

@@ -2,16 +2,16 @@ import { useCallback, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { Button, Card, Paragraph, IconButton } from 'react-native-paper';
 import i18n from '@/languages';
-import { PostComment } from '@/types/post';
+import { PublicationComment } from '@/types/publications';
 import useAxios from '@/hooks/useAxios';
 import { getPostCommentReplies } from '@/api/post';
 import useToggle from '@/hooks/useToggle';
 import Separator from './Separator';
 
 type Props = {
-  comment: PostComment;
+  comment: PublicationComment;
   reply: (id: string) => void;
-  myReplies: PostComment[];
+  myReplies: PublicationComment[];
 };
 
 export default function Comment({ comment, reply, myReplies }: Props) {
@@ -22,7 +22,7 @@ export default function Comment({ comment, reply, myReplies }: Props) {
     [comment],
   );
 
-  const { response, fetchData } = useAxios<PostComment[]>({
+  const { response, fetchData } = useAxios<PublicationComment[]>({
     axiosRequest,
     fetchOnMount: false,
   });

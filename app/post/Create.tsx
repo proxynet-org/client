@@ -6,7 +6,6 @@ import {
 } from '@react-navigation/native';
 import { Image, StyleSheet } from 'react-native';
 import { IconButton, MD3Theme, TextInput, useTheme } from 'react-native-paper';
-import * as Location from 'expo-location';
 import * as yup from 'yup';
 import { View } from '@/components/Themed';
 import Gallery from '@/components/Gallery';
@@ -14,7 +13,7 @@ import useFormikMultiStep from '@/hooks/useFormikMultiStep';
 import { RootStackParams } from '@/routes/params';
 import { Media } from '@/types/gallery';
 import { createPost } from '@/api/post';
-import { PostPayload } from '@/types/post';
+import { PublicationPayload } from '@/types/publications';
 import useToggleScreen from '@/hooks/useToggleScreen';
 
 export const CreatePostSchema = [
@@ -70,7 +69,7 @@ export default function Create() {
     },
   });
 
-  const formik = useFormikMultiStep<PostPayload>({
+  const formik = useFormikMultiStep<PublicationPayload>({
     validateOnMount: true,
     steps: CreatePostSchema,
     initialValues: {
@@ -81,14 +80,9 @@ export default function Create() {
         type: '',
         name: '',
       },
-      coordinates: {
-        latitude: 0,
-        longitude: 0,
-      },
     },
     onSubmit: async (values) => {
-      const location = await Location.getCurrentPositionAsync();
-      const res = await createPost({ ...values, coordinates: location.coords });
+      const res = await createPost({ ...values });
       navigation.navigate('PostPreview', { post: res.data });
     },
   });
