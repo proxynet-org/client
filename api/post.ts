@@ -38,8 +38,6 @@ export function createPost(post: PublicationPayload) {
   } as any);
 
   data.append('title', post.title);
-  data.append('latitude', post.coordinates.latitude.toString());
-  data.append('longitude', post.coordinates.longitude.toString());
 
   return api.post<Publication>(POSTS_ENDPOINT, data, {
     headers: {

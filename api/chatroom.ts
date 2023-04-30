@@ -25,8 +25,6 @@ export function createChatroom(chatroom: ChatroomPayload) {
 
   data.append('name', chatroom.name);
   data.append('description', chatroom.description);
-  data.append('latitude', chatroom.coordinates.latitude.toString());
-  data.append('longitude', chatroom.coordinates.longitude.toString());
 
   return api.post<Chatroom>(CHATROOMS_ENDPOINT, data, {
     headers: {
