@@ -12,7 +12,7 @@ import Gallery from '@/components/Gallery';
 import useFormikMultiStep from '@/hooks/useFormikMultiStep';
 import { RootStackParams } from '@/routes/params';
 import { Media } from '@/types/gallery';
-import { createPost } from '@/api/post';
+import { createPublication } from '@/api/publication';
 import { PublicationPayload } from '@/types/publications';
 import useToggleScreen from '@/hooks/useToggleScreen';
 
@@ -82,7 +82,7 @@ export default function Create() {
       },
     },
     onSubmit: async (values) => {
-      const res = await createPost({ ...values });
+      const res = await createPublication({ ...values });
       navigation.navigate('PostPreview', { post: res.data });
     },
   });

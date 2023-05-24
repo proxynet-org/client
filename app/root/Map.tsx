@@ -12,7 +12,7 @@ import { RootStackParams } from '@/routes/params';
 import { Publication } from '@/types/publications';
 import { Chatroom } from '@/types/chatroom';
 import { openMap } from '@/api/map';
-import { getPosts } from '@/api/post';
+import { getPublications } from '@/api/publication';
 
 import useAxios from '@/hooks/useAxios';
 import { getChatrooms } from '@/api/chatroom';
@@ -49,7 +49,7 @@ export default function MapScreen() {
   });
 
   const { response: postResponse } = useAxios<Publication[]>({
-    axiosRequest: getPosts,
+    axiosRequest: getPublications,
   });
 
   const markers = useMemo(
@@ -103,16 +103,8 @@ export default function MapScreen() {
 
     const { closeMap } = openMap(onNewPost, onNewChatroom, onOpen, onClose);
 
-    // const interval = setInterval(() => {
-    //   updatePostion({
-    //     latitude: 0,
-    //     longitude: 0,
-    //   });
-    // }, 1000 * 10);
-
     return () => {
       closeMap();
-      // clearInterval(interval);
     };
   }, []);
 

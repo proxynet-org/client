@@ -1,6 +1,6 @@
 import { LatLng } from 'react-native-maps';
-import { Publication } from '@/types/publications';
-import { Chatroom } from '@/types/chatroom';
+import { Publication, PublicationPayload } from '@/types/publications';
+import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
 import api, { BASE_URL_WS } from './api';
 
@@ -21,24 +21,25 @@ export function openMap(
   console.log('Opening map...');
   const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}/`);
 
-  const sendPosition = (position: LatLng) => {
-    console.log('Sending position...', position);
-    ws.send(
-      JSON.stringify({
-        position,
-      }),
-    );
-  };
-
   const closeMap = () => {
     console.log('Closing map...');
     ws.close();
   };
 
+  const sendMessage = (type: string, data: object) => {
+    console.log(`Sending ${type}`, data);
+    ws.send(
+      JSON.stringify({
+        type,
+        data,
+      }),
+    );
+  };
+
   ws.onmessage = (e: MessageEvent<string>) => {
     const data = JSON.parse(e.data);
     switch (data.type) {
-      case 'post':
+      case 'publication':
         onNewPost(data);
         break;
       case 'chatroom':
@@ -58,5 +59,31 @@ export function openMap(
     console.log('Error: ', e);
   };
 
-  return { sendPosition, closeMap };
+  return { closeMap, sendMessage };
+}
+
+export function sendPublication(publication: PublicationPayload) {
+  const { sendMessage, closeMap } = openMap(
+    () => {},
+    () => {},
+    () => {},
+    () => {},
+  );
+
+  sendMessage('publication', publication);
+
+  closeMap();
+}
+
+export function sendChatroom(chatroom: ChatroomPayload) {
+  const { sendMessage, closeMap } = openMap(
+    () => {},
+    () => {},
+    () => {},
+    () => {},
+  );
+
+  sendMessage('chatroom', chatroom);
+
+  closeMap();
 }

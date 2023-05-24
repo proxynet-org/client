@@ -4,7 +4,7 @@ import { Button, Card, Paragraph, IconButton } from 'react-native-paper';
 import i18n from '@/languages';
 import { PublicationComment } from '@/types/publications';
 import useAxios from '@/hooks/useAxios';
-import { getPostCommentReplies } from '@/api/post';
+import { getPostCommentReplies } from '@/api/publication';
 import useToggle from '@/hooks/useToggle';
 import Separator from './Separator';
 

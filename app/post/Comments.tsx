@@ -6,7 +6,10 @@ import { useTheme, MD3Theme } from 'react-native-paper';
 import { View } from '@/components/Themed';
 import { PublicationComment } from '@/types/publications';
 import useAxios from '@/hooks/useAxios';
-import { createPostComment, getPostComments } from '@/api/post';
+import {
+  createPublicationComment,
+  getPublicationComments,
+} from '@/api/publication';
 import { RootStackParams } from '@/routes/params';
 import Separator from '@/components/Separator';
 import Comment from '@/components/Comment';
@@ -35,7 +38,7 @@ export default function Comments() {
   const [replyId, setReplyId] = useState<string>();
 
   const axiosRequest = useCallback(
-    () => getPostComments(route.params.post.id),
+    () => getPublicationComments(route.params.post.id),
     [route],
   );
   const { response } = useAxios<PublicationComment[]>({ axiosRequest });
@@ -50,7 +53,11 @@ export default function Comments() {
 
   const handleSubmit = useCallback(
     async (text: string) => {
-      const res = await createPostComment(route.params.post.id, text, replyId);
+      const res = await createPublicationComment(
+        route.params.post.id,
+        text,
+        replyId,
+      );
       setMyReplies((prev) => [...prev, res.data]);
     },
     [route, replyId],
