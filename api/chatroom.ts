@@ -1,6 +1,9 @@
 import { Platform } from 'react-native';
+import { getCurrentPositionAsync } from 'expo-location';
 import { Chatroom, ChatroomPayload } from '@/types/chatroom';
+
 import api, { BASE_URL_WS } from './api';
+import { updatePostion, sendChatroom } from './map';
 
 export const CHATROOMS_ENDPOINT = '/chatrooms';
 
@@ -9,7 +12,10 @@ export function getChatrooms() {
   return api.get<Chatroom[]>(CHATROOMS_ENDPOINT);
 }
 
-export function createChatroom(chatroom: ChatroomPayload) {
+export async function createChatroom(chatroom: ChatroomPayload) {
+  const position = await getCurrentPositionAsync();
+  updatePostion(position.coords);
+
   console.log('Creating chatroom...');
 
   const data = new FormData();
@@ -26,12 +32,16 @@ export function createChatroom(chatroom: ChatroomPayload) {
   data.append('name', chatroom.name);
   data.append('description', chatroom.description);
 
-  return api.post<Chatroom>(CHATROOMS_ENDPOINT, data, {
+  const res = await api.post<Chatroom>(CHATROOMS_ENDPOINT, data, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'multipart/form-data',
     },
   });
+
+  sendChatroom(res.data);
+
+  return res;
 }
 
 export function joinChatroom(

@@ -1,6 +1,6 @@
 import { LatLng } from 'react-native-maps';
-import { Publication, PublicationPayload } from '@/types/publications';
-import { Chatroom, ChatroomPayload } from '@/types/chatroom';
+import { Publication } from '@/types/publications';
+import { Chatroom } from '@/types/chatroom';
 
 import api, { BASE_URL_WS } from './api';
 
@@ -13,10 +13,10 @@ export function updatePostion(position: LatLng) {
 }
 
 export function openMap(
-  onNewPost: (post: Publication) => void,
-  onNewChatRoom: (chatroom: Chatroom) => void,
-  onOpen: () => void,
-  onClose: () => void,
+  onNewPost?: (post: Publication) => void,
+  onNewChatRoom?: (chatroom: Chatroom) => void,
+  onOpen?: (this: WebSocket, ev: Event) => void,
+  onClose?: () => void,
 ) {
   console.log('Opening map...');
   const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}/`);
@@ -40,50 +40,42 @@ export function openMap(
     const data = JSON.parse(e.data);
     switch (data.type) {
       case 'publication':
-        onNewPost(data);
+        onNewPost?.(data);
         break;
       case 'chatroom':
-        onNewChatRoom(data);
+        onNewChatRoom?.(data);
         break;
       default:
         break;
     }
   };
 
-  ws.onopen = onOpen;
+  if (onOpen) ws.onopen = onOpen;
   ws.onclose = () => {
     console.log("Retry connection... (before calling map's socket closed)");
-    onClose();
+    onClose?.();
   };
   ws.onerror = (e) => {
     console.log('Error: ', e);
   };
 
-  return { closeMap, sendMessage };
+  return { closeMap, sendMessage, ws };
 }
 
-export function sendPublication(publication: PublicationPayload) {
-  const { sendMessage, closeMap } = openMap(
-    () => {},
-    () => {},
-    () => {},
-    () => {},
-  );
+export function sendPublication(publication: Publication) {
+  const { ws, sendMessage, closeMap } = openMap();
 
-  sendMessage('publication', publication);
-
-  closeMap();
+  ws.onopen = () => {
+    sendMessage('publication', publication);
+    closeMap();
+  };
 }
 
-export function sendChatroom(chatroom: ChatroomPayload) {
-  const { sendMessage, closeMap } = openMap(
-    () => {},
-    () => {},
-    () => {},
-    () => {},
-  );
+export function sendChatroom(chatroom: Chatroom) {
+  const { ws, sendMessage, closeMap } = openMap();
 
-  sendMessage('chatroom', chatroom);
-
-  closeMap();
+  ws.onopen = () => {
+    sendMessage('chatroom', chatroom);
+    closeMap();
+  };
 }

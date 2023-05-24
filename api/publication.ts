@@ -1,10 +1,13 @@
 import { Platform } from 'react-native';
+import { getCurrentPositionAsync } from 'expo-location';
 import {
   Publication,
   PublicationComment,
   PublicationPayload,
 } from '@/types/publications';
+
 import api from './api';
+import { updatePostion, sendPublication } from './map';
 
 export const PUBLICATIONS_ENDPOINT = '/publications';
 export const COMMENTS_ENDPOINT = '/comments';
@@ -25,6 +28,9 @@ export function getPublication(id: string) {
 }
 
 export async function createPublication(publication: PublicationPayload) {
+  const position = await getCurrentPositionAsync();
+  updatePostion(position.coords);
+
   console.log('Creating post...');
   const data = new FormData();
 
@@ -45,6 +51,8 @@ export async function createPublication(publication: PublicationPayload) {
       'Content-Type': 'multipart/form-data',
     },
   });
+
+  sendPublication(res.data);
 
   return res;
 }
