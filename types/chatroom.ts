@@ -8,6 +8,7 @@ export type Chatroom = {
   name: string;
   description: string;
   num_people: number;
+  capacity: number;
   coordinates: LatLng;
 };
 
