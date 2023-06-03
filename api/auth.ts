@@ -1,4 +1,4 @@
-import { SignInPayload, SignUpPayload, Token } from '@/types/auth';
+import { SignInPayload, SignUpPayload, Token, User } from '@/types/auth';
 import api, { setAccessToken } from './api';
 
 export async function singin(data: SignInPayload) {
@@ -27,4 +27,10 @@ export async function signout() {
 export async function forgotPassword(email: string) {
   console.log('Forgot password...');
   await api.post('/auth/forgot-password', { email });
+}
+
+export async function getUserInfo() {
+  console.log('Getting user info...');
+  const response = await api.get<User>('/users/info');
+  return response.data;
 }

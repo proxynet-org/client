@@ -4,18 +4,21 @@ import {
   Publication,
   PublicationComment,
   PublicationPayload,
+  Reaction,
 } from '@/types/publications';
 import api from './api';
 
 import { updatePosition, sendPublication } from './map';
 
 export const PUBLICATION_ENDPOINT = '/publications';
-export const COMMENTS_ENDPOINT = '/comments';
-const REPLIES_ENDPOINT = '/replies';
+export const COMMENTS_ENDPOINT = '/comment';
+const REPLIES_ENDPOINT = '/reply';
 
-export function getPublications() {
+export async function getPublications() {
   console.log('Getting Publications...');
-  return api.get(PUBLICATION_ENDPOINT);
+  const res = await api.get(PUBLICATION_ENDPOINT);
+  console.log('Publications: ', res.data);
+  return res;
 }
 
 export function getPublication(id: string) {
@@ -68,7 +71,7 @@ export async function createPublication(publication: PublicationPayload) {
 export function getPublicationComments(publicationId: string) {
   console.log('Getting Publication comments...', publicationId);
   return api.get(
-    `${PUBLICATION_ENDPOINT}/${publicationId}/${COMMENTS_ENDPOINT}/`,
+    `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/`,
   );
 }
 
@@ -78,7 +81,7 @@ export function getPublicationCommentReplies(
 ) {
   console.log('Getting Publication comment replies...', publicationId, id);
   return api.get(
-    `${PUBLICATION_ENDPOINT}/${publicationId}/${COMMENTS_ENDPOINT}/${id}/${REPLIES_ENDPOINT}/`,
+    `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/${id}${REPLIES_ENDPOINT}/`,
   );
 }
 
@@ -89,8 +92,8 @@ export function createPublicationComment(
 ) {
   console.log('Creating Publication comment...', publicationId, text, parentId);
   return api.post<PublicationComment>(
-    `${PUBLICATION_ENDPOINT}/${publicationId}/${COMMENTS_ENDPOINT}/${
-      parentId ? `${parentId}/${REPLIES_ENDPOINT}/` : ''
+    `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/${
+      parentId ? `${parentId}${REPLIES_ENDPOINT}/` : ''
     }`,
     {
       publicationId,
@@ -101,4 +104,16 @@ export function createPublicationComment(
       dislikes: 0,
     },
   );
+}
+
+export async function reactPublication(
+  publicationId: string,
+  reaction: Reaction,
+) {
+  console.log('Reacting Publication...', publicationId, reaction);
+  const res = await api.post<Publication>(
+    `${PUBLICATION_ENDPOINT}/${publicationId}/${reaction.toLowerCase()}/`,
+  );
+
+  return res;
 }

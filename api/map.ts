@@ -4,49 +4,34 @@ import { Chatroom } from '@/types/chatroom';
 
 import api, { BASE_URL_WS } from './api';
 
-export const MAP_ENDPOINT = '/map';
-
 export async function updatePosition(position: LatLng) {
   console.log('Updating position...');
   return api.post('/users/location/', { coordinates: position });
 }
 
-export function openMap(
-  onNewPublication?: (publication: Publication) => void,
-  onNewChatRoom?: (chatroom: Chatroom) => void,
+export function openMap<T>(
+  endpoint: string,
+  onData?: (data: T) => void,
   onOpen?: () => void,
   onClose?: () => void,
 ) {
   console.log('Opening map...');
-  const ws = new WebSocket(`${BASE_URL_WS}${MAP_ENDPOINT}/`);
+  const ws = new WebSocket(`${BASE_URL_WS}${endpoint}/`);
 
   const closeMap = () => {
     console.log('Closing map...');
     ws.close();
   };
 
-  const sendMessage = (type: string, data: object) => {
-    console.log(`Sending ${type}`, data);
-    ws.send(
-      JSON.stringify({
-        type,
-        data,
-      }),
-    );
+  const sendMessage = (data: T) => {
+    console.log(`Sending to ${endpoint}`, data);
+    ws.send(JSON.stringify(data));
   };
 
   ws.onmessage = (e: MessageEvent<string>) => {
-    const data = JSON.parse(e.data);
-    switch (data.type) {
-      case 'publication':
-        onNewPublication?.(data);
-        break;
-      case 'chatroom':
-        onNewChatRoom?.(data);
-        break;
-      default:
-        break;
-    }
+    const { message } = JSON.parse(e.data);
+    const data = JSON.parse(message) as T;
+    onData?.(data);
   };
 
   if (onOpen) ws.onopen = onOpen;
@@ -62,19 +47,19 @@ export function openMap(
 }
 
 export function sendPublication(publication: Publication) {
-  const { ws, sendMessage, closeMap } = openMap();
+  const { ws, sendMessage, closeMap } = openMap('/publications');
 
   ws.onopen = () => {
-    sendMessage('publication', publication);
+    sendMessage(publication);
     closeMap();
   };
 }
 
 export function sendChatroom(chatroom: Chatroom) {
-  const { ws, sendMessage, closeMap } = openMap();
+  const { ws, sendMessage, closeMap } = openMap('/chatrooms');
 
   ws.onopen = () => {
-    sendMessage('chatroom', chatroom);
+    sendMessage(chatroom);
     closeMap();
   };
 }
