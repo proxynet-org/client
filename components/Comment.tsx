@@ -18,7 +18,7 @@ export default function Comment({ comment, reply, myReplies }: Props) {
   const [showReplies, toggleReplies] = useToggle(false);
 
   const axiosRequest = useCallback(
-    () => getPublicationCommentReplies(comment.publicationId, comment.id),
+    () => getPublicationCommentReplies(comment.publication, comment.id),
     [comment],
   );
 
@@ -33,8 +33,8 @@ export default function Comment({ comment, reply, myReplies }: Props) {
     }
   }, [showReplies, fetchData]);
 
-  const isRootComment = !comment.parentId;
-  const myReplyId = comment.parentId || comment.id;
+  const isRootComment = !comment.parent_comment;
+  const myReplyId = comment.parent_comment || comment.id;
   const replies = [...(response?.data ?? []), ...myReplies];
 
   return (
@@ -56,11 +56,11 @@ export default function Comment({ comment, reply, myReplies }: Props) {
           }}
         />
       </Card.Actions>
-      {comment.replies > 0 && (
+      {comment.num_replies > 0 && (
         <Card.Actions>
           <Button mode="text" onPress={toggleReplies}>
             {i18n.t('publication.comments.see.replies', {
-              count: comment.replies,
+              count: comment.num_replies,
             })}
           </Button>
         </Card.Actions>

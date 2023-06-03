@@ -64,7 +64,7 @@ export default function Comments() {
   );
 
   const rootComments = [...myReplies, ...(response?.data ?? [])].filter(
-    (comment) => !comment.parentId,
+    (comment) => !comment.parent_comment,
   );
 
   return (
@@ -78,7 +78,9 @@ export default function Comments() {
           <Comment
             comment={item}
             reply={handleReply}
-            myReplies={myReplies.filter((reply) => reply.parentId === item.id)}
+            myReplies={myReplies.filter(
+              (reply) => reply.parent_comment === item.id,
+            )}
           />
         )}
         ItemSeparatorComponent={Separator}
