@@ -2,34 +2,36 @@ import api, { BASE_URL_WS } from './api';
 import { WebSocketMessage } from '@/types/websocket';
 import { ChatMessage, ChatMessagePayload } from '@/types/chat';
 
-export const CHAT_ENDPOINT = '/chat';
-
-export async function getMessages() {
-  return api.get<ChatMessage[]>('/messages/');
-}
-
-export async function postMessage(message: ChatMessagePayload) {
-  return api.post<ChatMessage>('/messages/', message);
-}
+export const CHAT_ENDPOINT = '/all';
+export const MESSAGES_ENDPOINT = '/messages';
 
 export function connectToChat(
+  chatEndpoint: string,
+  messagesEndpoint: string,
   onMessage: (message: ChatMessage) => void,
-  onOpen: (messages: ChatMessage[]) => void,
+  onOpen: () => void,
   onClose: () => void,
 ) {
   console.log('Connecting to chat...');
-  const ws = new WebSocket(`${BASE_URL_WS}${CHAT_ENDPOINT}/`);
+  const ws = new WebSocket(`${BASE_URL_WS}${chatEndpoint}/`);
 
-  const sendMessage = async (message: ChatMessagePayload) => {
+  async function getMessages() {
+    console.log('Getting messages...');
+    const res = await api.get<ChatMessage[]>(messagesEndpoint);
+    console.log('Got messages: ', res.data);
+    return res;
+  }
+
+  async function sendMessage(message: ChatMessagePayload) {
     console.log('Sending message...', message);
-    const res = await postMessage(message);
+    const res = await api.post<ChatMessage>(`${messagesEndpoint}/`, message);
     ws.send(JSON.stringify(res.data));
-  };
+  }
 
-  const disconnect = () => {
+  function disconnect() {
     console.log('Disconnecting from chat...');
     ws.close();
-  };
+  }
 
   ws.onmessage = (e: MessageEvent<string>) => {
     console.log('Message received: ', e.data);
@@ -40,16 +42,15 @@ export function connectToChat(
 
   ws.onopen = async () => {
     console.log('Connection established!');
-    const response = await getMessages();
-    onOpen(response.data);
+    onOpen();
   };
   ws.onclose = () => {
-    console.log("Retry connection... (before calling chat's socket closed)");
+    console.log('Connection closed!');
     onClose();
   };
   ws.onerror = (e) => {
     console.log('Error: ', e);
   };
 
-  return { sendMessage, disconnect };
+  return { getMessages, sendMessage, disconnect };
 }
