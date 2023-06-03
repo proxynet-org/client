@@ -4,8 +4,6 @@ import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
 import api, { BASE_URL_WS } from './api';
 import { updatePosition, sendChatroom } from './map';
-import { ChatMessage, ChatMessagePayload } from '@/types/chat';
-import { WebSocketMessage } from '@/types/websocket';
 
 export const CHATROOMS_ENDPOINT = '/chatrooms';
 
@@ -60,6 +58,13 @@ export async function joinChatroom(id: string) {
   return res;
 }
 
+export async function leaveChatroom(id: string) {
+  console.log('Leaving chatroom...');
+  const res = await api.post<Chatroom>(`${CHATROOMS_ENDPOINT}/${id}/leave/`);
+  console.log('Left chatroom: ', res.data);
+  return res;
+}
+
 export async function createChatroom(chatroom: ChatroomPayload) {
   const position = await getCurrentPositionAsync();
   updatePosition(position.coords);
@@ -95,57 +100,4 @@ export async function createChatroom(chatroom: ChatroomPayload) {
   sendChatroom(res.data);
 
   return res;
-}
-
-export async function joinChatroomChat(
-  chatroom: Chatroom,
-  onMessage: (message: ChatMessage) => void,
-  onOpen: (messages: ChatMessage[]) => void,
-  onClose: () => void,
-) {
-  console.log('Joining chatroom...');
-  const { id } = chatroom;
-
-  const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/${id}`);
-
-  const sendMessage = async (message: ChatMessagePayload) => {
-    console.log('Sending message...', message);
-    const res = await api.post<ChatMessage>(
-      `${CHATROOMS_ENDPOINT}/${id}/messages/`,
-      message,
-    );
-    ws.send(JSON.stringify(res.data));
-  };
-
-  const leaveChatroom = () => {
-    console.log('Leaving chatroom...');
-    api.post(`${CHATROOMS_ENDPOINT}/${id}/leave/`);
-    ws.close();
-  };
-
-  ws.onmessage = (e: MessageEvent<string>) => {
-    console.log('Message received: ', e.data);
-    const data = JSON.parse(e.data) as WebSocketMessage;
-    const message = JSON.parse(data.message) as ChatMessage;
-    onMessage(message);
-  };
-
-  ws.onopen = async () => {
-    console.log('Connection established...');
-    const res = await api.get<ChatMessage[]>(
-      `${CHATROOMS_ENDPOINT}/${id}/messages/`,
-    );
-    onOpen(res.data);
-  };
-  ws.onclose = () => {
-    console.log(
-      "Retry connection... (before calling chatroom's socket closed)",
-    );
-    onClose();
-  };
-  ws.onerror = (e) => {
-    console.log('Error: ', e);
-  };
-
-  return { sendMessage, leaveChatroom };
 }
