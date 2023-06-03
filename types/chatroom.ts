@@ -4,10 +4,10 @@ import { Media } from './gallery';
 // get
 export type Chatroom = {
   id: string;
-  media: string;
+  image: string;
   name: string;
   description: string;
-  people: number;
+  num_people: number;
   coordinates: LatLng;
 };
 
@@ -17,5 +17,5 @@ export type ChatroomPayload = {
   description: string;
   lifetime: number;
   capacity: number;
-  media: Media;
+  image: Media;
 };
