@@ -12,7 +12,7 @@ import {
   getCurrentPositionAsync,
 } from 'expo-location';
 
-import { updatePostion } from '@/api/map';
+import { updatePosition } from '@/api/map';
 import mapstyle from '@/constants/mapstyle';
 import dimensions from '@/constants/dimensions';
 
@@ -51,7 +51,7 @@ export default function MapView({ markers }: Props) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      updatePostion({
+      updatePosition({
         latitude: userLocation.current?.latitude || 0,
         longitude: userLocation.current?.longitude || 0,
       });

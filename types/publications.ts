@@ -23,7 +23,8 @@ export type Publication = {
 // post
 export type PublicationPayload = {
   title: string;
-  media: Media;
+  text: string;
+  image: Media;
 };
 
 // get

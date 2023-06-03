@@ -18,7 +18,7 @@ import useToggleScreen from '@/hooks/useToggleScreen';
 
 export const CreatePublicationSchema = [
   yup.object().shape({
-    media: yup.mixed().required('form.required'),
+    image: yup.mixed().required('form.required'),
   }),
   yup.object().shape({
     title: yup.string().required('form.required'),
@@ -76,7 +76,8 @@ export default function Create() {
     steps: CreatePublicationSchema,
     initialValues: {
       title: '',
-      media: {
+      text: '',
+      image: {
         id: '',
         uri: '',
         type: '',
@@ -119,7 +120,7 @@ export default function Create() {
 
   const onGalleryChange = useCallback(
     (image: Media) => {
-      setFieldValue('media', image);
+      setFieldValue('image', image);
     },
     [setFieldValue],
   );
@@ -127,13 +128,13 @@ export default function Create() {
   return (
     <View style={styles.container}>
       {step === 0 && (
-        <Gallery onChange={onGalleryChange} value={formik.values.media} />
+        <Gallery onChange={onGalleryChange} value={formik.values.image} />
       )}
       {step === 1 && (
         <View style={styles.row}>
           <Image
             source={{
-              uri: formik.values.media.uri,
+              uri: formik.values.image.uri,
             }}
             style={styles.image}
           />

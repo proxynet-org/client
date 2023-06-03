@@ -6,10 +6,9 @@ import api, { BASE_URL_WS } from './api';
 
 export const MAP_ENDPOINT = '/map';
 
-export function updatePosition(position: LatLng) {
+export async function updatePosition(position: LatLng) {
   console.log('Updating position...');
-
-  api.post('/users/location/', position);
+  return api.post('/users/location/', { coordinates: position });
 }
 
 export function openMap(

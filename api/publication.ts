@@ -29,28 +29,36 @@ export function getPublication(id: string) {
 
 export async function createPublication(publication: PublicationPayload) {
   const position = await getCurrentPositionAsync();
-  updatePosition(position.coords);
+  await updatePosition(position.coords);
 
-  console.log('Creating Publication...');
-  const data = new FormData();
+  const formData = new FormData();
 
-  data.append('media', {
-    name: publication.media.name,
-    type: `${publication.media.type}/${publication.media.uri.split('.').pop()}`,
-    uri:
-      Platform.OS === 'ios'
-        ? publication.media.uri?.replace('file://', '')
-        : publication.media.uri,
+  formData.append('title', publication.title);
+  formData.append('text', 'Test text');
+  const uri =
+    Platform.OS === 'android'
+      ? publication.image.uri
+      : publication.image.uri.replace('file://', '');
+  const filename = publication.image.uri.split('/').pop();
+  const match = /\.(\w+)$/.exec(filename as string);
+  const ext = match?.[1];
+  const type = match ? `image/${match[1]}` : `image`;
+
+  formData.append('image', {
+    uri,
+    name: `image.${ext}`,
+    type,
   } as any);
 
-  data.append('title', publication.title);
-
-  const res = await api.post<Publication>(PUBLICATION_ENDPOINT, data, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'multipart/form-data',
+  const res = await api.post<Publication>(
+    `${PUBLICATION_ENDPOINT}/`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     },
-  });
+  );
 
   sendPublication(res.data);
 
