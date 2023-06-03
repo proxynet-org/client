@@ -41,7 +41,7 @@ function AuthTabNavigator() {
 }
 
 export default function Routes() {
-  const { isLoggedIn } = useAuth();
+  const { user } = useAuth();
 
   return (
     <RootStack.Navigator
@@ -49,7 +49,7 @@ export default function Routes() {
         headerShown: false,
       }}
     >
-      {isLoggedIn ? (
+      {user ? (
         <RootStack.Group>
           <RootStack.Screen name="Map" component={Map} />
           <RootStack.Group
