@@ -11,10 +11,10 @@ export enum Reaction {
 export type Publication = {
   id: string;
   title: string;
-  media: string;
-  likes: number;
-  dislikes: number;
-  comments: number;
+  image: string;
+  num_likes: number;
+  num_dislikes: number;
+  num_comments: number;
   coordinates: LatLng;
   createdAt: string;
   reaction: Reaction;
@@ -30,12 +30,15 @@ export type PublicationPayload = {
 // get
 export type PublicationComment = {
   id: string;
-  publicationId: string;
-  parentId?: string;
+  publication: string;
+  parent_comment?: string;
   text: string;
-  replies: number;
+  num_replies: number;
   likes: number;
   dislikes: number;
+  num_likes: number;
+  num_dislikes: number;
+  reaction: Reaction;
 };
 
 // post

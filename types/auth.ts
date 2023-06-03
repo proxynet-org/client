@@ -1,3 +1,5 @@
+import { LatLng } from 'react-native-maps';
+
 export type SignUpPayload = {
   first_name: string;
   last_name: string;
@@ -15,4 +17,13 @@ export type SignInPayload = { username: string; password: string };
 export type Token = {
   access: string;
   refresh: string;
+};
+
+export type User = {
+  username: string;
+  coordinates: LatLng;
+  email: string;
+  first_name: string;
+  last_name: string;
+  id: number;
 };
