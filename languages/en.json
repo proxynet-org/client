@@ -154,5 +154,18 @@
         "other": "%{count} replies"
       }
     }
+  },
+  "chatroom": {
+    "title": "Chatroom",
+    "placeholder": "Type a message...",
+    "button": "Send",
+    "online": {
+      "zero": "No one is online",
+      "one": "%{count} online",
+      "other": "%{count} online"
+    },
+    "join": {
+      "error": "Unable to join chatroom"
+    }
   }
 }

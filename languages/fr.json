@@ -154,5 +154,18 @@
         "other": "%{count} réponses"
       }
     }
+  },
+  "chatroom": {
+    "title": "Chatroom",
+    "placeholder": "Veuillez saisir votre message...",
+    "button": "Envoyer",
+    "online": {
+      "zero": "Aucun utilisateur en ligne",
+      "one": "1 en ligne",
+      "other": "%{count} en ligne"
+    },
+    "join": {
+      "error": "Impossible de rejoindre la chatroom"
+    }
   }
 }

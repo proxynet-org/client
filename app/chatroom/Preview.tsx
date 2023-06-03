@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   RouteProp,
@@ -16,10 +16,15 @@ import {
   IconButton,
   Title,
   Chip,
+  Snackbar,
 } from 'react-native-paper';
+
+import i18n from '@/languages';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
 import useToggleScreen from '@/hooks/useToggleScreen';
+import { getChatroom, joinChatroom } from '@/api/chatroom';
+import { SnackbarState } from '@/types/ui';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -53,13 +58,43 @@ export default function Preview() {
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'ChatPreview'>>();
   useToggleScreen({ hideOnBlur: true });
+  const { chatroom } = route.params;
 
-  const { chat } = route.params;
+  const [updatedChatroom, setUpdatedChatroom] = useState(chatroom);
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getChatroom(chatroom.id).then((lastChatroom) => {
+        setUpdatedChatroom(lastChatroom.data);
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [chatroom]);
+
+  const enterChatroom = async () => {
+    try {
+      await joinChatroom(chatroom.id);
+      navigation.navigate('ChatRoom', { chatroom });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: i18n.t('chatroom.join.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Card>
-        <Card.Cover source={{ uri: chat.media }} style={styles.image} />
+        <Card.Cover source={{ uri: chatroom.image }} style={styles.image} />
         <Card.Title
           title={
             <View
@@ -71,7 +106,7 @@ export default function Preview() {
                 gap: 5,
               }}
             >
-              <Title>{chat.name}</Title>
+              <Title>{chatroom.name}</Title>
               <Chip icon="check-decagram" mode="flat">
                 verified
               </Chip>
@@ -82,25 +117,43 @@ export default function Preview() {
               <Badge
                 size={10}
                 style={{
-                  backgroundColor: 'green',
+                  backgroundColor:
+                    updatedChatroom.num_people >= chatroom.capacity
+                      ? theme.colors.error
+                      : 'green',
                   alignSelf: 'center',
                 }}
               />
-              <Text>{chat.people} Online</Text>
+              <Text>
+                {i18n.t('chatroom.online', {
+                  count: updatedChatroom.num_people,
+                })}
+              </Text>
             </View>
           }
         />
         <Card.Content>
-          <Paragraph>{chat.description}</Paragraph>
+          <Paragraph>{chatroom.description}</Paragraph>
         </Card.Content>
         <Card.Actions>
           <IconButton
             mode="contained-tonal"
             icon="message"
-            onPress={() => navigation.navigate('ChatRoom', { chat })}
+            onPress={enterChatroom}
+            disabled={updatedChatroom.num_people >= chatroom.capacity}
           />
         </Card.Actions>
       </Card>
+      <Snackbar
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </View>
   );
 }

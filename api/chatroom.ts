@@ -46,6 +46,20 @@ export function subscribeChatrooms(onMessage: (message: Chatroom) => void) {
   return { unsubscribeChatrooms, ws };
 }
 
+export async function getChatroom(id: string) {
+  console.log('Getting chatroom...');
+  const res = await api.get<Chatroom>(`${CHATROOMS_ENDPOINT}/${id}/`);
+  console.log('Got chatroom: ', res.data);
+  return res;
+}
+
+export async function joinChatroom(id: string) {
+  console.log('Joining chatroom...');
+  const res = await api.post<Chatroom>(`${CHATROOMS_ENDPOINT}/${id}/join/`);
+  console.log('Joined chatroom: ', res.data);
+  return res;
+}
+
 export async function createChatroom(chatroom: ChatroomPayload) {
   const position = await getCurrentPositionAsync();
   updatePosition(position.coords);
@@ -83,7 +97,7 @@ export async function createChatroom(chatroom: ChatroomPayload) {
   return res;
 }
 
-export async function joinChatroom(
+export async function joinChatroomChat(
   chatroom: Chatroom,
   onMessage: (message: ChatMessage) => void,
   onOpen: (messages: ChatMessage[]) => void,
@@ -91,8 +105,6 @@ export async function joinChatroom(
 ) {
   console.log('Joining chatroom...');
   const { id } = chatroom;
-
-  await api.post(`${CHATROOMS_ENDPOINT}/${id}/join/`);
 
   const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/${id}`);
 
