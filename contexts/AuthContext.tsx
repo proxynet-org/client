@@ -15,8 +15,8 @@ interface AuthContextState {
 }
 
 interface AuthContextActions {
-  signUp: (data: SignUpPayload) => void;
-  signIn: (data: SignInPayload) => void;
+  signUp: (data: SignUpPayload) => Promise<void>;
+  signIn: (data: SignInPayload) => Promise<void>;
   signOut: () => void;
 }
 
@@ -39,8 +39,6 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const signUp = useCallback(async (data: SignUpPayload) => {
-    setIsLoggedIn(true);
-    return;
     const res = await singup(data);
     setIsLoggedIn(Boolean(res));
   }, []);

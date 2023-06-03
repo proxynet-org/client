@@ -10,8 +10,11 @@ export async function singin(data: SignInPayload) {
 
 export async function singup(data: SignUpPayload) {
   console.log('Signing up...');
-  const response = await api.post<Token>('/users/register/', data);
-  setAccessToken(response.data);
+  const response = await api.post<Omit<SignUpPayload, 'password'>>(
+    '/users/register/',
+    data,
+  );
+  await singin({ username: data.username, password: data.password });
   return response.data;
 }
 

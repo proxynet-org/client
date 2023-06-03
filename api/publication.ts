@@ -5,22 +5,22 @@ import {
   PublicationComment,
   PublicationPayload,
 } from '@/types/publications';
-
 import api from './api';
+
 import { updatePostion, sendPublication } from './map';
 
-export const PUBLICATIONS_ENDPOINT = '/publications';
+export const PUBLICATION_ENDPOINT = '/publications';
 export const COMMENTS_ENDPOINT = '/comments';
 const REPLIES_ENDPOINT = '/replies';
 
 export function getPublications() {
-  console.log('Getting publications...');
-  return api.get(PUBLICATIONS_ENDPOINT);
+  console.log('Getting Publications...');
+  return api.get(PUBLICATION_ENDPOINT);
 }
 
 export function getPublication(id: string) {
-  console.log('Getting publication...', id);
-  return api.get(PUBLICATIONS_ENDPOINT, {
+  console.log('Getting Publication...', id);
+  return api.get(PUBLICATION_ENDPOINT, {
     params: {
       id,
     },
@@ -31,7 +31,7 @@ export async function createPublication(publication: PublicationPayload) {
   const position = await getCurrentPositionAsync();
   updatePostion(position.coords);
 
-  console.log('Creating post...');
+  console.log('Creating Publication...');
   const data = new FormData();
 
   data.append('media', {
@@ -45,7 +45,7 @@ export async function createPublication(publication: PublicationPayload) {
 
   data.append('title', publication.title);
 
-  const res = await api.post<Publication>(PUBLICATIONS_ENDPOINT, data, {
+  const res = await api.post<Publication>(PUBLICATION_ENDPOINT, data, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'multipart/form-data',
@@ -57,30 +57,35 @@ export async function createPublication(publication: PublicationPayload) {
   return res;
 }
 
-export function getPublicationComments(postId: string) {
-  console.log('Getting post comments...', postId);
-  return api.get(`${PUBLICATIONS_ENDPOINT}/${postId}/${COMMENTS_ENDPOINT}/`);
+export function getPublicationComments(publicationId: string) {
+  console.log('Getting Publication comments...', publicationId);
+  return api.get(
+    `${PUBLICATION_ENDPOINT}/${publicationId}/${COMMENTS_ENDPOINT}/`,
+  );
 }
 
-export function getPostCommentReplies(postId: string, id: string) {
-  console.log('Getting post comment replies...', postId, id);
+export function getPublicationCommentReplies(
+  publicationId: string,
+  id: string,
+) {
+  console.log('Getting Publication comment replies...', publicationId, id);
   return api.get(
-    `${PUBLICATIONS_ENDPOINT}/${postId}/${COMMENTS_ENDPOINT}/${id}/${REPLIES_ENDPOINT}/`,
+    `${PUBLICATION_ENDPOINT}/${publicationId}/${COMMENTS_ENDPOINT}/${id}/${REPLIES_ENDPOINT}/`,
   );
 }
 
 export function createPublicationComment(
-  postId: string,
+  publicationId: string,
   text: string,
   parentId?: string,
 ) {
-  console.log('Creating post comment...', postId, text, parentId);
+  console.log('Creating Publication comment...', publicationId, text, parentId);
   return api.post<PublicationComment>(
-    `${PUBLICATIONS_ENDPOINT}/${postId}/${COMMENTS_ENDPOINT}/${
+    `${PUBLICATION_ENDPOINT}/${publicationId}/${COMMENTS_ENDPOINT}/${
       parentId ? `${parentId}/${REPLIES_ENDPOINT}/` : ''
     }`,
     {
-      postId,
+      publicationId,
       parentId,
       text,
       replies: 0,

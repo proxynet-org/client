@@ -6,7 +6,8 @@
       "subTitle": "Please sign in to continue",
       "noAccount": "No account yet?",
       "forgotPassword": "Forgot password?",
-      "button": "Sign In"
+      "button": "Sign In",
+      "error": "Invalid username or password"
     },
     "signup": {
       "title": "Sign Up",
@@ -28,6 +29,12 @@
   "form": {
     "username": {
       "field": "USERNAME"
+    },
+    "firstname": {
+      "field": "FIRST NAME"
+    },
+    "lastname": {
+      "field": "LAST NAME"
     },
     "email": {
       "field": "EMAIL",
@@ -120,7 +127,7 @@
       "other": "%{count} years ago"
     }
   },
-  "post": {
+  "publication": {
     "comments": {
       "title": "Comments",
       "placeholder": "Type a comment...",

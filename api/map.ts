@@ -6,16 +6,16 @@ import api, { BASE_URL_WS } from './api';
 
 export const MAP_ENDPOINT = '/map';
 
-export function updatePostion(position: LatLng) {
+export function updatePosition(position: LatLng) {
   console.log('Updating position...');
 
   api.post('/users/location/', position);
 }
 
 export function openMap(
-  onNewPost?: (post: Publication) => void,
-  onNewChatRoom?: (chatroom: Chatroom) => void,
-  onOpen?: (this: WebSocket, ev: Event) => void,
+  onNewPublication: (publication: Publication) => void,
+  onNewChatRoom: (chatroom: Chatroom) => void,
+  onOpen?: () => void,
   onClose?: () => void,
 ) {
   console.log('Opening map...');
@@ -40,7 +40,7 @@ export function openMap(
     const data = JSON.parse(e.data);
     switch (data.type) {
       case 'publication':
-        onNewPost?.(data);
+        onNewPublication(data);
         break;
       case 'chatroom':
         onNewChatRoom?.(data);

@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-const CreatePostSchema = [
+const CreatePublicationSchema = [
   yup.object().shape({
     media: yup.mixed().required('form.required'),
   }),
@@ -9,4 +9,4 @@ const CreatePostSchema = [
   }),
 ];
 
-export default CreatePostSchema;
+export default CreatePublicationSchema;

@@ -7,9 +7,9 @@ export type RootStackParams = {
   Chat: undefined;
   Map: undefined;
 
-  PostCreate: undefined;
-  PostPreview: { post: Publication };
-  PostComments: { post: Publication };
+  PublicationCreate: undefined;
+  PublicationPreview: { publication: Publication };
+  PublicationComments: { publication: Publication };
 
   ChatCreate: undefined;
   ChatPreview: { chat: Chatroom };

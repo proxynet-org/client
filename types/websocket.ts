@@ -2,14 +2,14 @@ import { Chatroom } from './chatroom';
 import { Publication } from './publications';
 
 export enum WebSocketEvent {
-  POST = 'post',
+  PUBLICATION = 'publication',
   CHATROOM = 'chatroom',
   CHATROOM_MESSAGE = 'chatroom_message',
   CHAT_ALL = 'chat_all',
 }
 
 export type WebSocketMessageData = {
-  [WebSocketEvent.POST]: Publication;
+  [WebSocketEvent.PUBLICATION]: Publication;
   [WebSocketEvent.CHATROOM]: Chatroom;
   [WebSocketEvent.CHATROOM_MESSAGE]: string;
   [WebSocketEvent.CHAT_ALL]: string;

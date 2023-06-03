@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import {
   useTheme,
   Button,
   Text,
+  Snackbar,
 } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useFormik } from 'formik';
@@ -20,6 +21,7 @@ import { AuthTabParams } from '@/routes/params';
 import dimensions from '@/constants/dimensions';
 import { SignupSchema } from '@/schemas/auth';
 import { useAuth } from '@/contexts/AuthContext';
+import { SnackbarState } from '@/types/ui';
 
 function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
   return StyleSheet.create({
@@ -54,22 +56,40 @@ export default function SignUp() {
 
   const { signUp } = useAuth();
 
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
+  });
+
   const formik = useFormik({
     validateOnMount: true,
     validationSchema: SignupSchema,
     initialValues: {
-      fullname: '',
+      first_name: '',
+      last_name: '',
       username: '',
-      phone: '',
       birthDate: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
-    onSubmit: signUp,
+    onSubmit: async (values) => {
+      try {
+        await signUp(values);
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: i18n.t('auth.signup.error'),
+          type: 'error',
+          duration: 3000,
+        });
+      }
+    },
   });
 
-  const { isValid, handleChange, values } = formik;
+  const { isValid, handleChange, values, handleSubmit } = formik;
 
   return (
     <KeyboardAwareScrollView
@@ -78,11 +98,18 @@ export default function SignUp() {
     >
       <Title>{i18n.t('auth.signup.title')}</Title>
       <TextInput
-        label={i18n.t('form.fullname.field')}
+        label={i18n.t('form.firstname.field')}
         style={styles.input}
         mode="outlined"
-        onChangeText={handleChange('fullname')}
-        value={values.fullname}
+        onChangeText={handleChange('first_name')}
+        value={values.first_name}
+      />
+      <TextInput
+        label={i18n.t('form.lastname.field')}
+        style={styles.input}
+        mode="outlined"
+        onChangeText={handleChange('last_name')}
+        value={values.last_name}
       />
       <TextInput
         label={i18n.t('form.username.field')}
@@ -115,16 +142,6 @@ export default function SignUp() {
         autoComplete="email"
       />
       <TextInput
-        label={i18n.t('form.phone.field')}
-        style={styles.input}
-        mode="outlined"
-        onChangeText={handleChange('phone')}
-        value={values.phone}
-        inputMode="tel"
-        keyboardType="phone-pad"
-        autoComplete="tel"
-      />
-      <TextInput
         label={i18n.t('form.password.field')}
         style={styles.input}
         mode="outlined"
@@ -144,7 +161,12 @@ export default function SignUp() {
         autoCapitalize="none"
         autoComplete="password-new"
       />
-      <Button style={styles.button} mode="contained" disabled={!isValid}>
+      <Button
+        style={styles.button}
+        mode="contained"
+        disabled={!isValid}
+        onPress={() => handleSubmit()}
+      >
         {i18n.t('auth.signup.button')}
       </Button>
       <View style={styles.row}>
@@ -155,6 +177,17 @@ export default function SignUp() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <Snackbar
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'Ok',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </KeyboardAwareScrollView>
   );
 }

@@ -4,7 +4,7 @@ import { Button, Card, Paragraph, IconButton } from 'react-native-paper';
 import i18n from '@/languages';
 import { PublicationComment } from '@/types/publications';
 import useAxios from '@/hooks/useAxios';
-import { getPostCommentReplies } from '@/api/publication';
+import { getPublicationCommentReplies } from '@/api/publication';
 import useToggle from '@/hooks/useToggle';
 import Separator from './Separator';
 
@@ -18,7 +18,7 @@ export default function Comment({ comment, reply, myReplies }: Props) {
   const [showReplies, toggleReplies] = useToggle(false);
 
   const axiosRequest = useCallback(
-    () => getPostCommentReplies(comment.postId, comment.id),
+    () => getPublicationCommentReplies(comment.publicationId, comment.id),
     [comment],
   );
 
@@ -59,7 +59,9 @@ export default function Comment({ comment, reply, myReplies }: Props) {
       {comment.replies > 0 && (
         <Card.Actions>
           <Button mode="text" onPress={toggleReplies}>
-            {i18n.t('post.comments.see.replies', { count: comment.replies })}
+            {i18n.t('publication.comments.see.replies', {
+              count: comment.replies,
+            })}
           </Button>
         </Card.Actions>
       )}

@@ -16,7 +16,7 @@ import { createPublication } from '@/api/publication';
 import { PublicationPayload } from '@/types/publications';
 import useToggleScreen from '@/hooks/useToggleScreen';
 
-export const CreatePostSchema = [
+export const CreatePublicationSchema = [
   yup.object().shape({
     media: yup.mixed().required('form.required'),
   }),
@@ -58,7 +58,9 @@ export default function Create() {
     onBlur: () => {
       navigation.dispatch((state) => {
         // Remove the create route from the stack
-        const routes = state.routes.filter((r) => r.name !== 'PostCreate');
+        const routes = state.routes.filter(
+          (r) => r.name !== 'PublicationCreate',
+        );
 
         return CommonActions.reset({
           ...state,
@@ -71,7 +73,7 @@ export default function Create() {
 
   const formik = useFormikMultiStep<PublicationPayload>({
     validateOnMount: true,
-    steps: CreatePostSchema,
+    steps: CreatePublicationSchema,
     initialValues: {
       title: '',
       media: {
@@ -83,7 +85,7 @@ export default function Create() {
     },
     onSubmit: async (values) => {
       const res = await createPublication({ ...values });
-      navigation.navigate('PostPreview', { post: res.data });
+      navigation.navigate('PublicationPreview', { publication: res.data });
     },
   });
 

@@ -53,34 +53,36 @@ export default function Preview() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
-  const route = useRoute<RouteProp<RootStackParams, 'PostPreview'>>();
+  const route = useRoute<RouteProp<RootStackParams, 'PublicationPreview'>>();
   useToggleScreen({ hideOnBlur: true });
 
-  const { post } = route.params;
+  const { publication } = route.params;
 
   const navigateToComments = useCallback(() => {
-    navigation.navigate('PostComments', { post });
-  }, [navigation, post]);
+    navigation.navigate('PublicationComments', { publication });
+  }, [navigation, publication]);
 
   return (
     <View style={styles.container}>
       <Card>
-        <Card.Cover source={{ uri: post.media }} style={styles.image} />
-        <Card.Title title={post.title} />
+        <Card.Cover source={{ uri: publication.media }} style={styles.image} />
+        <Card.Title title={publication.title} />
         <Card.Actions>
           <Button icon="thumb-up" mode="contained" onPress={() => {}}>
-            {post.likes}
+            {publication.likes}
           </Button>
           <Button icon="thumb-down" mode="contained" onPress={() => {}}>
-            {post.dislikes}
+            {publication.dislikes}
           </Button>
           <Button icon="message" mode="contained" onPress={navigateToComments}>
-            {post.comments}
+            {publication.comments}
           </Button>
         </Card.Actions>
         <Card.Actions>
           <Button mode="text" onPress={navigateToComments}>
-            {i18n.t('post.comments.see', { count: post.comments })}
+            {i18n.t('publication.comments.see', {
+              count: publication.comments,
+            })}
           </Button>
         </Card.Actions>
       </Card>

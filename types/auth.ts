@@ -1,8 +1,8 @@
 export type SignUpPayload = {
-  fullname: string;
+  first_name: string;
+  last_name: string;
   username: string;
   birthDate: string;
-  phone: string;
   email: string;
   password: string;
 };

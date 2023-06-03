@@ -61,7 +61,7 @@ export default function CommentForm({ onSubmit, replyId, cancelReply }: Props) {
         value={formik.values.text}
         onChangeText={formik.handleChange('text')}
         mode="flat"
-        placeholder={i18n.t('post.comments.placeholder')}
+        placeholder={i18n.t('publication.comments.placeholder')}
         multiline
         right={
           <TextInput.Icon icon="send" onPress={() => formik.handleSubmit()} />

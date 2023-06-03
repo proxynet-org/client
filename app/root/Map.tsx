@@ -38,7 +38,9 @@ function makeStyles(insets: EdgeInsets) {
 }
 
 export default function MapScreen() {
-  const [postMarkers, setPostMarkers] = useState<Publication[]>([]);
+  const [publicationMarkers, setPublicationMarkers] = useState<Publication[]>(
+    [],
+  );
   const [chatroomMarkers, setChatroomMarkers] = useState<Chatroom[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const insets = useSafeAreaInsets();
@@ -48,19 +50,22 @@ export default function MapScreen() {
     axiosRequest: getChatrooms,
   });
 
-  const { response: postResponse } = useAxios<Publication[]>({
+  const { response: publicationResponse } = useAxios<Publication[]>({
     axiosRequest: getPublications,
   });
 
   const markers = useMemo(
     () =>
-      postResponse && chatroomResponse
+      publicationResponse && chatroomResponse
         ? [
-            ...postResponse.data.map((post) => ({
-              id: post.id,
-              coordinate: post.coordinates,
-              icon: require('@/assets/images/map-marker/post.png'),
-              onPress: () => navigation.navigate('PostPreview', { post }),
+            ...publicationResponse.data.map((publication) => ({
+              id: publication.id,
+              coordinate: publication.coordinates,
+              icon: require('@/assets/images/map-marker/publication.png'),
+              onPress: () =>
+                navigation.navigate('PublicationPreview', {
+                  publication,
+                }),
             })),
             ...chatroomResponse.data.map((chat) => ({
               id: chat.id,
@@ -68,11 +73,14 @@ export default function MapScreen() {
               icon: require('@/assets/images/map-marker/chat.png'),
               onPress: () => navigation.navigate('ChatPreview', { chat }),
             })),
-            ...postMarkers.map((post) => ({
-              id: post.id,
-              coordinate: post.coordinates,
-              icon: require('@/assets/images/map-marker/post.png'),
-              onPress: () => navigation.navigate('PostPreview', { post }),
+            ...publicationMarkers.map((publication) => ({
+              id: publication.id,
+              coordinate: publication.coordinates,
+              icon: require('@/assets/images/map-marker/publication.png'),
+              onPress: () =>
+                navigation.navigate('PublicationPreview', {
+                  publication,
+                }),
             })),
             ...chatroomMarkers.map((chat) => ({
               id: chat.id,
@@ -82,12 +90,18 @@ export default function MapScreen() {
             })),
           ]
         : [],
-    [postResponse, chatroomResponse, navigation, postMarkers, chatroomMarkers],
+    [
+      publicationResponse,
+      chatroomResponse,
+      navigation,
+      publicationMarkers,
+      chatroomMarkers,
+    ],
   );
 
   useEffect(() => {
-    const onNewPost = (post: Publication) => {
-      setPostMarkers((prev) => [...prev, post]);
+    const onNewPublication = (publication: Publication) => {
+      setPublicationMarkers((prev) => [...prev, publication]);
     };
     const onNewChatroom = (chatroom: Chatroom) => {
       setChatroomMarkers((prev) => [...prev, chatroom]);
@@ -101,8 +115,12 @@ export default function MapScreen() {
       console.log('Map closed nothing to do here');
     };
 
-    const { closeMap } = openMap(onNewPost, onNewChatroom, onOpen, onClose);
-
+    const { closeMap } = openMap(
+      onNewPublication,
+      onNewChatroom,
+      onOpen,
+      onClose,
+    );
     return () => {
       closeMap();
     };
@@ -127,8 +145,8 @@ export default function MapScreen() {
           },
           {
             icon: 'camera',
-            onPress: () => navigation.navigate('PostCreate'),
-            label: 'Post',
+            onPress: () => navigation.navigate('PublicationCreate'),
+            label: 'Publication',
           },
         ]}
       />

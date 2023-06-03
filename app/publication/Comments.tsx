@@ -32,13 +32,13 @@ function makeStyle(theme: MD3Theme) {
 export default function Comments() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const route = useRoute<RouteProp<RootStackParams, 'PostComments'>>();
+  const route = useRoute<RouteProp<RootStackParams, 'PublicationComments'>>();
 
   const [myReplies, setMyReplies] = useState<PublicationComment[]>([]);
   const [replyId, setReplyId] = useState<string>();
 
   const axiosRequest = useCallback(
-    () => getPublicationComments(route.params.post.id),
+    () => getPublicationComments(route.params.publication.id),
     [route],
   );
   const { response } = useAxios<PublicationComment[]>({ axiosRequest });
@@ -54,7 +54,7 @@ export default function Comments() {
   const handleSubmit = useCallback(
     async (text: string) => {
       const res = await createPublicationComment(
-        route.params.post.id,
+        route.params.publication.id,
         text,
         replyId,
       );

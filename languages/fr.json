@@ -6,7 +6,8 @@
       "subTitle": "Veuillez vous connecter pour continuer",
       "noAccount": "Pas encore de compte ?",
       "forgotPassword": "Mot de passe oublié ?",
-      "button": "Se connecter"
+      "button": "Se connecter",
+      "error": "Nom d'utilisateur ou mot de passe incorrect"
     },
     "signup": {
       "title": "Inscription",
@@ -28,6 +29,12 @@
   "form": {
     "username": {
       "field": "NOM D'UTILISATEUR"
+    },
+    "firstname": {
+      "field": "PRÉNOM"
+    },
+    "lastname": {
+      "field": "NOM"
     },
     "email": {
       "field": "EMAIL",
@@ -120,7 +127,7 @@
       "other": "Il y a {{count}} ans"
     }
   },
-  "post": {
+  "publication": {
     "comments": {
       "title": "Commentaires",
       "placeholder": "Veuillez saisir votre commentaire...",

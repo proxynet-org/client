@@ -1,6 +1,12 @@
 import { LatLng } from 'react-native-maps';
 import { Media } from '@/types/gallery';
 
+export enum Reaction {
+  NONE = 'NONE',
+  LIKE = 'LIKE',
+  DISLIKE = 'DISLIKE',
+}
+
 // get
 export type Publication = {
   id: string;
@@ -10,6 +16,8 @@ export type Publication = {
   dislikes: number;
   comments: number;
   coordinates: LatLng;
+  createdAt: string;
+  reaction: Reaction;
 };
 
 // post
@@ -21,7 +29,7 @@ export type PublicationPayload = {
 // get
 export type PublicationComment = {
   id: string;
-  postId: string;
+  publicationId: string;
   parentId?: string;
   text: string;
   replies: number;
@@ -30,8 +38,8 @@ export type PublicationComment = {
 };
 
 // post
-export type PostCommentPayload = {
-  postId: string;
+export type PublicationCommentPayload = {
+  publicationId: string;
   parentId?: string;
   text: string;
 };

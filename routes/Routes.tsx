@@ -4,9 +4,9 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import Map from '@/app/root/Map';
 import Settings from '@/app/root/Settings';
 
-import PostCreate from '@/app/post/Create';
-import PostPreview from '@/app/post/Preview';
-import PostComments from '@/app/post/Comments';
+import PublicationCreate from '@/app/publication/Create';
+import PublicationPreview from '@/app/publication/Preview';
+import PublicationComments from '@/app/publication/Comments';
 
 import ChatCreate from '@/app/chatroom/Create';
 import ChatPreview from '@/app/chatroom/Preview';
@@ -62,9 +62,18 @@ export default function Routes() {
             <RootStack.Screen name="Chat" component={Chat} />
 
             <RootStack.Screen name="Settings" component={Settings} />
-            <RootStack.Screen name="PostCreate" component={PostCreate} />
-            <RootStack.Screen name="PostPreview" component={PostPreview} />
-            <RootStack.Screen name="PostComments" component={PostComments} />
+            <RootStack.Screen
+              name="PublicationCreate"
+              component={PublicationCreate}
+            />
+            <RootStack.Screen
+              name="PublicationPreview"
+              component={PublicationPreview}
+            />
+            <RootStack.Screen
+              name="PublicationComments"
+              component={PublicationComments}
+            />
 
             <RootStack.Screen name="ChatCreate" component={ChatCreate} />
             <RootStack.Screen name="ChatPreview" component={ChatPreview} />
