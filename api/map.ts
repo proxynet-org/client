@@ -1,6 +1,5 @@
 import { LatLng } from 'react-native-maps';
 import { Publication } from '@/types/publications';
-import { Chatroom } from '@/types/chatroom';
 
 import api, { BASE_URL_WS } from './api';
 
@@ -51,15 +50,6 @@ export function sendPublication(publication: Publication) {
 
   ws.onopen = () => {
     sendMessage(publication);
-    closeMap();
-  };
-}
-
-export function sendChatroom(chatroom: Chatroom) {
-  const { ws, sendMessage, closeMap } = openMap('/chatrooms');
-
-  ws.onopen = () => {
-    sendMessage(chatroom);
     closeMap();
   };
 }

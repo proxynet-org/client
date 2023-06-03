@@ -3,7 +3,7 @@ import { getCurrentPositionAsync } from 'expo-location';
 import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
 import api, { BASE_URL_WS } from './api';
-import { updatePosition, sendChatroom } from './map';
+import { updatePosition } from './map';
 
 export const CHATROOMS_ENDPOINT = '/chatrooms';
 
@@ -97,7 +97,10 @@ export async function createChatroom(chatroom: ChatroomPayload) {
     },
   });
 
-  sendChatroom(res.data);
+  const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/`);
+  ws.onopen = () => {
+    ws.send(JSON.stringify(res.data));
+  };
 
   return res;
 }
