@@ -1,19 +1,15 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  RouteProp,
-  useRoute,
-  useNavigation,
-  NavigationProp,
-} from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { MD3Theme, useTheme, Card, Button } from 'react-native-paper';
+
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
 import i18n from '@/languages';
-import useToggleScreen from '@/hooks/useToggleScreen';
 import dimensions from '@/constants/dimensions';
 import { Reaction } from '@/types/publications';
-import { reactPublication } from '@/api/publication';
+import { getPublication, reactPublication } from '@/api/publication';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -54,51 +50,58 @@ function makeStyle(theme: MD3Theme) {
 export default function Preview() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'PublicationPreview'>>();
-  useToggleScreen({ hideOnBlur: true });
 
   const { publication } = route.params;
 
   const navigateToComments = useCallback(() => {
-    navigation.navigate('PublicationComments', { publication });
+    navigation.replace('PublicationComments', { publication });
   }, [navigation, publication]);
 
-  const [likes, setLikes] = useState<number>(publication.num_likes);
-  const [dislikes, setDislikes] = useState<number>(publication.num_dislikes);
-  const [reaction, setReaction] = useState<Reaction>(publication.reaction);
+  const [updatedPublication, setUpdatedPublication] = useState(publication);
+
+  useEffect(() => {
+    getPublication(publication.id).then((lastPublication) =>
+      setUpdatedPublication(lastPublication.data),
+    );
+  }, [publication]);
 
   async function sendReaction(newReaction: Reaction) {
     await reactPublication(publication.id, newReaction);
 
-    setReaction((oldReaction) => {
-      switch (oldReaction) {
+    setUpdatedPublication((oldPublication) => {
+      const newPublication = { ...oldPublication };
+
+      switch (oldPublication.reaction) {
         case Reaction.LIKE:
-          setLikes(likes - 1);
+          newPublication.num_likes -= 1;
           break;
         case Reaction.DISLIKE:
-          setDislikes(dislikes - 1);
+          newPublication.num_dislikes -= 1;
           break;
         default:
           break;
       }
 
-      if (oldReaction === newReaction) {
-        return Reaction.NONE;
+      if (oldPublication.reaction === newReaction) {
+        newPublication.reaction = Reaction.NONE;
+        return newPublication;
       }
 
       switch (newReaction) {
         case Reaction.LIKE:
-          setLikes(likes + 1);
+          newPublication.num_likes += 1;
           break;
         case Reaction.DISLIKE:
-          setDislikes(dislikes + 1);
+          newPublication.num_dislikes += 1;
           break;
         default:
           break;
       }
 
-      return newReaction;
+      newPublication.reaction = newReaction;
+      return newPublication;
     });
   }
 
@@ -110,17 +113,25 @@ export default function Preview() {
         <Card.Actions>
           <Button
             icon="thumb-up"
-            mode={reaction === Reaction.LIKE ? 'contained' : 'outlined'}
+            mode={
+              updatedPublication.reaction === Reaction.LIKE
+                ? 'contained'
+                : 'outlined'
+            }
             onPress={() => sendReaction(Reaction.LIKE)}
           >
-            {likes}
+            {updatedPublication.num_likes}
           </Button>
           <Button
             icon="thumb-down"
-            mode={reaction === Reaction.DISLIKE ? 'contained' : 'outlined'}
+            mode={
+              updatedPublication.reaction === Reaction.DISLIKE
+                ? 'contained'
+                : 'outlined'
+            }
             onPress={() => sendReaction(Reaction.DISLIKE)}
           >
-            {dislikes}
+            {updatedPublication.num_dislikes}
           </Button>
           <Button icon="message" mode="contained" onPress={navigateToComments}>
             {publication.num_comments}
