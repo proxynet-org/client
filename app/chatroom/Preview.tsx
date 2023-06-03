@@ -1,11 +1,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  RouteProp,
-  useRoute,
-  useNavigation,
-  NavigationProp,
-} from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import {
   Badge,
   Card,
@@ -22,7 +18,6 @@ import {
 import i18n from '@/languages';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
-import useToggleScreen from '@/hooks/useToggleScreen';
 import { getChatroom, joinChatroom } from '@/api/chatroom';
 import { SnackbarState } from '@/types/ui';
 
@@ -55,9 +50,8 @@ function makeStyle(theme: MD3Theme) {
 export default function Preview() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'ChatPreview'>>();
-  useToggleScreen({ hideOnBlur: true });
   const { chatroom } = route.params;
 
   const [updatedChatroom, setUpdatedChatroom] = useState(chatroom);
@@ -80,7 +74,7 @@ export default function Preview() {
   const enterChatroom = async () => {
     try {
       await joinChatroom(chatroom.id);
-      navigation.navigate('ChatRoom', { chatroom });
+      navigation.replace('ChatRoom', { chatroom: updatedChatroom });
     } catch (err) {
       setSnackbar({
         open: true,
