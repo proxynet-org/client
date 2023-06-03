@@ -13,8 +13,8 @@ export function updatePosition(position: LatLng) {
 }
 
 export function openMap(
-  onNewPublication: (publication: Publication) => void,
-  onNewChatRoom: (chatroom: Chatroom) => void,
+  onNewPublication?: (publication: Publication) => void,
+  onNewChatRoom?: (chatroom: Chatroom) => void,
   onOpen?: () => void,
   onClose?: () => void,
 ) {
@@ -40,7 +40,7 @@ export function openMap(
     const data = JSON.parse(e.data);
     switch (data.type) {
       case 'publication':
-        onNewPublication(data);
+        onNewPublication?.(data);
         break;
       case 'chatroom':
         onNewChatRoom?.(data);

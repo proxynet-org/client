@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import { getCurrentPositionAsync } from 'expo-location';
+import { Platform } from 'react-native';
 import {
   Publication,
   PublicationComment,
@@ -7,7 +7,7 @@ import {
 } from '@/types/publications';
 import api from './api';
 
-import { updatePostion, sendPublication } from './map';
+import { updatePosition, sendPublication } from './map';
 
 export const PUBLICATION_ENDPOINT = '/publications';
 export const COMMENTS_ENDPOINT = '/comments';
@@ -29,7 +29,7 @@ export function getPublication(id: string) {
 
 export async function createPublication(publication: PublicationPayload) {
   const position = await getCurrentPositionAsync();
-  updatePostion(position.coords);
+  updatePosition(position.coords);
 
   console.log('Creating Publication...');
   const data = new FormData();
