@@ -12,8 +12,8 @@ export type RootStackParams = {
   PublicationComments: { publication: Publication };
 
   ChatCreate: undefined;
-  ChatPreview: { chat: Chatroom };
-  ChatRoom: { chat: Chatroom };
+  ChatPreview: { chatroom: Chatroom };
+  ChatRoom: { chatroom: Chatroom };
 
   Settings: undefined;
 };
