@@ -46,14 +46,14 @@ export async function launchMediaPicker(
 ): Promise<Media | null> {
   const mediaPicker =
     picker === 'camera' ? launchCameraAsync : launchImageLibraryAsync;
-  const media = await mediaPicker(imagePickerOptions);
-  if (media.canceled) return null;
+  const image = await mediaPicker(imagePickerOptions);
+  if (image.canceled) return null;
 
   const res: Media = {
-    id: media.assets[0].assetId || `prox-${new Date().toISOString()}`,
-    name: media.assets[0].fileName || `prox-${new Date().toISOString()}`,
-    type: media.assets[0].type || 'image',
-    uri: media.assets[0].uri,
+    id: image.assets[0].assetId || `prox-${new Date().toISOString()}`,
+    name: image.assets[0].fileName || `prox-${new Date().toISOString()}`,
+    type: image.assets[0].type || 'image',
+    uri: image.assets[0].uri,
   };
   return res;
 }

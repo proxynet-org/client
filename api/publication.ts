@@ -8,7 +8,7 @@ import {
 } from '@/types/publications';
 import api, { BASE_URL_WS } from './api';
 
-import { updatePosition, sendPublication } from './map';
+import { updatePosition } from './map';
 
 export const PUBLICATION_ENDPOINT = '/publications';
 export const COMMENTS_ENDPOINT = '/comment';
@@ -93,35 +93,42 @@ export async function createPublication(publication: PublicationPayload) {
     },
   );
 
-  sendPublication(res.data);
+  const ws = new WebSocket(`${BASE_URL_WS}${PUBLICATION_ENDPOINT}/`);
+  ws.onopen = () => {
+    ws.send(JSON.stringify(res.data));
+  };
 
   return res;
 }
 
-export function getPublicationComments(publicationId: string) {
+export async function getPublicationComments(publicationId: string) {
   console.log('Getting Publication comments...', publicationId);
-  return api.get<PublicationComment[]>(
+  const res = await api.get<PublicationComment[]>(
     `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/`,
   );
+  console.log('Got Publication comments: ', res.data);
+  return res;
 }
 
-export function getPublicationCommentReplies(
+export async function getPublicationCommentReplies(
   publicationId: string,
   id: string,
 ) {
   console.log('Getting Publication comment replies...', publicationId, id);
-  return api.get(
+  const res = await api.get(
     `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/${id}${REPLIES_ENDPOINT}/`,
   );
+  console.log('Got Publication comment replies: ', res.data);
+  return res;
 }
 
-export function createPublicationComment(
+export async function postPublicationComment(
   publicationId: string,
   text: string,
   parentId?: string,
 ) {
   console.log('Creating Publication comment...', publicationId, text, parentId);
-  return api.post<PublicationComment>(
+  const res = await api.post<PublicationComment>(
     `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/${
       parentId ? `${parentId}${REPLIES_ENDPOINT}/` : ''
     }`,
@@ -129,11 +136,9 @@ export function createPublicationComment(
       publicationId,
       parentId,
       text,
-      replies: 0,
-      likes: 0,
-      dislikes: 0,
     },
   );
+  return res;
 }
 
 export async function reactPublication(

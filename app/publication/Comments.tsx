@@ -7,7 +7,7 @@ import { View } from '@/components/Themed';
 import { PublicationComment } from '@/types/publications';
 import useAxios from '@/hooks/useAxios';
 import {
-  createPublicationComment,
+  postPublicationComment,
   getPublicationComments,
 } from '@/api/publication';
 import { RootStackParams } from '@/routes/params';
@@ -53,7 +53,7 @@ export default function Comments() {
 
   const handleSubmit = useCallback(
     async (text: string) => {
-      const res = await createPublicationComment(
+      const res = await postPublicationComment(
         route.params.publication.id,
         text,
         replyId,

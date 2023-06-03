@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 const CreatePublicationSchema = [
   yup.object().shape({
-    media: yup.mixed().required('form.required'),
+    image: yup.mixed().required('form.required'),
   }),
   yup.object().shape({
     title: yup.string().required('form.required'),

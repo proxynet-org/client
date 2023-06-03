@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Image, StyleSheet } from 'react-native';
 import { IconButton, MD3Theme, TextInput, useTheme } from 'react-native-paper';
 import * as yup from 'yup';
@@ -14,7 +11,6 @@ import { RootStackParams } from '@/routes/params';
 import { Media } from '@/types/gallery';
 import { createPublication } from '@/api/publication';
 import { PublicationPayload } from '@/types/publications';
-import useToggleScreen from '@/hooks/useToggleScreen';
 
 export const CreatePublicationSchema = [
   yup.object().shape({
@@ -51,25 +47,7 @@ const makeStyle = (theme: MD3Theme) =>
 export default function Create() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
-
-  useToggleScreen({
-    hideOnBlur: true,
-    onBlur: () => {
-      navigation.dispatch((state) => {
-        // Remove the create route from the stack
-        const routes = state.routes.filter(
-          (r) => r.name !== 'PublicationCreate',
-        );
-
-        return CommonActions.reset({
-          ...state,
-          routes,
-          index: routes.length - 1,
-        });
-      });
-    },
-  });
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   const formik = useFormikMultiStep<PublicationPayload>({
     validateOnMount: true,
@@ -86,7 +64,7 @@ export default function Create() {
     },
     onSubmit: async (values) => {
       const res = await createPublication({ ...values });
-      navigation.navigate('PublicationPreview', { publication: res.data });
+      navigation.replace('PublicationPreview', { publication: res.data });
     },
   });
 
