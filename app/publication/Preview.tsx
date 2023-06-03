@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   RouteProp,
@@ -12,6 +12,8 @@ import { RootStackParams } from '@/routes/params';
 import i18n from '@/languages';
 import useToggleScreen from '@/hooks/useToggleScreen';
 import dimensions from '@/constants/dimensions';
+import { Reaction } from '@/types/publications';
+import { reactPublication } from '@/api/publication';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -62,26 +64,72 @@ export default function Preview() {
     navigation.navigate('PublicationComments', { publication });
   }, [navigation, publication]);
 
+  const [likes, setLikes] = useState<number>(publication.num_likes);
+  const [dislikes, setDislikes] = useState<number>(publication.num_dislikes);
+  const [reaction, setReaction] = useState<Reaction>(publication.reaction);
+
+  async function sendReaction(newReaction: Reaction) {
+    await reactPublication(publication.id, newReaction);
+
+    setReaction((oldReaction) => {
+      switch (oldReaction) {
+        case Reaction.LIKE:
+          setLikes(likes - 1);
+          break;
+        case Reaction.DISLIKE:
+          setDislikes(dislikes - 1);
+          break;
+        default:
+          break;
+      }
+
+      if (oldReaction === newReaction) {
+        return Reaction.NONE;
+      }
+
+      switch (newReaction) {
+        case Reaction.LIKE:
+          setLikes(likes + 1);
+          break;
+        case Reaction.DISLIKE:
+          setDislikes(dislikes + 1);
+          break;
+        default:
+          break;
+      }
+
+      return newReaction;
+    });
+  }
+
   return (
     <View style={styles.container}>
       <Card>
-        <Card.Cover source={{ uri: publication.media }} style={styles.image} />
+        <Card.Cover source={{ uri: publication.image }} style={styles.image} />
         <Card.Title title={publication.title} />
         <Card.Actions>
-          <Button icon="thumb-up" mode="contained" onPress={() => {}}>
-            {publication.likes}
+          <Button
+            icon="thumb-up"
+            mode={reaction === Reaction.LIKE ? 'contained' : 'outlined'}
+            onPress={() => sendReaction(Reaction.LIKE)}
+          >
+            {likes}
           </Button>
-          <Button icon="thumb-down" mode="contained" onPress={() => {}}>
-            {publication.dislikes}
+          <Button
+            icon="thumb-down"
+            mode={reaction === Reaction.DISLIKE ? 'contained' : 'outlined'}
+            onPress={() => sendReaction(Reaction.DISLIKE)}
+          >
+            {dislikes}
           </Button>
           <Button icon="message" mode="contained" onPress={navigateToComments}>
-            {publication.comments}
+            {publication.num_comments}
           </Button>
         </Card.Actions>
         <Card.Actions>
           <Button mode="text" onPress={navigateToComments}>
             {i18n.t('publication.comments.see', {
-              count: publication.comments,
+              count: publication.num_comments,
             })}
           </Button>
         </Card.Actions>
