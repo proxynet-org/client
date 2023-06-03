@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import { ActivityIndicator, MD3Theme, useTheme } from 'react-native-paper';
@@ -6,6 +6,8 @@ import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { View } from '@/components/Themed';
 import { connectToChat } from '@/api/chat';
 import { RootStackParams } from '@/routes/params';
+import { useAuth } from '@/contexts/AuthContext';
+import { ChatMessage } from '@/types/chat';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -23,48 +25,69 @@ function makeStyle(theme: MD3Theme) {
   });
 }
 
+let onSend = (message: IMessage[]) => {
+  console.log('send message', message);
+};
+
+function ChatMessageToIMessage(message: ChatMessage): IMessage {
+  return {
+    ...message,
+    _id: message.id,
+    createdAt: new Date(message.created_at),
+    user: {
+      _id: message.user,
+    },
+  };
+}
+
 export default function Chat() {
+  const { user } = useAuth();
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const [loading, setLoading] = useState(true);
 
-  const onSend = useCallback((msg: IMessage[]) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, msg));
-  }, []);
-
   useEffect(() => {
-    const onMessage = (message: string) => {
-      const msg: IMessage = {
-        _id: Math.random(),
-        text: message,
-        createdAt: new Date(),
-        user: {
-          _id: 0,
-        },
-      };
+    const onMessage = (message: ChatMessage) => {
       setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [msg]),
+        GiftedChat.append(previousMessages, [ChatMessageToIMessage(message)]),
       );
     };
 
-    const onOpen = () => {
+    const onOpen = async (initialMessages: ChatMessage[]) => {
       console.log('connected to chat hide loading');
       setLoading(false);
+      setMessages(initialMessages.reverse().map(ChatMessageToIMessage));
     };
 
     const onClose = () => {
       console.log('disconnected from go back to map');
-      navigation.goBack();
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
     };
 
-    const { disconnect } = connectToChat(onMessage, onOpen, onClose);
+    const { disconnect, sendMessage } = connectToChat(
+      onMessage,
+      onOpen,
+      onClose,
+    );
+
+    onSend = (msg) => {
+      sendMessage({
+        text: msg[0].text,
+      });
+    };
 
     return () => {
       disconnect();
     };
   }, [navigation]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -75,10 +98,12 @@ export default function Chat() {
         style={styles.loader}
       />
       <GiftedChat
+        showUserAvatar={false}
+        renderAvatar={() => null}
         messages={messages}
-        onSend={(msg) => onSend(msg)}
+        onSend={onSend}
         user={{
-          _id: 1,
+          _id: user.id,
         }}
       />
     </View>
