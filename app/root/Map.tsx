@@ -9,13 +9,12 @@ import FabGroup from '@/components/FabGroup';
 import MapView from '@/components/MapView';
 
 import { RootStackParams } from '@/routes/params';
+
 import { Publication } from '@/types/publications';
 import { Chatroom } from '@/types/chatroom';
-import { openMap } from '@/api/map';
-import { getPublications } from '@/api/publication';
 
-import useAxios from '@/hooks/useAxios';
-import { getChatrooms } from '@/api/chatroom';
+import { getPublications, subscribePublications } from '@/api/publication';
+import { getChatrooms, subscribeChatrooms } from '@/api/chatroom';
 
 function makeStyles(insets: EdgeInsets) {
   return StyleSheet.create({
@@ -38,93 +37,82 @@ function makeStyles(insets: EdgeInsets) {
 }
 
 export default function MapScreen() {
-  const [publicationMarkers, setPublicationMarkers] = useState<Publication[]>(
-    [],
-  );
-  const [chatroomMarkers, setChatroomMarkers] = useState<Chatroom[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => makeStyles(insets), [insets]);
 
-  const { response: chatroomResponse } = useAxios<Chatroom[]>({
-    axiosRequest: getChatrooms,
-  });
-
-  const { response: publicationResponse } = useAxios<Publication[]>({
-    axiosRequest: getPublications,
-  });
-
-  const markers = useMemo(
-    () =>
-      publicationResponse && chatroomResponse
-        ? [
-            ...publicationResponse.data.map((publication) => ({
-              id: publication.id,
-              coordinate: publication.coordinates,
-              icon: require('@/assets/images/map-marker/publication.png'),
-              onPress: () =>
-                navigation.navigate('PublicationPreview', {
-                  publication,
-                }),
-            })),
-            ...chatroomResponse.data.map((chat) => ({
-              id: chat.id,
-              coordinate: chat.coordinates,
-              icon: require('@/assets/images/map-marker/chat.png'),
-              onPress: () => navigation.navigate('ChatPreview', { chat }),
-            })),
-            ...publicationMarkers.map((publication) => ({
-              id: publication.id,
-              coordinate: publication.coordinates,
-              icon: require('@/assets/images/map-marker/publication.png'),
-              onPress: () =>
-                navigation.navigate('PublicationPreview', {
-                  publication,
-                }),
-            })),
-            ...chatroomMarkers.map((chat) => ({
-              id: chat.id,
-              coordinate: chat.coordinates,
-              icon: require('@/assets/images/map-marker/chat.png'),
-              onPress: () => navigation.navigate('ChatPreview', { chat }),
-            })),
-          ]
-        : [],
-    [
-      publicationResponse,
-      chatroomResponse,
-      navigation,
-      publicationMarkers,
-      chatroomMarkers,
-    ],
+  const [publications, setPublications] = useState<Map<string, Publication>>(
+    new Map(),
   );
+  const [chatrooms, setChatrooms] = useState<Map<string, Chatroom>>(new Map());
 
   useEffect(() => {
+    async function fetchPublications() {
+      const { data } = await getPublications();
+      const newPublications = new Map<string, Publication>();
+      data.forEach((publication: Publication) => {
+        newPublications.set(publication.id, publication);
+      });
+      setPublications(newPublications);
+    }
+
+    async function fetchChatrooms() {
+      const { data } = await getChatrooms();
+      const newChatrooms = new Map<string, Chatroom>();
+      data.forEach((chatroom: Chatroom) => {
+        newChatrooms.set(chatroom.id, chatroom);
+      });
+      setChatrooms(newChatrooms);
+    }
+
+    fetchPublications();
+    fetchChatrooms();
+
     const onNewPublication = (publication: Publication) => {
-      setPublicationMarkers((prev) => [...prev, publication]);
+      setPublications((prev) => {
+        const newPublications = new Map(prev);
+        newPublications.set(publication.id, publication);
+        return newPublications;
+      });
     };
+
     const onNewChatroom = (chatroom: Chatroom) => {
-      setChatroomMarkers((prev) => [...prev, chatroom]);
+      setChatrooms((prev) => {
+        const newChatrooms = new Map(prev);
+        newChatrooms.set(chatroom.id, chatroom);
+        return newChatrooms;
+      });
     };
 
-    const onOpen = () => {
-      console.log('Map opened nothing to do here');
-    };
+    const { unsubscribePublications } = subscribePublications(onNewPublication);
+    const { unsubscribeChatrooms } = subscribeChatrooms(onNewChatroom);
 
-    const onClose = () => {
-      console.log('Map closed nothing to do here');
-    };
-
-    const { closeMap } = openMap(
-      onNewPublication,
-      onNewChatroom,
-      onOpen,
-      onClose,
-    );
     return () => {
-      closeMap();
+      unsubscribePublications();
+      unsubscribeChatrooms();
     };
   }, []);
+
+  const markers = useMemo(
+    () => [
+      ...Array.from(publications.values()).map((publication) => ({
+        id: publication.id,
+        coordinates: publication.coordinates,
+        icon: require('@/assets/images/map-marker/publication.png'),
+        onPress: () =>
+          navigation.navigate('PublicationPreview', {
+            publication,
+          }),
+      })),
+      ...Array.from(chatrooms.values()).map((chatroom) => ({
+        id: chatroom.id,
+        coordinates: chatroom.coordinates,
+        icon: require('@/assets/images/map-marker/chatroom.png'),
+        onPress: () => navigation.navigate('ChatPreview', { chatroom }),
+      })),
+    ],
+    [publications, chatrooms, navigation],
+  );
 
   return (
     <View style={styles.container}>

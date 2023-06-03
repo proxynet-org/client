@@ -6,7 +6,7 @@ import {
   PublicationPayload,
   Reaction,
 } from '@/types/publications';
-import api from './api';
+import api, { BASE_URL_WS } from './api';
 
 import { updatePosition, sendPublication } from './map';
 
@@ -17,17 +17,47 @@ const REPLIES_ENDPOINT = '/reply';
 export async function getPublications() {
   console.log('Getting Publications...');
   const res = await api.get(PUBLICATION_ENDPOINT);
-  console.log('Publications: ', res.data);
+  console.log('Got Publications: ', res.data);
   return res;
 }
 
-export function getPublication(id: string) {
+export function subscribePublications(
+  onMessage: (message: Publication) => void,
+) {
+  console.log('Subscribing Publications...');
+  const ws = new WebSocket(`${BASE_URL_WS}${PUBLICATION_ENDPOINT}/`);
+
+  function unsubscribePublications() {
+    console.log('Unsubscribing Publications...');
+    ws.close();
+  }
+
+  function onmessage(e: MessageEvent<string>) {
+    const { message } = JSON.parse(e.data);
+    const data = JSON.parse(message) as Publication;
+    console.log('Got Publication: ', data);
+    onMessage(data);
+  }
+
+  ws.onmessage = onmessage;
+  ws.onopen = () => {
+    console.log('Subscribed Publications');
+  };
+  ws.onclose = () => {
+    console.log('Unsubscribed Publications');
+  };
+  ws.onerror = (e) => {
+    console.log('Error: ', e);
+  };
+
+  return { unsubscribePublications, ws };
+}
+
+export async function getPublication(id: string) {
   console.log('Getting Publication...', id);
-  return api.get(PUBLICATION_ENDPOINT, {
-    params: {
-      id,
-    },
-  });
+  const res = await api.get<Publication>(`${PUBLICATION_ENDPOINT}/${id}`);
+  console.log('Got Publication: ', res.data);
+  return res;
 }
 
 export async function createPublication(publication: PublicationPayload) {
@@ -70,7 +100,7 @@ export async function createPublication(publication: PublicationPayload) {
 
 export function getPublicationComments(publicationId: string) {
   console.log('Getting Publication comments...', publicationId);
-  return api.get(
+  return api.get<PublicationComment[]>(
     `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/`,
   );
 }
