@@ -25,9 +25,7 @@ function makeStyle(theme: MD3Theme) {
   });
 }
 
-let onSend = (message: IMessage[]) => {
-  console.log('send message', message);
-};
+let onSend: (msg: IMessage[]) => void;
 
 function ChatMessageToIMessage(message: ChatMessage): IMessage {
   return {
