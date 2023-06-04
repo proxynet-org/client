@@ -12,7 +12,14 @@ export default function FabGroup({ icon, actions }: Props) {
 
   const styledActions = actions.map((action) => ({
     ...action,
-    labelTextColor: colors.onSecondary,
+    color: colors.onSurface,
+    labelTextColor: colors.onSurface,
+    containerStyle: {
+      backgroundColor: colors.surface,
+    },
+    style: {
+      backgroundColor: colors.surface,
+    },
   }));
 
   return (

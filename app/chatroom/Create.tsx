@@ -243,7 +243,7 @@ export default function Create() {
             <MaterialCommunityIcons
               name="clock-outline"
               size={24}
-              color="black"
+              color={theme.colors.onBackground}
             />
           }
           right={SliderText}
@@ -266,7 +266,7 @@ export default function Create() {
             <MaterialCommunityIcons
               name="account-group-outline"
               size={24}
-              color="black"
+              color={theme.colors.onBackground}
             />
           }
           right={SliderText}
