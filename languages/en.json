@@ -152,7 +152,8 @@
         "zero": "No replies",
         "one": "%{count} reply",
         "other": "%{count} replies"
-      }
+      },
+      "replying": "Replying..."
     }
   },
   "chatroom": {

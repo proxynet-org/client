@@ -152,7 +152,9 @@
         "zero": "Aucune réponse",
         "one": "%{count} réponse",
         "other": "%{count} réponses"
-      }
+      },
+
+      "replying": "Répondre..."
     }
   },
   "chatroom": {

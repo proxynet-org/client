@@ -40,6 +40,8 @@ export default function CommentForm({ onSubmit, replyId, cancelReply }: Props) {
     },
   });
 
+  const { values, handleChange, handleSubmit } = formik;
+
   useEffect(() => {
     if (replyId) {
       inputRef.current?.blur();
@@ -52,19 +54,23 @@ export default function CommentForm({ onSubmit, replyId, cancelReply }: Props) {
       {replyId && (
         <View style={styles.helper}>
           <Button icon="close-circle" onPress={cancelReply}>
-            replying...
+            {i18n.t('publication.comments.replying')}
           </Button>
         </View>
       )}
       <TextInput
         ref={inputRef}
-        value={formik.values.text}
-        onChangeText={formik.handleChange('text')}
+        value={values.text}
+        onChangeText={handleChange('text')}
         mode="flat"
         placeholder={i18n.t('publication.comments.placeholder')}
         multiline
         right={
-          <TextInput.Icon icon="send" onPress={() => formik.handleSubmit()} />
+          <TextInput.Icon
+            icon="send"
+            onPress={() => handleSubmit()}
+            disabled={!values.text}
+          />
         }
       />
     </View>
