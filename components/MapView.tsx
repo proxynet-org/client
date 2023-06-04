@@ -6,6 +6,7 @@ import DefaultMapView, {
   Region,
   UserLocationChangeEvent,
 } from 'react-native-maps';
+import ClusteredMapView from 'react-native-map-clustering';
 import { FAB } from 'react-native-paper';
 import {
   getCurrentPositionAsync,
@@ -39,6 +40,13 @@ const styles = StyleSheet.create({
 
 type Props = {
   markers: MapMarker[];
+};
+
+const INITIAL_REGION = {
+  latitude: 52.5,
+  longitude: 19.2,
+  latitudeDelta: 8.5,
+  longitudeDelta: 8.5,
 };
 
 export default function MapView({ markers }: Props) {
@@ -142,7 +150,8 @@ export default function MapView({ markers }: Props) {
 
   return (
     <>
-      <DefaultMapView
+      <ClusteredMapView
+        initialRegion={INITIAL_REGION}
         ref={mapRef}
         customMapStyle={mapstyle}
         style={styles.map}
@@ -173,7 +182,7 @@ export default function MapView({ markers }: Props) {
               image={marker.icon}
             />
           ))}
-      </DefaultMapView>
+      </ClusteredMapView>
       <FAB
         icon="crosshairs-gps"
         style={styles.fab}
