@@ -101,6 +101,18 @@ export async function createPublication(publication: PublicationPayload) {
   return res;
 }
 
+export async function reactPublication(
+  publicationId: string,
+  reaction: Reaction,
+) {
+  console.log('Reacting Publication...', publicationId, reaction);
+  const res = await api.post<Publication>(
+    `${PUBLICATION_ENDPOINT}/${publicationId}/${reaction.toLowerCase()}/`,
+  );
+
+  return res;
+}
+
 export async function getPublicationComments(publicationId: string) {
   console.log('Getting Publication comments...', publicationId);
   const res = await api.get<PublicationComment[]>(
@@ -115,7 +127,7 @@ export async function getPublicationCommentReplies(
   id: string,
 ) {
   console.log('Getting Publication comment replies...', publicationId, id);
-  const res = await api.get(
+  const res = await api.get<PublicationComment[]>(
     `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/${id}${REPLIES_ENDPOINT}/`,
   );
   console.log('Got Publication comment replies: ', res.data);
@@ -141,13 +153,19 @@ export async function postPublicationComment(
   return res;
 }
 
-export async function reactPublication(
+export async function reactPublicationComment(
   publicationId: string,
+  commentId: string,
   reaction: Reaction,
 ) {
-  console.log('Reacting Publication...', publicationId, reaction);
+  console.log(
+    'Reacting Publication Comment...',
+    publicationId,
+    commentId,
+    reaction,
+  );
   const res = await api.post<Publication>(
-    `${PUBLICATION_ENDPOINT}/${publicationId}/${reaction.toLowerCase()}/`,
+    `${PUBLICATION_ENDPOINT}/${publicationId}${COMMENTS_ENDPOINT}/${commentId}/${reaction.toLowerCase()}/`,
   );
 
   return res;

@@ -134,13 +134,13 @@ export default function Preview() {
             {updatedPublication.num_dislikes}
           </Button>
           <Button icon="message" mode="contained" onPress={navigateToComments}>
-            {publication.num_comments}
+            {updatedPublication.num_comments}
           </Button>
         </Card.Actions>
         <Card.Actions>
           <Button mode="text" onPress={navigateToComments}>
             {i18n.t('publication.comments.see', {
-              count: publication.num_comments,
+              count: updatedPublication.num_comments,
             })}
           </Button>
         </Card.Actions>

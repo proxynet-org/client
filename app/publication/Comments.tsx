@@ -1,20 +1,20 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme, MD3Theme } from 'react-native-paper';
+
 import { View } from '@/components/Themed';
-import { PublicationComment } from '@/types/publications';
-import useAxios from '@/hooks/useAxios';
 import {
-  postPublicationComment,
   getPublicationComments,
+  postPublicationComment,
 } from '@/api/publication';
 import { RootStackParams } from '@/routes/params';
 import Separator from '@/components/Separator';
 import Comment from '@/components/Comment';
 import CommentForm from '@/components/CommentForm';
 import Empty from '@/components/Empty';
+import { PublicationComment } from '@/types/publications';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -33,37 +33,44 @@ export default function Comments() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const route = useRoute<RouteProp<RootStackParams, 'PublicationComments'>>();
-
-  const [myReplies, setMyReplies] = useState<PublicationComment[]>([]);
-  const [replyId, setReplyId] = useState<string>();
-
-  const axiosRequest = useCallback(
-    () => getPublicationComments(route.params.publication.id),
-    [route],
+  const [comments, setComments] = useState<Map<string, PublicationComment>>(
+    new Map(),
   );
-  const { response } = useAxios<PublicationComment[]>({ axiosRequest });
+  const [replyingTo, setReplyingTo] = useState<string>();
 
-  const cancelReply = useCallback(() => {
-    setReplyId(undefined);
-  }, []);
+  const { publication } = route.params;
 
-  const handleReply = useCallback((id: string) => {
-    setReplyId(id);
-  }, []);
+  useEffect(() => {
+    getPublicationComments(publication.id).then((res) => {
+      if (res) {
+        const newReplies = new Map(
+          res.data.map((comment) => [comment.id, comment]),
+        );
+        setComments(newReplies);
+      }
+    });
+  }, [publication]);
 
-  const handleSubmit = useCallback(
-    async (text: string) => {
-      const res = await postPublicationComment(
-        route.params.publication.id,
-        text,
-        replyId,
-      );
-      setMyReplies((prev) => [...prev, res.data]);
-    },
-    [route, replyId],
-  );
+  const replyTo = (id?: string) => {
+    setReplyingTo(id);
+  };
 
-  const rootComments = [...myReplies, ...(response?.data ?? [])].filter(
+  const cancelReply = () => {
+    setReplyingTo(undefined);
+  };
+
+  const submitReply = async (text: string) => {
+    const res = await postPublicationComment(publication.id, text, replyingTo);
+    if (res) {
+      setComments((prev) => {
+        const newReplies = new Map(prev);
+        newReplies.set(res.data.id, res.data);
+        return newReplies;
+      });
+    }
+  };
+
+  const rootComments = Array.from(comments.values()).filter(
     (comment) => !comment.parent_comment,
   );
 
@@ -75,13 +82,7 @@ export default function Comments() {
         data={rootComments}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Comment
-            comment={item}
-            reply={handleReply}
-            myReplies={myReplies.filter(
-              (reply) => reply.parent_comment === item.id,
-            )}
-          />
+          <Comment comment={item} replyTo={replyTo} comments={comments} />
         )}
         ItemSeparatorComponent={Separator}
         ListHeaderComponent={Separator}
@@ -89,8 +90,8 @@ export default function Comments() {
         ListEmptyComponent={Empty}
       />
       <CommentForm
-        onSubmit={handleSubmit}
-        replyId={replyId}
+        onSubmit={submitReply}
+        replyId={replyingTo}
         cancelReply={cancelReply}
       />
     </View>
