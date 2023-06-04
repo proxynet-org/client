@@ -49,8 +49,6 @@ export default function MapView({ markers }: Props) {
 
   useEffect(() => {
     async function start() {
-      await asyncStore.removeItem(POSITION_KEY);
-
       const location = await asyncStore.getItem(POSITION_KEY);
       if (location) {
         const { latitude, longitude } = JSON.parse(location);
