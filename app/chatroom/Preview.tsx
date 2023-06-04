@@ -85,6 +85,8 @@ export default function Preview() {
     }
   };
 
+  const full = updatedChatroom.num_people >= chatroom.capacity;
+
   return (
     <View style={styles.container}>
       <Card>
@@ -102,7 +104,7 @@ export default function Preview() {
             >
               <Title>{chatroom.name}</Title>
               <Chip icon="check-decagram" mode="flat">
-                verified
+                {i18n.t('chatroom.verified')}
               </Chip>
             </View>
           }
@@ -111,17 +113,16 @@ export default function Preview() {
               <Badge
                 size={10}
                 style={{
-                  backgroundColor:
-                    updatedChatroom.num_people >= chatroom.capacity
-                      ? theme.colors.error
-                      : 'green',
+                  backgroundColor: full ? theme.colors.error : 'green',
                   alignSelf: 'center',
                 }}
               />
               <Text>
-                {i18n.t('chatroom.online', {
-                  count: updatedChatroom.num_people,
-                })}
+                {full
+                  ? i18n.t('chatroom.full')
+                  : i18n.t('chatroom.online', {
+                      count: updatedChatroom.num_people,
+                    })}
               </Text>
             </View>
           }
@@ -134,7 +135,7 @@ export default function Preview() {
             mode="contained-tonal"
             icon="message"
             onPress={enterChatroom}
-            disabled={updatedChatroom.num_people >= chatroom.capacity}
+            disabled={full}
           />
         </Card.Actions>
       </Card>

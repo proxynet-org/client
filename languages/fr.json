@@ -89,6 +89,9 @@
     "name": {
       "field": "NOM"
     },
+    "image": {
+      "button": "Choisir une image"
+    },
     "required": "Champ obligatoire"
   },
   "chat": {
@@ -165,6 +168,11 @@
       "zero": "Aucun utilisateur en ligne",
       "one": "1 en ligne",
       "other": "%{count} en ligne"
+    },
+    "full": "Chatroom pleine",
+    "Verified": "Vérifié",
+    "create": {
+      "error": "Impossible de créer la chatroom"
     },
     "join": {
       "error": "Impossible de rejoindre la chatroom"

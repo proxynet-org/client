@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Image, StyleSheet } from 'react-native';
-import { IconButton, MD3Theme, TextInput, useTheme } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  IconButton,
+  MD3Theme,
+  TextInput,
+  useTheme,
+  Snackbar,
+} from 'react-native-paper';
 import * as yup from 'yup';
 import { View } from '@/components/Themed';
 import Gallery from '@/components/Gallery';
@@ -11,6 +18,8 @@ import { RootStackParams } from '@/routes/params';
 import { Media } from '@/types/gallery';
 import { createPublication } from '@/api/publication';
 import { PublicationPayload } from '@/types/publications';
+import { SnackbarState } from '@/types/ui';
+import i18n from '@/languages';
 
 export const CreatePublicationSchema = [
   yup.object().shape({
@@ -42,12 +51,27 @@ const makeStyle = (theme: MD3Theme) =>
       aspectRatio: 1,
       borderRadius: 5,
     },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+    },
   });
 
 export default function Create() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
+
+  const [sending, setSending] = useState(false);
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
+  });
 
   const formik = useFormikMultiStep<PublicationPayload>({
     validateOnMount: true,
@@ -63,22 +87,36 @@ export default function Create() {
       },
     },
     onSubmit: async (values) => {
-      const res = await createPublication({ ...values });
-      navigation.replace('PublicationPreview', { publication: res.data });
+      setSending(true);
+      try {
+        const res = await createPublication({ ...values });
+        navigation.replace('PublicationPreview', { publication: res.data });
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: i18n.t('publication.create.error'),
+          type: 'error',
+          duration: 3000,
+        });
+      }
+      setSending(false);
     },
   });
 
   const { step, setFieldValue, isValid } = formik;
 
   const HeaderRight = useCallback(() => {
-    if (!isValid) return null;
+    if (!isValid) {
+      return null;
+    }
     return (
       <IconButton
         onPress={() => formik.handleSubmit()}
         icon={step === 0 ? 'arrow-right' : 'check'}
+        disabled={sending}
       />
     );
-  }, [formik, step, isValid]);
+  }, [formik, step, isValid, sending]);
 
   const HeaderLeft = useCallback(() => {
     return (
@@ -105,6 +143,12 @@ export default function Create() {
 
   return (
     <View style={styles.container}>
+      <ActivityIndicator
+        animating={sending}
+        hidesWhenStopped
+        size="large"
+        style={styles.loader}
+      />
       {step === 0 && (
         <Gallery onChange={onGalleryChange} value={formik.values.image} />
       )}
@@ -124,6 +168,17 @@ export default function Create() {
           />
         </View>
       )}
+      <Snackbar
+        duration={snackbar.duration}
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </View>
   );
 }

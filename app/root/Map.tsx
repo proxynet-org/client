@@ -96,7 +96,7 @@ export default function MapScreen() {
   const markers = useMemo(
     () => [
       ...Array.from(publications.values()).map((publication) => ({
-        id: publication.id,
+        id: `publication_${publication.id}`,
         coordinates: publication.coordinates,
         icon: require('@/assets/images/map-marker/publication.png'),
         onPress: () =>
@@ -105,7 +105,7 @@ export default function MapScreen() {
           }),
       })),
       ...Array.from(chatrooms.values()).map((chatroom) => ({
-        id: chatroom.id,
+        id: `chatroom_${chatroom.id}`,
         coordinates: chatroom.coordinates,
         icon: require('@/assets/images/map-marker/chatroom.png'),
         onPress: () => navigation.navigate('ChatPreview', { chatroom }),

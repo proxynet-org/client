@@ -89,6 +89,9 @@
     "caption": {
       "field": "CAPTION"
     },
+    "image": {
+      "button": "Choose Image"
+    },
     "required": "Required field"
   },
   "chat": {
@@ -164,6 +167,11 @@
       "zero": "No one is online",
       "one": "%{count} online",
       "other": "%{count} online"
+    },
+    "full": "Chatroom is full",
+    "verified": "Verified",
+    "create": {
+      "error": "Unable to create chatroom"
     },
     "join": {
       "error": "Unable to join chatroom"
