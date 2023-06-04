@@ -11,6 +11,7 @@ const api = axios.create({
 export const setAccessToken = async (token: Token) => {
   console.log('Setting access token...', token);
   api.defaults.headers.Authorization = `Bearer ${token.access}`;
+  api.defaults.headers.common.Authorization = `Bearer ${token.access}`;
   if (token.refresh) {
     await setSecureItem('refresh_token', token.refresh);
   }
@@ -31,20 +32,16 @@ api.interceptors.response.use(
   },
   async (error) => {
     if (error.response) {
-      const { config } = error;
-      if (error.response.status === 401 && !config.retry) {
-        config.retry = true;
+      const originalRequest = error.config;
+      if (error.response.status === 401 && !originalRequest.retry) {
+        originalRequest.retry = true;
         await refreshAccessToken();
-        return api({
-          ...config,
-          headers: {
-            ...config.headers,
-            Authorization: `Bearer ${api.defaults.headers.Authorization}`,
-          },
-        });
+        originalRequest.headers.Authorization =
+          api.defaults.headers.Authorization;
+        const response = await api(originalRequest);
+        return response;
       }
     }
-
     return Promise.reject(error);
   },
 );
