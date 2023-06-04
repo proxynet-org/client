@@ -54,6 +54,7 @@ export default function MapView({ markers }: Props) {
   const mapRef = useRef<DefaultMapView>(null);
   const userLocation = useRef<LatLng>();
   const timeout = useRef<NodeJS.Timeout>();
+  const distance = useRef<number>(0);
 
   useEffect(() => {
     async function start() {
@@ -133,10 +134,11 @@ export default function MapView({ markers }: Props) {
 
       userLocation.current = newPosition;
       await asyncStore.setItem(POSITION_KEY, JSON.stringify(newPosition));
-      const distance = distanceInMeters(oldPosition, newPosition);
+      distance.current += distanceInMeters(oldPosition, newPosition);
 
-      if (distance >= DISTANCE_METERS_TO_UPDATE) {
+      if (distance.current >= DISTANCE_METERS_TO_UPDATE) {
         positionSubject.notify(newPosition);
+        distance.current = 0;
       }
 
       if (!followUser) {
