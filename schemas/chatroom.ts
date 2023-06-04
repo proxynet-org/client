@@ -8,7 +8,7 @@ const CreateChatroomSchema = yup.object().shape({
     .max(100, 'form.description.errorLength'),
   lifetime: yup.number().required('form.required'),
   capacity: yup.number().required('form.required'),
-  media: yup.mixed().required('form.required'),
+  image: yup.mixed().required('form.required'),
 });
 
 export default CreateChatroomSchema;

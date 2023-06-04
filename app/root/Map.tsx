@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { FAB } from 'react-native-paper';
@@ -9,13 +9,12 @@ import FabGroup from '@/components/FabGroup';
 import MapView from '@/components/MapView';
 
 import { RootStackParams } from '@/routes/params';
-import { Post } from '@/types/post';
+
+import { Publication } from '@/types/publications';
 import { Chatroom } from '@/types/chatroom';
 
-import { getPosts } from '@/api/post';
-
-import useAxios from '@/hooks/useAxios';
-import { getChatrooms } from '@/api/chatroom';
+import { getPublications, subscribePublications } from '@/api/publication';
+import { getChatrooms, subscribeChatrooms } from '@/api/chatroom';
 
 function makeStyles(insets: EdgeInsets) {
   return StyleSheet.create({
@@ -28,6 +27,12 @@ function makeStyles(insets: EdgeInsets) {
       top: insets.top,
       right: insets.right,
     },
+    chatButton: {
+      position: 'absolute',
+      margin: 16,
+      bottom: insets.bottom,
+      left: insets.left,
+    },
   });
 }
 
@@ -36,33 +41,77 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => makeStyles(insets), [insets]);
 
-  const { response: chatroomResponse } = useAxios<Chatroom[]>({
-    axiosRequest: getChatrooms,
-  });
+  const [publications, setPublications] = useState<Map<string, Publication>>(
+    new Map(),
+  );
+  const [chatrooms, setChatrooms] = useState<Map<string, Chatroom>>(new Map());
 
-  const { response: postResponse } = useAxios<Post[]>({
-    axiosRequest: getPosts,
-  });
+  useEffect(() => {
+    async function fetchPublications() {
+      const { data } = await getPublications();
+      const newPublications = new Map<string, Publication>();
+      data.forEach((publication: Publication) => {
+        newPublications.set(publication.id, publication);
+      });
+      setPublications(newPublications);
+    }
+
+    async function fetchChatrooms() {
+      const { data } = await getChatrooms();
+      const newChatrooms = new Map<string, Chatroom>();
+      data.forEach((chatroom: Chatroom) => {
+        newChatrooms.set(chatroom.id, chatroom);
+      });
+      setChatrooms(newChatrooms);
+    }
+
+    fetchPublications();
+    fetchChatrooms();
+
+    const onNewPublication = (publication: Publication) => {
+      setPublications((prev) => {
+        const newPublications = new Map(prev);
+        newPublications.set(publication.id, publication);
+        return newPublications;
+      });
+    };
+
+    const onNewChatroom = (chatroom: Chatroom) => {
+      setChatrooms((prev) => {
+        const newChatrooms = new Map(prev);
+        newChatrooms.set(chatroom.id, chatroom);
+        return newChatrooms;
+      });
+    };
+
+    const { unsubscribePublications } = subscribePublications(onNewPublication);
+    const { unsubscribeChatrooms } = subscribeChatrooms(onNewChatroom);
+
+    return () => {
+      unsubscribePublications();
+      unsubscribeChatrooms();
+    };
+  }, []);
 
   const markers = useMemo(
-    () =>
-      postResponse && chatroomResponse
-        ? [
-            ...postResponse.data.map((post) => ({
-              id: post.id,
-              coordinate: post.coordinates,
-              icon: require('@/assets/images/map-marker/post.png'),
-              onPress: () => navigation.navigate('PostPreview', { post }),
-            })),
-            ...chatroomResponse.data.map((chat) => ({
-              id: chat.id,
-              coordinate: chat.coordinates,
-              icon: require('@/assets/images/map-marker/chat.png'),
-              onPress: () => navigation.navigate('ChatPreview', { chat }),
-            })),
-          ]
-        : [],
-    [postResponse, chatroomResponse, navigation],
+    () => [
+      ...Array.from(publications.values()).map((publication) => ({
+        id: `publication_${publication.id}`,
+        coordinates: publication.coordinates,
+        icon: require('@/assets/images/map-marker/publication.png'),
+        onPress: () =>
+          navigation.navigate('PublicationPreview', {
+            publication,
+          }),
+      })),
+      ...Array.from(chatrooms.values()).map((chatroom) => ({
+        id: `chatroom_${chatroom.id}`,
+        coordinates: chatroom.coordinates,
+        icon: require('@/assets/images/map-marker/chatroom.png'),
+        onPress: () => navigation.navigate('ChatPreview', { chatroom }),
+      })),
+    ],
+    [publications, chatrooms, navigation],
   );
 
   return (
@@ -84,10 +133,16 @@ export default function MapScreen() {
           },
           {
             icon: 'camera',
-            onPress: () => navigation.navigate('PostCreate'),
-            label: 'Post',
+            onPress: () => navigation.navigate('PublicationCreate'),
+            label: 'Publication',
           },
         ]}
+      />
+      <FAB
+        icon="message"
+        onPress={() => navigation.navigate('Chat')}
+        size="small"
+        style={styles.chatButton}
       />
     </View>
   );

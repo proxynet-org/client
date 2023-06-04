@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormik } from 'formik';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import {
@@ -8,14 +8,13 @@ import {
   Text,
   IconButton,
   Card,
+  ActivityIndicator,
+  Snackbar,
+  Button,
 } from 'react-native-paper';
-import * as Location from 'expo-location';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {
-  useNavigation,
-  NavigationProp,
-  CommonActions,
-} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { View } from '@/components/Themed';
 import Slider from '@/components/Slider';
@@ -23,16 +22,25 @@ import { RootStackParams } from '@/routes/params';
 import i18n from '@/languages';
 import Gallery from '@/components/Gallery';
 import { Media } from '@/types/gallery';
-import useToggleScreen from '@/hooks/useToggleScreen';
-import { createChatroom } from '@/api/chatroom';
+import { createChatroom, joinChatroom } from '@/api/chatroom';
 import CreateChatroomSchema from '@/schemas/chatroom';
 import useToggle from '@/hooks/useToggle';
+import { SnackbarState } from '@/types/ui';
 
 const makeStyle = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.backdrop,
+      padding: 5,
+    },
+    content: { backgroundColor: 'transparent' },
+    buttonContainer: {
+      height: 200,
+      justifyContent: 'center',
+      backgroundColor: theme.colors.background,
+      borderRadius: 5,
+      borderWidth: 1,
     },
     sliderView: {
       padding: 10,
@@ -47,6 +55,14 @@ const makeStyle = (theme: MD3Theme) =>
       ...theme.fonts.labelLarge,
       textAlign: 'right',
     },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+      zIndex: 1,
+    },
   });
 
 function SliderText(value: number) {
@@ -57,29 +73,21 @@ function SliderText(value: number) {
 export default function Create() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
-  useToggleScreen({
-    hideOnBlur: true,
-    onBlur: () => {
-      navigation.dispatch((state) => {
-        // Remove the create route from the stack
-        const routes = state.routes.filter((r) => r.name !== 'ChatCreate');
-
-        return CommonActions.reset({
-          ...state,
-          routes,
-          index: routes.length - 1,
-        });
-      });
-    },
+  const [sending, setSending] = useState(false);
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
   });
 
   const formik = useFormik({
     validateOnMount: true,
     validationSchema: CreateChatroomSchema,
     initialValues: {
-      media: {
+      image: {
         id: '',
         uri: '',
         name: '',
@@ -88,15 +96,23 @@ export default function Create() {
       name: '',
       description: '',
       lifetime: 24,
-      capacity: 0,
+      capacity: 100,
     },
     onSubmit: async (values) => {
-      const location = await Location.getCurrentPositionAsync();
-      const res = await createChatroom({
-        ...values,
-        coordinates: location.coords,
-      });
-      navigation.navigate('ChatRoom', { chat: res.data });
+      setSending(true);
+      try {
+        const res = await createChatroom(values);
+        await joinChatroom(res.data.id);
+        navigation.replace('ChatRoom', { chatroom: res.data });
+      } catch (e) {
+        setSnackbar({
+          open: true,
+          message: i18n.t('chatroom.create.error'),
+          type: 'error',
+          duration: 3000,
+        });
+      }
+      setSending(false);
     },
   });
 
@@ -105,8 +121,9 @@ export default function Create() {
 
   const headerRight = useCallback(
     () =>
-      isValid ? (
+      isValid || openGallery ? (
         <IconButton
+          disabled={sending}
           icon="check"
           onPress={() => {
             if (openGallery) {
@@ -117,7 +134,7 @@ export default function Create() {
           }}
         />
       ) : null,
-    [isValid, handleSubmit, openGallery, toggleGallery],
+    [isValid, handleSubmit, openGallery, toggleGallery, sending],
   );
 
   const headerLeft = useCallback(
@@ -159,23 +176,40 @@ export default function Create() {
 
   const onGalleryChange = useCallback(
     (image: Media) => {
-      setFieldValue('media', image);
+      setFieldValue('image', image);
     },
     [setFieldValue],
   );
 
   if (openGallery) {
-    return <Gallery onChange={onGalleryChange} value={values.media as Media} />;
+    return <Gallery onChange={onGalleryChange} value={values.image as Media} />;
   }
 
   return (
     <KeyboardAwareScrollView style={styles.container}>
-      <View>
-        <TouchableOpacity onPress={toggleGallery}>
-          <Card.Cover
-            source={{ uri: values.media?.uri || 'https://picsum.photos/500' }}
-          />
-        </TouchableOpacity>
+      <View style={styles.content}>
+        <ActivityIndicator
+          animating={sending}
+          hidesWhenStopped
+          size="large"
+          style={styles.loader}
+        />
+        {values.image.uri ? (
+          <TouchableOpacity onPress={toggleGallery}>
+            <Card.Cover
+              source={{
+                uri: values.image.uri,
+              }}
+            />
+          </TouchableOpacity>
+        ) : (
+          <Card.Content style={styles.buttonContainer}>
+            <Button mode="outlined" onPress={toggleGallery}>
+              <Text>{i18n.t('form.image.button')}</Text>
+            </Button>
+          </Card.Content>
+        )}
+
         <TextInput
           label={i18n.t('form.name.field')}
           mode="outlined"
@@ -209,7 +243,7 @@ export default function Create() {
             <MaterialCommunityIcons
               name="clock-outline"
               size={24}
-              color="black"
+              color={theme.colors.onBackground}
             />
           }
           right={SliderText}
@@ -232,12 +266,23 @@ export default function Create() {
             <MaterialCommunityIcons
               name="account-group-outline"
               size={24}
-              color="black"
+              color={theme.colors.onBackground}
             />
           }
           right={SliderText}
         />
       </View>
+      <Snackbar
+        duration={snackbar.duration}
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </KeyboardAwareScrollView>
   );
 }

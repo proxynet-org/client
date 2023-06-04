@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageURISource, StyleSheet } from 'react-native';
 import DefaultMapView, {
   LatLng,
@@ -12,6 +12,7 @@ import {
   getCurrentPositionAsync,
 } from 'expo-location';
 
+import { updatePosition } from '@/api/map';
 import mapstyle from '@/constants/mapstyle';
 import dimensions from '@/constants/dimensions';
 
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
 type Props = {
   markers: Array<{
     id: string;
-    coordinate: LatLng;
+    coordinates: LatLng;
     icon?: number | ImageURISource | undefined;
     onPress?: () => void;
   }>;
@@ -48,6 +49,16 @@ export default function MapView({ markers }: Props) {
     request: true,
   });
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updatePosition({
+        latitude: userLocation.current?.latitude || 0,
+        longitude: userLocation.current?.longitude || 0,
+      });
+    }, 1000 * 10);
+    return () => clearInterval(interval);
+  }, []);
+
   const centerOnUser = useCallback(() => {
     if (!userLocation.current) {
       getCurrentPositionAsync({ accuracy: 6 }).then((location) => {
@@ -61,8 +72,8 @@ export default function MapView({ markers }: Props) {
     const region: Region = {
       latitude: userLocation.current.latitude,
       longitude: userLocation.current.longitude,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
+      latitudeDelta: 0.0015,
+      longitudeDelta: 0.0015,
     };
     mapRef.current?.animateToRegion(region, 1000);
   }, []);
@@ -117,17 +128,19 @@ export default function MapView({ markers }: Props) {
         onPanDrag={cancelFollow}
         onUserLocationChange={onUserLocationChange}
       >
-        {markers?.map((marker) => (
-          <Marker
-            key={marker.id}
-            coordinate={marker.coordinate}
-            onPress={() => {
-              marker.onPress?.();
-              cancelFollow();
-            }}
-            image={marker.icon}
-          />
-        ))}
+        {markers
+          ?.filter((marker) => marker.coordinates)
+          .map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={marker.coordinates}
+              onPress={() => {
+                marker.onPress?.();
+                cancelFollow();
+              }}
+              image={marker.icon}
+            />
+          ))}
       </DefaultMapView>
       <FAB
         icon="crosshairs-gps"

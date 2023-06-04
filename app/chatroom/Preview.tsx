@@ -1,11 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  RouteProp,
-  useRoute,
-  useNavigation,
-  NavigationProp,
-} from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import {
   Badge,
   Card,
@@ -16,10 +12,14 @@ import {
   IconButton,
   Title,
   Chip,
+  Snackbar,
 } from 'react-native-paper';
+
+import i18n from '@/languages';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
-import useToggleScreen from '@/hooks/useToggleScreen';
+import { getChatroom, joinChatroom } from '@/api/chatroom';
+import { SnackbarState } from '@/types/ui';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -50,16 +50,47 @@ function makeStyle(theme: MD3Theme) {
 export default function Preview() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'ChatPreview'>>();
-  useToggleScreen({ hideOnBlur: true });
+  const { chatroom } = route.params;
 
-  const { chat } = route.params;
+  const [updatedChatroom, setUpdatedChatroom] = useState(chatroom);
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getChatroom(chatroom.id).then((lastChatroom) => {
+        setUpdatedChatroom(lastChatroom.data);
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [chatroom]);
+
+  const enterChatroom = async () => {
+    try {
+      await joinChatroom(chatroom.id);
+      navigation.replace('ChatRoom', { chatroom: updatedChatroom });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: i18n.t('chatroom.join.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    }
+  };
+
+  const full = updatedChatroom.num_people >= chatroom.capacity;
 
   return (
     <View style={styles.container}>
       <Card>
-        <Card.Cover source={{ uri: chat.media }} style={styles.image} />
+        <Card.Cover source={{ uri: chatroom.image }} style={styles.image} />
         <Card.Title
           title={
             <View
@@ -71,9 +102,9 @@ export default function Preview() {
                 gap: 5,
               }}
             >
-              <Title>{chat.name}</Title>
+              <Title>{chatroom.name}</Title>
               <Chip icon="check-decagram" mode="flat">
-                verified
+                {i18n.t('chatroom.verified')}
               </Chip>
             </View>
           }
@@ -82,25 +113,42 @@ export default function Preview() {
               <Badge
                 size={10}
                 style={{
-                  backgroundColor: 'green',
+                  backgroundColor: full ? theme.colors.error : 'green',
                   alignSelf: 'center',
                 }}
               />
-              <Text>{chat.people} Online</Text>
+              <Text>
+                {full
+                  ? i18n.t('chatroom.full')
+                  : i18n.t('chatroom.online', {
+                      count: updatedChatroom.num_people,
+                    })}
+              </Text>
             </View>
           }
         />
         <Card.Content>
-          <Paragraph>{chat.description}</Paragraph>
+          <Paragraph>{chatroom.description}</Paragraph>
         </Card.Content>
         <Card.Actions>
           <IconButton
             mode="contained-tonal"
             icon="message"
-            onPress={() => navigation.navigate('ChatRoom', { chat })}
+            onPress={enterChatroom}
+            disabled={full}
           />
         </Card.Actions>
       </Card>
+      <Snackbar
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import {
   useTheme,
   Text,
   Button,
+  Snackbar,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { View } from '@/components/Themed';
@@ -17,6 +18,7 @@ import i18n from '@/languages';
 import { AuthTabParams } from '@/routes/params';
 import { SigninSchema } from '@/schemas/auth';
 import { useAuth } from '@/contexts/AuthContext';
+import { SnackbarState } from '@/types/ui';
 
 function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
   return StyleSheet.create({
@@ -50,14 +52,32 @@ export default function SignIn() {
   const navigation =
     useNavigation<MaterialBottomTabNavigationProp<AuthTabParams>>();
 
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
+  });
+
   const formik = useFormik({
     validateOnMount: true,
     validationSchema: SigninSchema,
     initialValues: {
-      email: '',
+      username: '',
       password: '',
     },
-    onSubmit: signIn,
+    onSubmit: async (values) => {
+      try {
+        await signIn(values);
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: i18n.t('auth.signin.error'),
+          type: 'error',
+          duration: 3000,
+        });
+      }
+    },
   });
 
   const { isValid, handleSubmit } = formik;
@@ -66,15 +86,12 @@ export default function SignIn() {
     <View style={styles.container}>
       <Title>{i18n.t('auth.signin.title')}</Title>
       <TextInput
-        label={i18n.t('form.email.field')}
+        label={i18n.t('form.username.field')}
         style={styles.input}
         mode="outlined"
-        onChangeText={formik.handleChange('email')}
-        value={formik.values.email}
-        inputMode="email"
-        keyboardType="email-address"
+        onChangeText={formik.handleChange('username')}
+        value={formik.values.username}
         autoCapitalize="none"
-        autoComplete="email"
       />
       <TextInput
         label={i18n.t('form.password.field')}
@@ -105,6 +122,18 @@ export default function SignIn() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <Snackbar
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'OK',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+        duration={snackbar.duration}
+      >
+        {snackbar.message}
+      </Snackbar>
     </View>
   );
 }

@@ -6,24 +6,24 @@ import {
   useContext,
   useEffect,
 } from 'react';
-import { SignUpPayload, SignInPayload } from '@/types/auth';
-import { signout, singin, singup } from '@/api/auth';
-import { getSecureItem } from '@/utils/secureStore';
+import { SignUpPayload, SignInPayload, User } from '@/types/auth';
+import { getUserInfo, singin, singup } from '@/api/auth';
+import { refreshAccessToken } from '@/api/api';
 
 interface AuthContextState {
-  isLoggedIn: boolean;
+  user?: User;
 }
 
 interface AuthContextActions {
-  signUp: (data: SignUpPayload) => void;
-  signIn: (data: SignInPayload) => void;
+  signUp: (data: SignUpPayload) => Promise<void>;
+  signIn: (data: SignInPayload) => Promise<void>;
   signOut: () => void;
 }
 
-export interface AuthContextType extends AuthContextState, AuthContextActions {}
+interface AuthContextType extends AuthContextState, AuthContextActions {}
 
-export const AuthContext = createContext<AuthContextType>({
-  isLoggedIn: false,
+const AuthContext = createContext<AuthContextType>({
+  user: undefined,
   signUp: (data) => {
     throw new Error(`signUp with ${data} is not implemented`);
   },
@@ -35,53 +35,46 @@ export const AuthContext = createContext<AuthContextType>({
   },
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User>();
 
   const signUp = useCallback(async (data: SignUpPayload) => {
-    setIsLoggedIn(true);
-    return;
-    const res = await singup(data);
-    setIsLoggedIn(Boolean(res));
+    await singup(data);
+    await getUserInfo().then(setUser);
   }, []);
 
   const signIn = useCallback(async (data: SignInPayload) => {
-    setIsLoggedIn(true);
-    return;
-    const res = await singin(data);
-    setIsLoggedIn(Boolean(res));
+    await singin(data);
+    await getUserInfo().then(setUser);
   }, []);
 
   const signOut = useCallback(async () => {
-    setIsLoggedIn(false);
-    return;
-    await signout();
-    setIsLoggedIn(false);
+    setUser(undefined);
   }, []);
 
   useEffect(() => {
-    const checkLoggedIn = async () => {
-      const token = await getSecureItem('token');
-      setIsLoggedIn(Boolean(token));
-    };
+    async function tryLoggin() {
+      await refreshAccessToken();
+      await getUserInfo().then(setUser);
+    }
 
-    checkLoggedIn();
+    tryLoggin();
   }, []);
 
   const value = useMemo(
     () => ({
-      isLoggedIn,
+      user,
       signUp,
       signIn,
       signOut,
     }),
-    [isLoggedIn, signUp, signIn, signOut],
+    [user, signUp, signIn, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
@@ -90,3 +83,5 @@ export function useAuth() {
 
   return context;
 }
+
+export { AuthProvider, useAuth };

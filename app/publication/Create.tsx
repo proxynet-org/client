@@ -1,25 +1,29 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from '@react-navigation/native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Image, StyleSheet } from 'react-native';
-import { IconButton, MD3Theme, TextInput, useTheme } from 'react-native-paper';
-import * as Location from 'expo-location';
+import {
+  ActivityIndicator,
+  IconButton,
+  MD3Theme,
+  TextInput,
+  useTheme,
+  Snackbar,
+} from 'react-native-paper';
 import * as yup from 'yup';
 import { View } from '@/components/Themed';
 import Gallery from '@/components/Gallery';
 import useFormikMultiStep from '@/hooks/useFormikMultiStep';
 import { RootStackParams } from '@/routes/params';
 import { Media } from '@/types/gallery';
-import { createPost } from '@/api/post';
-import { PostPayload } from '@/types/post';
-import useToggleScreen from '@/hooks/useToggleScreen';
+import { createPublication } from '@/api/publication';
+import { PublicationPayload } from '@/types/publications';
+import { SnackbarState } from '@/types/ui';
+import i18n from '@/languages';
 
-export const CreatePostSchema = [
+export const CreatePublicationSchema = [
   yup.object().shape({
-    media: yup.mixed().required('form.required'),
+    image: yup.mixed().required('form.required'),
   }),
   yup.object().shape({
     title: yup.string().required('form.required'),
@@ -47,63 +51,72 @@ const makeStyle = (theme: MD3Theme) =>
       aspectRatio: 1,
       borderRadius: 5,
     },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+    },
   });
 
 export default function Create() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
-  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
-  useToggleScreen({
-    hideOnBlur: true,
-    onBlur: () => {
-      navigation.dispatch((state) => {
-        // Remove the create route from the stack
-        const routes = state.routes.filter((r) => r.name !== 'PostCreate');
-
-        return CommonActions.reset({
-          ...state,
-          routes,
-          index: routes.length - 1,
-        });
-      });
-    },
+  const [sending, setSending] = useState(false);
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    type: 'error',
+    duration: 3000,
   });
 
-  const formik = useFormikMultiStep<PostPayload>({
+  const formik = useFormikMultiStep<PublicationPayload>({
     validateOnMount: true,
-    steps: CreatePostSchema,
+    steps: CreatePublicationSchema,
     initialValues: {
       title: '',
-      media: {
+      text: '',
+      image: {
         id: '',
         uri: '',
         type: '',
         name: '',
       },
-      coordinates: {
-        latitude: 0,
-        longitude: 0,
-      },
     },
     onSubmit: async (values) => {
-      const location = await Location.getCurrentPositionAsync();
-      const res = await createPost({ ...values, coordinates: location.coords });
-      navigation.navigate('PostPreview', { post: res.data });
+      setSending(true);
+      try {
+        const res = await createPublication({ ...values });
+        navigation.replace('PublicationPreview', { publication: res.data });
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: i18n.t('publication.create.error'),
+          type: 'error',
+          duration: 3000,
+        });
+      }
+      setSending(false);
     },
   });
 
   const { step, setFieldValue, isValid } = formik;
 
   const HeaderRight = useCallback(() => {
-    if (!isValid) return null;
+    if (!isValid) {
+      return null;
+    }
     return (
       <IconButton
         onPress={() => formik.handleSubmit()}
         icon={step === 0 ? 'arrow-right' : 'check'}
+        disabled={sending}
       />
     );
-  }, [formik, step, isValid]);
+  }, [formik, step, isValid, sending]);
 
   const HeaderLeft = useCallback(() => {
     return (
@@ -123,21 +136,27 @@ export default function Create() {
 
   const onGalleryChange = useCallback(
     (image: Media) => {
-      setFieldValue('media', image);
+      setFieldValue('image', image);
     },
     [setFieldValue],
   );
 
   return (
     <View style={styles.container}>
+      <ActivityIndicator
+        animating={sending}
+        hidesWhenStopped
+        size="large"
+        style={styles.loader}
+      />
       {step === 0 && (
-        <Gallery onChange={onGalleryChange} value={formik.values.media} />
+        <Gallery onChange={onGalleryChange} value={formik.values.image} />
       )}
       {step === 1 && (
         <View style={styles.row}>
           <Image
             source={{
-              uri: formik.values.media.uri,
+              uri: formik.values.image.uri,
             }}
             style={styles.image}
           />
@@ -149,6 +168,17 @@ export default function Create() {
           />
         </View>
       )}
+      <Snackbar
+        duration={snackbar.duration}
+        visible={snackbar.open}
+        onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+        action={{
+          label: 'Close',
+          onPress: () => setSnackbar({ ...snackbar, open: false }),
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </View>
   );
 }

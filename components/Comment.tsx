@@ -1,41 +1,96 @@
-import { useCallback, useEffect } from 'react';
+import { useState } from 'react';
 import { FlatList } from 'react-native';
 import { Button, Card, Paragraph, IconButton } from 'react-native-paper';
 import i18n from '@/languages';
-import { PostComment } from '@/types/post';
-import useAxios from '@/hooks/useAxios';
-import { getPostCommentReplies } from '@/api/post';
-import useToggle from '@/hooks/useToggle';
+import { PublicationComment, Reaction } from '@/types/publications';
 import Separator from './Separator';
+import {
+  getPublicationCommentReplies,
+  reactPublicationComment,
+} from '@/api/publication';
 
 type Props = {
-  comment: PostComment;
-  reply: (id: string) => void;
-  myReplies: PostComment[];
+  comment: PublicationComment;
+  comments: Map<string, PublicationComment>;
+  replyTo: (id?: string) => void;
 };
 
-export default function Comment({ comment, reply, myReplies }: Props) {
-  const [showReplies, toggleReplies] = useToggle(false);
-
-  const axiosRequest = useCallback(
-    () => getPostCommentReplies(comment.postId, comment.id),
-    [comment],
+export default function Comment({ comment, comments, replyTo }: Props) {
+  const [replies, setReplies] = useState<Map<string, PublicationComment>>(
+    new Map(),
   );
+  const [updatedComment, setUpdatedComment] = useState(comment);
+  const [showReplies, setShowReply] = useState(false);
 
-  const { response, fetchData } = useAxios<PostComment[]>({
-    axiosRequest,
-    fetchOnMount: false,
-  });
+  const isRootComment = !comment.parent_comment;
+  const replyId = isRootComment ? comment.id : comment.parent_comment;
+  const commentReplies = Array.from(comments.values()).filter(
+    (c) => c.parent_comment === replyId,
+  );
+  const allReplies = Array.from(replies.values()).concat(commentReplies);
+  const replyCount = Math.max(allReplies.length, comment.num_replies);
 
-  useEffect(() => {
-    if (showReplies) {
-      fetchData();
+  const handleShowReplies = async () => {
+    const res = await getPublicationCommentReplies(
+      comment.publication,
+      comment.id,
+    );
+    if (res) {
+      const newReplies = new Map(
+        res.data
+          .filter((reply) => !comments.get(reply.id))
+          .map((reply) => [reply.id, reply]),
+      );
+      setReplies(newReplies);
+      setShowReply(true);
     }
-  }, [showReplies, fetchData]);
+  };
 
-  const isRootComment = !comment.parentId;
-  const myReplyId = comment.parentId || comment.id;
-  const replies = [...(response?.data ?? []), ...myReplies];
+  const toggleShowReplies = () => {
+    if (showReplies) {
+      setShowReply(false);
+    } else {
+      handleShowReplies();
+    }
+  };
+
+  async function sendReaction(newReaction: Reaction) {
+    await reactPublicationComment(comment.publication, comment.id, newReaction);
+
+    setUpdatedComment((oldComment) => {
+      const newComment = { ...oldComment };
+
+      switch (oldComment.reaction) {
+        case Reaction.LIKE:
+          newComment.num_likes -= 1;
+          break;
+        case Reaction.DISLIKE:
+          newComment.num_dislikes -= 1;
+          break;
+        default:
+          break;
+      }
+
+      if (oldComment.reaction === newReaction) {
+        newComment.reaction = Reaction.NONE;
+        return newComment;
+      }
+
+      switch (newReaction) {
+        case Reaction.LIKE:
+          newComment.num_likes += 1;
+          break;
+        case Reaction.DISLIKE:
+          newComment.num_dislikes += 1;
+          break;
+        default:
+          break;
+      }
+
+      newComment.reaction = newReaction;
+      return newComment;
+    });
+  }
 
   return (
     <Card mode={isRootComment ? 'elevated' : 'contained'}>
@@ -43,50 +98,53 @@ export default function Comment({ comment, reply, myReplies }: Props) {
         <Paragraph>{comment.text}</Paragraph>
       </Card.Content>
       <Card.Actions>
-        <Button mode="text" icon="thumb-up">
-          {comment.likes}
+        <Button
+          icon="thumb-up"
+          mode={
+            updatedComment.reaction === Reaction.LIKE ? 'contained' : 'outlined'
+          }
+          onPress={() => sendReaction(Reaction.LIKE)}
+        >
+          {updatedComment.num_likes}
         </Button>
-        <Button mode="text" icon="thumb-down">
-          {comment.dislikes}
+        <Button
+          icon="thumb-down"
+          mode={
+            updatedComment.reaction === Reaction.DISLIKE
+              ? 'contained'
+              : 'outlined'
+          }
+          onPress={() => sendReaction(Reaction.DISLIKE)}
+        >
+          {updatedComment.num_dislikes}
         </Button>
         <IconButton
           icon="message"
           onPress={() => {
-            reply(myReplyId);
+            replyTo(replyId);
           }}
         />
       </Card.Actions>
-      {comment.replies > 0 && (
+      {replyCount > 0 && (
         <Card.Actions>
-          <Button mode="text" onPress={toggleReplies}>
-            {i18n.t('post.comments.see.replies', { count: comment.replies })}
+          <Button mode="text" onPress={toggleShowReplies}>
+            {i18n.t('publication.comments.see.replies', {
+              count: replyCount,
+            })}
           </Button>
         </Card.Actions>
       )}
-      {replies.length > 0 && (
+      {allReplies.length > 0 && showReplies && (
         <Card.Content>
-          {response && response.data.length > 0 && showReplies && (
-            <FlatList
-              scrollEnabled={false}
-              data={response.data}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Comment comment={item} reply={reply} myReplies={[]} />
-              )}
-              ItemSeparatorComponent={Separator}
-            />
-          )}
-          {myReplies.length > 0 && (
-            <FlatList
-              scrollEnabled={false}
-              data={myReplies}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Comment comment={item} reply={reply} myReplies={[]} />
-              )}
-              ItemSeparatorComponent={Separator}
-            />
-          )}
+          <FlatList
+            scrollEnabled={false}
+            data={allReplies}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <Comment comment={item} replyTo={replyTo} comments={new Map()} />
+            )}
+            ItemSeparatorComponent={Separator}
+          />
         </Card.Content>
       )}
     </Card>

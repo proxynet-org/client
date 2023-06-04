@@ -6,7 +6,8 @@
       "subTitle": "Veuillez vous connecter pour continuer",
       "noAccount": "Pas encore de compte ?",
       "forgotPassword": "Mot de passe oublié ?",
-      "button": "Se connecter"
+      "button": "Se connecter",
+      "error": "Nom d'utilisateur ou mot de passe incorrect"
     },
     "signup": {
       "title": "Inscription",
@@ -25,9 +26,20 @@
       "button": "Réinitialiser"
     }
   },
+  "settings": {
+    "dark": "Sombre",
+    "light": "Clair",
+    "language": "Langue"
+  },
   "form": {
     "username": {
       "field": "NOM D'UTILISATEUR"
+    },
+    "firstname": {
+      "field": "PRÉNOM"
+    },
+    "lastname": {
+      "field": "NOM"
     },
     "email": {
       "field": "EMAIL",
@@ -82,6 +94,9 @@
     "name": {
       "field": "NOM"
     },
+    "image": {
+      "button": "Choisir une image"
+    },
     "required": "Champ obligatoire"
   },
   "chat": {
@@ -120,7 +135,7 @@
       "other": "Il y a {{count}} ans"
     }
   },
-  "post": {
+  "publication": {
     "comments": {
       "title": "Commentaires",
       "placeholder": "Veuillez saisir votre commentaire...",
@@ -145,7 +160,27 @@
         "zero": "Aucune réponse",
         "one": "%{count} réponse",
         "other": "%{count} réponses"
-      }
+      },
+
+      "replying": "Répondre..."
+    }
+  },
+  "chatroom": {
+    "title": "Chatroom",
+    "placeholder": "Veuillez saisir votre message...",
+    "button": "Envoyer",
+    "online": {
+      "zero": "Aucun utilisateur en ligne",
+      "one": "1 en ligne",
+      "other": "%{count} en ligne"
+    },
+    "full": "Chatroom pleine",
+    "Verified": "Vérifié",
+    "create": {
+      "error": "Impossible de créer la chatroom"
+    },
+    "join": {
+      "error": "Impossible de rejoindre la chatroom"
     }
   }
 }

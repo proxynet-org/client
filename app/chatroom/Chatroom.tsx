@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   useNavigation,
   NavigationProp,
@@ -7,9 +7,12 @@ import {
 } from '@react-navigation/native';
 import { StyleSheet, Image } from 'react-native';
 import { Badge, MD3Theme, Text, useTheme } from 'react-native-paper';
-import { GiftedChat } from 'react-native-gifted-chat';
+
+import i18n from '@/languages';
+import ChatView from '@/components/ChatView';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
+import { leaveChatroom } from '@/api/chatroom';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -32,56 +35,61 @@ function makeStyle(theme: MD3Theme) {
     headerBackgroud: {
       flex: 1,
     },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+    },
   });
 }
 
-export default function Chat() {
+export default function ChatRoom() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'ChatRoom'>>();
-  const [messages, setMessages] = useState([]);
 
-  const { chat } = route.params;
+  const { chatroom } = route.params;
 
   const headerRight = useCallback(() => {
     return (
       <View style={styles.headerRight}>
-        <Text style={styles.text}>{chat.people} Online</Text>
+        <Text style={styles.text}>
+          {i18n.t('chatroom.online', {
+            count: chatroom.num_people,
+          })}
+        </Text>
         <Badge style={styles.badge} size={10} />
       </View>
     );
-  }, [chat, styles]);
+  }, [chatroom, styles]);
 
   const headerBackground = useCallback(() => {
     return (
-      <Image source={{ uri: chat.media }} style={styles.headerBackgroud} />
+      <Image source={{ uri: chatroom.image }} style={styles.headerBackgroud} />
     );
-  }, [chat, styles]);
+  }, [chatroom, styles]);
 
   useEffect(() => {
     navigation.setOptions({
       headerTintColor: styles.text.color,
       headerTitleStyle: styles.text,
-      title: chat.name,
+      title: chatroom.name,
       headerRight,
       headerBackground,
     });
-  }, [chat, headerRight, navigation, headerBackground, styles]);
 
-  const onSend = useCallback((msg = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, msg));
-  }, []);
+    return () => {
+      leaveChatroom(chatroom.id);
+    };
+  }, [chatroom, headerRight, navigation, headerBackground, styles]);
 
   return (
-    <View style={styles.container}>
-      <GiftedChat
-        messages={messages}
-        onSend={(msg) => onSend(msg)}
-        user={{
-          _id: 1,
-        }}
-      />
-    </View>
+    <ChatView
+      chatEndpoint={`/chatrooms${chatroom.id}`}
+      messagesEndpoint={`/chatrooms/${chatroom.id}/messages`}
+    />
   );
 }

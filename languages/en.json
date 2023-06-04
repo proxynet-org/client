@@ -6,7 +6,8 @@
       "subTitle": "Please sign in to continue",
       "noAccount": "No account yet?",
       "forgotPassword": "Forgot password?",
-      "button": "Sign In"
+      "button": "Sign In",
+      "error": "Invalid username or password"
     },
     "signup": {
       "title": "Sign Up",
@@ -25,9 +26,20 @@
       "button": "Reset"
     }
   },
+  "settings": {
+    "dark": "Dark",
+    "light": "Light",
+    "language": "Language"
+  },
   "form": {
     "username": {
       "field": "USERNAME"
+    },
+    "firstname": {
+      "field": "FIRST NAME"
+    },
+    "lastname": {
+      "field": "LAST NAME"
     },
     "email": {
       "field": "EMAIL",
@@ -82,6 +94,9 @@
     "caption": {
       "field": "CAPTION"
     },
+    "image": {
+      "button": "Choose Image"
+    },
     "required": "Required field"
   },
   "chat": {
@@ -120,7 +135,7 @@
       "other": "%{count} years ago"
     }
   },
-  "post": {
+  "publication": {
     "comments": {
       "title": "Comments",
       "placeholder": "Type a comment...",
@@ -145,7 +160,26 @@
         "zero": "No replies",
         "one": "%{count} reply",
         "other": "%{count} replies"
-      }
+      },
+      "replying": "Replying..."
+    }
+  },
+  "chatroom": {
+    "title": "Chatroom",
+    "placeholder": "Type a message...",
+    "button": "Send",
+    "online": {
+      "zero": "No one is online",
+      "one": "%{count} online",
+      "other": "%{count} online"
+    },
+    "full": "Chatroom is full",
+    "verified": "Verified",
+    "create": {
+      "error": "Unable to create chatroom"
+    },
+    "join": {
+      "error": "Unable to join chatroom"
     }
   }
 }

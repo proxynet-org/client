@@ -1,18 +1,29 @@
+import { LatLng } from 'react-native-maps';
+
 export type SignUpPayload = {
-  fullname: string;
+  first_name: string;
+  last_name: string;
   username: string;
   birthDate: string;
-  phone: string;
   email: string;
   password: string;
 };
 
 /**
- * @param id - phone, email, or username
+ * @param id - username
  */
-export type SignInPayload = { email: string; password: string };
+export type SignInPayload = { username: string; password: string };
 
 export type Token = {
-  access_token: string;
-  refresh_token: string;
+  access: string;
+  refresh: string;
+};
+
+export type User = {
+  username: string;
+  coordinates: LatLng;
+  email: string;
+  first_name: string;
+  last_name: string;
+  id: number;
 };
