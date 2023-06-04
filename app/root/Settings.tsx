@@ -15,6 +15,12 @@ function makeStyle(theme: MD3Theme) {
       justifyContent: 'space-between',
       padding: 10,
     },
+    content: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderRadius: 100,
+      paddingHorizontal: 10,
+    },
   });
 }
 
@@ -27,17 +33,10 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderRadius: 100,
-          paddingHorizontal: 10,
-        }}
-      >
-        <Text variant="labelLarge">Light</Text>
+      <View style={styles.content}>
+        <Text variant="labelLarge">{i18n.t('settings.light')}</Text>
         <Switch value={isThemeDark} onValueChange={toggleTheme} />
-        <Text variant="labelLarge">Dark</Text>
+        <Text variant="labelLarge">{i18n.t('settings.dark')}</Text>
       </View>
       <Button icon="logout" mode="contained" onPress={signOut}>
         {i18n.t('auth.signout.button')}

@@ -26,6 +26,11 @@
       "button": "Réinitialiser"
     }
   },
+  "settings": {
+    "dark": "Sombre",
+    "light": "Clair",
+    "language": "Langue"
+  },
   "form": {
     "username": {
       "field": "NOM D'UTILISATEUR"

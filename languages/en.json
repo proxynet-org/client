@@ -26,6 +26,11 @@
       "button": "Reset"
     }
   },
+  "settings": {
+    "dark": "Dark",
+    "light": "Light",
+    "language": "Language"
+  },
   "form": {
     "username": {
       "field": "USERNAME"
