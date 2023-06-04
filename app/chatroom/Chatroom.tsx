@@ -13,6 +13,9 @@ import ChatView from '@/components/ChatView';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
 import { leaveChatroom } from '@/api/chatroom';
+import positionSubject, { PositionObserver } from '@/events/PositionSubject';
+import { distanceInMeters } from '@/utils/distanceInMeters';
+import { RANGE_METERS } from '@/constants/rules';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -85,6 +88,21 @@ export default function ChatRoom() {
       leaveChatroom(chatroom.id);
     };
   }, [chatroom, headerRight, navigation, headerBackground, styles]);
+
+  useEffect(() => {
+    const positionObserver: PositionObserver = (position) => {
+      const distance = distanceInMeters(position, chatroom.coordinates);
+      if (distance > RANGE_METERS) {
+        navigation.goBack();
+      }
+    };
+
+    positionSubject.subscribe(positionObserver);
+
+    return () => {
+      positionSubject.unsubscribe(positionObserver);
+    };
+  }, [chatroom, navigation]);
 
   return (
     <ChatView

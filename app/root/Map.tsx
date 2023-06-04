@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { LatLng } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { FAB } from 'react-native-paper';
@@ -6,7 +7,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { View } from '@/components/Themed';
 import FabGroup from '@/components/FabGroup';
-import MapView from '@/components/MapView';
+import MapView, { DISTANCE_METERS_TO_UPDATE } from '@/components/MapView';
 
 import { RootStackParams } from '@/routes/params';
 
@@ -15,6 +16,10 @@ import { Chatroom } from '@/types/chatroom';
 
 import { getPublications, subscribePublications } from '@/api/publication';
 import { getChatrooms, subscribeChatrooms } from '@/api/chatroom';
+import { updatePosition } from '@/api/map';
+
+import positionSubject, { PositionObserver } from '@/events/PositionSubject';
+import { distanceInMeters } from '@/utils/distanceInMeters';
 
 function makeStyles(insets: EdgeInsets) {
   return StyleSheet.create({
@@ -65,10 +70,16 @@ export default function MapScreen() {
       setChatrooms(newChatrooms);
     }
 
-    fetchPublications();
-    fetchChatrooms();
+    let lastKnownPosition: LatLng | undefined;
 
     const onNewPublication = (publication: Publication) => {
+      if (lastKnownPosition) {
+        const distance = distanceInMeters(
+          lastKnownPosition,
+          publication.coordinates,
+        );
+        if (distance > DISTANCE_METERS_TO_UPDATE) return;
+      }
       setPublications((prev) => {
         const newPublications = new Map(prev);
         newPublications.set(publication.id, publication);
@@ -77,6 +88,13 @@ export default function MapScreen() {
     };
 
     const onNewChatroom = (chatroom: Chatroom) => {
+      if (lastKnownPosition) {
+        const distance = distanceInMeters(
+          lastKnownPosition,
+          chatroom.coordinates,
+        );
+        if (distance > DISTANCE_METERS_TO_UPDATE) return;
+      }
       setChatrooms((prev) => {
         const newChatrooms = new Map(prev);
         newChatrooms.set(chatroom.id, chatroom);
@@ -87,9 +105,19 @@ export default function MapScreen() {
     const { unsubscribePublications } = subscribePublications(onNewPublication);
     const { unsubscribeChatrooms } = subscribeChatrooms(onNewChatroom);
 
+    const positionObserver: PositionObserver = (position) => {
+      lastKnownPosition = position;
+      fetchChatrooms();
+      fetchPublications();
+      updatePosition(position);
+    };
+
+    positionSubject.subscribe(positionObserver);
+
     return () => {
       unsubscribePublications();
       unsubscribeChatrooms();
+      positionSubject.unsubscribe(positionObserver);
     };
   }, []);
 

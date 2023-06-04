@@ -20,6 +20,9 @@ import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
 import { getChatroom, joinChatroom } from '@/api/chatroom';
 import { SnackbarState } from '@/types/ui';
+import positionSubject, { PositionObserver } from '@/events/PositionSubject';
+import { distanceInMeters } from '@/utils/distanceInMeters';
+import { RANGE_METERS } from '@/constants/rules';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -73,7 +76,9 @@ export default function Preview() {
 
   const enterChatroom = async () => {
     try {
-      await joinChatroom(chatroom.id);
+      if (!chatroom.joined) {
+        await joinChatroom(chatroom.id);
+      }
       navigation.replace('ChatRoom', { chatroom: updatedChatroom });
     } catch (err) {
       setSnackbar({
@@ -86,6 +91,21 @@ export default function Preview() {
   };
 
   const full = updatedChatroom.num_people >= chatroom.capacity;
+
+  useEffect(() => {
+    const positionObserver: PositionObserver = (position) => {
+      const distance = distanceInMeters(position, chatroom.coordinates);
+      if (distance > RANGE_METERS) {
+        navigation.goBack();
+      }
+    };
+
+    positionSubject.subscribe(positionObserver);
+
+    return () => {
+      positionSubject.unsubscribe(positionObserver);
+    };
+  }, [chatroom, navigation]);
 
   return (
     <View style={styles.container}>

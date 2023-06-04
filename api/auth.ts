@@ -20,7 +20,6 @@ export async function singup(data: SignUpPayload) {
 
 export async function signout() {
   console.log('Signing out...');
-  await api.post('/auth/signout');
   setAccessToken({ access: '', refresh: '' });
 }
 

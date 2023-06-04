@@ -10,6 +10,9 @@ import i18n from '@/languages';
 import dimensions from '@/constants/dimensions';
 import { Reaction } from '@/types/publications';
 import { getPublication, reactPublication } from '@/api/publication';
+import positionSubject, { PositionObserver } from '@/events/PositionSubject';
+import { distanceInMeters } from '@/utils/distanceInMeters';
+import { RANGE_METERS } from '@/constants/rules';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -104,6 +107,21 @@ export default function Preview() {
       return newPublication;
     });
   }
+
+  useEffect(() => {
+    const positionObserver: PositionObserver = (position) => {
+      const distance = distanceInMeters(position, publication.coordinates);
+      if (distance > RANGE_METERS) {
+        navigation.goBack();
+      }
+    };
+
+    positionSubject.subscribe(positionObserver);
+
+    return () => {
+      positionSubject.unsubscribe(positionObserver);
+    };
+  }, [publication, navigation]);
 
   return (
     <View style={styles.container}>

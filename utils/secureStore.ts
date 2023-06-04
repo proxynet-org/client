@@ -11,3 +11,9 @@ export async function setSecureItem(key: string, value: string): Promise<void> {
 export async function removeSecureItem(key: string): Promise<void> {
   return SecureStore.deleteItemAsync(key);
 }
+
+export default {
+  getSecureItem,
+  setSecureItem,
+  removeSecureItem,
+};

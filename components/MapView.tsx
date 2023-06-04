@@ -1,20 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageURISource, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import DefaultMapView, {
   LatLng,
   Marker,
   Region,
   UserLocationChangeEvent,
 } from 'react-native-maps';
-import { FAB } from 'react-native-paper';
+import ClusteredMapView from 'react-native-map-clustering';
+import { FAB, useTheme } from 'react-native-paper';
 import {
-  useForegroundPermissions,
   getCurrentPositionAsync,
+  getForegroundPermissionsAsync,
+  requestForegroundPermissionsAsync,
 } from 'expo-location';
 
-import { updatePosition } from '@/api/map';
+import asyncStore from '@/utils/asyncStore';
 import mapstyle from '@/constants/mapstyle';
 import dimensions from '@/constants/dimensions';
+import { MapMarker } from '@/types/ui';
+import { distanceInMeters } from '@/utils/distanceInMeters';
+import positionSubject from '@/events/PositionSubject';
+
+export const DISTANCE_METERS_TO_UPDATE = 1000;
+const POSITION_KEY = 'position';
 
 const styles = StyleSheet.create({
   map: {
@@ -31,32 +39,53 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
-  markers: Array<{
-    id: string;
-    coordinates: LatLng;
-    icon?: number | ImageURISource | undefined;
-    onPress?: () => void;
-  }>;
+  markers: MapMarker[];
+};
+
+const INITIAL_REGION = {
+  latitude: 52.5,
+  longitude: 19.2,
+  latitudeDelta: 8.5,
+  longitudeDelta: 8.5,
 };
 
 export default function MapView({ markers }: Props) {
+  const theme = useTheme();
   const [followUser, setFollowUser] = useState(true);
   const mapRef = useRef<DefaultMapView>(null);
   const userLocation = useRef<LatLng>();
   const timeout = useRef<NodeJS.Timeout>();
-
-  const [status] = useForegroundPermissions({
-    request: true,
-  });
+  const distance = useRef<number>(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      updatePosition({
-        latitude: userLocation.current?.latitude || 0,
-        longitude: userLocation.current?.longitude || 0,
-      });
-    }, 1000 * 10);
-    return () => clearInterval(interval);
+    async function start() {
+      const location = await asyncStore.getItem(POSITION_KEY);
+      if (location) {
+        const { latitude, longitude } = JSON.parse(location);
+        userLocation.current = { latitude, longitude };
+      }
+
+      const { granted } = await getForegroundPermissionsAsync();
+
+      if (!granted) {
+        await requestForegroundPermissionsAsync();
+      }
+
+      if (!location) {
+        const position = await getCurrentPositionAsync({ accuracy: 6 });
+        if (!position.coords) return;
+        const { latitude, longitude } = position.coords;
+        userLocation.current = { latitude, longitude };
+      }
+
+      if (!userLocation.current) {
+        return;
+      }
+
+      positionSubject.notify(userLocation.current);
+    }
+
+    start();
   }, []);
 
   const centerOnUser = useCallback(() => {
@@ -97,12 +126,26 @@ export default function MapView({ markers }: Props) {
   }, [followUser, setFollowUser, centerOnUser]);
 
   const onUserLocationChange = useCallback(
-    (ev: UserLocationChangeEvent) => {
-      if (!ev.nativeEvent.coordinate) return;
-      const { latitude, longitude } = ev.nativeEvent.coordinate;
-      userLocation.current = { latitude, longitude };
+    async (ev: UserLocationChangeEvent) => {
+      if (!ev.nativeEvent.coordinate) {
+        return;
+      }
+      const oldPosition = userLocation.current ?? ev.nativeEvent.coordinate;
+      const newPosition = ev.nativeEvent.coordinate;
 
-      if (!followUser) return;
+      userLocation.current = newPosition;
+      await asyncStore.setItem(POSITION_KEY, JSON.stringify(newPosition));
+      distance.current += distanceInMeters(oldPosition, newPosition);
+
+      if (distance.current >= DISTANCE_METERS_TO_UPDATE) {
+        positionSubject.notify(newPosition);
+        distance.current = 0;
+      }
+
+      if (!followUser) {
+        return;
+      }
+
       centerOnUser();
     },
     [followUser, centerOnUser],
@@ -110,11 +153,12 @@ export default function MapView({ markers }: Props) {
 
   return (
     <>
-      <DefaultMapView
+      <ClusteredMapView
+        initialRegion={INITIAL_REGION}
         ref={mapRef}
-        customMapStyle={mapstyle}
+        customMapStyle={mapstyle[theme.dark ? 'dark' : 'light']}
         style={styles.map}
-        showsUserLocation={status?.granted}
+        showsUserLocation
         followsUserLocation
         showsMyLocationButton={false}
         showsCompass={false}
@@ -141,7 +185,7 @@ export default function MapView({ markers }: Props) {
               image={marker.icon}
             />
           ))}
-      </DefaultMapView>
+      </ClusteredMapView>
       <FAB
         icon="crosshairs-gps"
         style={styles.fab}

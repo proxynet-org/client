@@ -10,6 +10,7 @@ export type Chatroom = {
   num_people: number;
   capacity: number;
   coordinates: LatLng;
+  joined: boolean;
 };
 
 // post

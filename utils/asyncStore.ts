@@ -11,3 +11,9 @@ export async function setItem(key: string, value: string): Promise<void> {
 export async function removeItem(key: string): Promise<void> {
   return AsyncStorage.removeItem(key);
 }
+
+export default {
+  getItem,
+  setItem,
+  removeItem,
+};

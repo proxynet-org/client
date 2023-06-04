@@ -7,7 +7,7 @@ import {
   useEffect,
 } from 'react';
 import { SignUpPayload, SignInPayload, User } from '@/types/auth';
-import { getUserInfo, singin, singup } from '@/api/auth';
+import { getUserInfo, singin, singup, signout } from '@/api/auth';
 import { refreshAccessToken } from '@/api/api';
 
 interface AuthContextState {
@@ -49,13 +49,18 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    await signout();
     setUser(undefined);
   }, []);
 
   useEffect(() => {
     async function tryLoggin() {
-      await refreshAccessToken();
-      await getUserInfo().then(setUser);
+      try {
+        await refreshAccessToken();
+        await getUserInfo().then(setUser);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     tryLoggin();

@@ -1,7 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
-import { RouteProp, useRoute } from '@react-navigation/native';
+import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { useTheme, MD3Theme } from 'react-native-paper';
 
 import { View } from '@/components/Themed';
@@ -15,6 +20,9 @@ import Comment from '@/components/Comment';
 import CommentForm from '@/components/CommentForm';
 import Empty from '@/components/Empty';
 import { PublicationComment } from '@/types/publications';
+import positionSubject, { PositionObserver } from '@/events/PositionSubject';
+import { distanceInMeters } from '@/utils/distanceInMeters';
+import { RANGE_METERS } from '@/constants/rules';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -32,6 +40,7 @@ function makeStyle(theme: MD3Theme) {
 export default function Comments() {
   const theme = useTheme();
   const styles = useMemo(() => makeStyle(theme), [theme]);
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
   const route = useRoute<RouteProp<RootStackParams, 'PublicationComments'>>();
   const [comments, setComments] = useState<Map<string, PublicationComment>>(
     new Map(),
@@ -73,6 +82,21 @@ export default function Comments() {
   const rootComments = Array.from(comments.values()).filter(
     (comment) => !comment.parent_comment,
   );
+
+  useEffect(() => {
+    const positionObserver: PositionObserver = (position) => {
+      const distance = distanceInMeters(position, publication.coordinates);
+      if (distance > RANGE_METERS) {
+        navigation.goBack();
+      }
+    };
+
+    positionSubject.subscribe(positionObserver);
+
+    return () => {
+      positionSubject.unsubscribe(positionObserver);
+    };
+  }, [publication, navigation]);
 
   return (
     <View style={styles.container}>
