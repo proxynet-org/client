@@ -1,8 +1,9 @@
+import { BASE_URL_WS } from '@env';
 import { Platform } from 'react-native';
 import { getCurrentPositionAsync } from 'expo-location';
 import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
-import api, { BASE_URL_WS } from './api';
+import api from './api';
 import { updatePosition } from './map';
 
 export const CHATROOMS_ENDPOINT = '/chatrooms';

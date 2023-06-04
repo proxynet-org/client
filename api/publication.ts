@@ -1,3 +1,4 @@
+import { BASE_URL_WS } from '@env';
 import { getCurrentPositionAsync } from 'expo-location';
 import { Platform } from 'react-native';
 import {
@@ -6,7 +7,7 @@ import {
   PublicationPayload,
   Reaction,
 } from '@/types/publications';
-import api, { BASE_URL_WS } from './api';
+import api from './api';
 
 import { updatePosition } from './map';
 

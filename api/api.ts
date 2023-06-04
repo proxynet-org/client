@@ -1,11 +1,8 @@
 import axios from 'axios';
-import { BASE_URL } from '@env';
+import { BASE_URL_API } from '@env';
 
 import { getSecureItem, setSecureItem } from '@/utils/secureStore';
 import { Token } from '@/types/auth';
-
-export const BASE_URL_API = `http://${BASE_URL}/api`;
-export const BASE_URL_WS = `ws://${BASE_URL}/ws/chat`;
 
 const api = axios.create({
   baseURL: BASE_URL_API,

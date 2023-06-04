@@ -1,4 +1,5 @@
-import api, { BASE_URL_WS } from './api';
+import { BASE_URL_WS } from '@env';
+import api from './api';
 import { WebSocketMessage } from '@/types/websocket';
 import { ChatMessage, ChatMessagePayload } from '@/types/chat';
 
