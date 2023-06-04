@@ -7,7 +7,7 @@ import DefaultMapView, {
   UserLocationChangeEvent,
 } from 'react-native-maps';
 import ClusteredMapView from 'react-native-map-clustering';
-import { FAB } from 'react-native-paper';
+import { FAB, useTheme } from 'react-native-paper';
 import {
   getCurrentPositionAsync,
   getForegroundPermissionsAsync,
@@ -50,6 +50,7 @@ const INITIAL_REGION = {
 };
 
 export default function MapView({ markers }: Props) {
+  const theme = useTheme();
   const [followUser, setFollowUser] = useState(true);
   const mapRef = useRef<DefaultMapView>(null);
   const userLocation = useRef<LatLng>();
@@ -155,7 +156,7 @@ export default function MapView({ markers }: Props) {
       <ClusteredMapView
         initialRegion={INITIAL_REGION}
         ref={mapRef}
-        customMapStyle={mapstyle}
+        customMapStyle={mapstyle[theme.dark ? 'dark' : 'light']}
         style={styles.map}
         showsUserLocation
         followsUserLocation
