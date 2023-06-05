@@ -5,6 +5,7 @@ import DefaultMapView, {
   Marker,
   Region,
   UserLocationChangeEvent,
+  PROVIDER_GOOGLE,
 } from 'react-native-maps';
 import ClusteredMapView from 'react-native-map-clustering';
 import { FAB, useTheme } from 'react-native-paper';
@@ -154,6 +155,7 @@ export default function MapView({ markers }: Props) {
   return (
     <>
       <ClusteredMapView
+        provider={PROVIDER_GOOGLE}
         initialRegion={INITIAL_REGION}
         ref={mapRef}
         customMapStyle={mapstyle[theme.dark ? 'dark' : 'light']}

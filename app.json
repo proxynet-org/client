@@ -15,9 +15,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -41,6 +39,11 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAGgwFDLEkAHdpTEsJjyTpDXVoPE8mPPtg"
+        }
+      },
       "package": "com.proxynet",
       "versionCode": 2
     },
