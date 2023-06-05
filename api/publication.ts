@@ -79,7 +79,7 @@ export async function createPublication(publication: PublicationPayload) {
   const formData = new FormData();
 
   formData.append('title', publication.title);
-  formData.append('text', 'Test text');
+  formData.append('text', publication.text);
   const uri =
     Platform.OS === 'android'
       ? publication.image.uri

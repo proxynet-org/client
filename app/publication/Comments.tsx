@@ -7,7 +7,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { useTheme, MD3Theme } from 'react-native-paper';
+import { useTheme, MD3Theme, Card } from 'react-native-paper';
 
 import { View } from '@/components/Themed';
 import {
@@ -23,6 +23,7 @@ import { PublicationComment } from '@/types/publications';
 import positionSubject, { PositionObserver } from '@/events/PositionSubject';
 import { distanceInMeters } from '@/utils/distanceInMeters';
 import { RANGE_METERS } from '@/constants/rules';
+import dimensions from '@/constants/dimensions';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -32,8 +33,13 @@ function makeStyle(theme: MD3Theme) {
     },
     list: {
       flex: 1,
-      paddingHorizontal: 10,
     },
+    image: {
+      backgroundColor: 'transparent',
+      height: dimensions.screen.width,
+      aspectRatio: 1,
+    },
+    itemContainer: { paddingHorizontal: 10, backgroundColor: 'transparent' },
   });
 }
 
@@ -104,6 +110,15 @@ export default function Comments() {
     };
   }, [publication, navigation]);
 
+  const Header = useMemo(() => {
+    return (
+      <View style={{ backgroundColor: 'transparent' }}>
+        <Card.Cover source={{ uri: publication.image }} style={styles.image} />
+        <Separator />
+      </View>
+    );
+  }, [publication, styles.image]);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -112,10 +127,12 @@ export default function Comments() {
         data={rootComments}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Comment comment={item} replyTo={replyTo} comments={comments} />
+          <View style={styles.itemContainer}>
+            <Comment comment={item} replyTo={replyTo} comments={comments} />
+          </View>
         )}
         ItemSeparatorComponent={Separator}
-        ListHeaderComponent={Separator}
+        ListHeaderComponent={Header}
         ListFooterComponent={Separator}
         ListEmptyComponent={Empty}
         onRefresh={fetchComments}

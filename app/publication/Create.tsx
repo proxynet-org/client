@@ -36,12 +36,12 @@ const makeStyle = (theme: MD3Theme) =>
       flex: 1,
       backgroundColor: theme.colors.backdrop,
     },
+    form: { backgroundColor: 'transparent', padding: 10, gap: 10 },
     row: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: 'transparent',
       gap: 10,
-      padding: 10,
     },
     textInput: {
       flex: 1,
@@ -89,7 +89,6 @@ export default function Create() {
     onSubmit: async (values) => {
       setSending(true);
       try {
-        console.log('Trying to create publication', values);
         const res = await createPublication({ ...values });
         navigation.replace('PublicationPreview', { publication: res.data });
       } catch (error) {
@@ -154,18 +153,30 @@ export default function Create() {
         <Gallery onChange={onGalleryChange} value={formik.values.image} />
       )}
       {step === 1 && (
-        <View style={styles.row}>
-          <Image
-            source={{
-              uri: formik.values.image.uri,
-            }}
-            style={styles.image}
-          />
+        <View style={styles.form}>
+          <View style={styles.row}>
+            <Image
+              source={{
+                uri: formik.values.image.uri,
+              }}
+              style={styles.image}
+            />
+            <TextInput
+              label="Title"
+              style={styles.textInput}
+              onChangeText={formik.handleChange('title')}
+              value={formik.values.title}
+            />
+          </View>
           <TextInput
-            label="Title"
-            style={styles.textInput}
-            onChangeText={formik.handleChange('title')}
-            value={formik.values.title}
+            label={i18n.t('form.caption.field')}
+            multiline
+            numberOfLines={5}
+            onChangeText={formik.handleChange('text')}
+            value={formik.values.text}
+            right={
+              <TextInput.Affix text={`${formik.values.text.length}/100`} />
+            }
           />
         </View>
       )}
