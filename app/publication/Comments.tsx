@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import {
@@ -46,19 +46,25 @@ export default function Comments() {
     new Map(),
   );
   const [replyingTo, setReplyingTo] = useState<string>();
+  const [refreshing, setRefreshing] = useState(false);
 
   const { publication } = route.params;
 
-  useEffect(() => {
-    getPublicationComments(publication.id).then((res) => {
-      if (res) {
-        const newReplies = new Map(
-          res.data.map((comment) => [comment.id, comment]),
-        );
-        setComments(newReplies);
-      }
-    });
+  const fetchComments = useCallback(async () => {
+    setRefreshing(true);
+    const res = await getPublicationComments(publication.id);
+    if (res) {
+      const newReplies = new Map(
+        res.data.map((comment) => [comment.id, comment]),
+      );
+      setComments(newReplies);
+    }
+    setRefreshing(false);
   }, [publication]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
   const replyTo = (id?: string) => {
     setReplyingTo(id);
@@ -112,6 +118,8 @@ export default function Comments() {
         ListHeaderComponent={Separator}
         ListFooterComponent={Separator}
         ListEmptyComponent={Empty}
+        onRefresh={fetchComments}
+        refreshing={refreshing}
       />
       <CommentForm
         onSubmit={submitReply}
