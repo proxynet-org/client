@@ -1,5 +1,6 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
@@ -19,6 +20,7 @@ import { AuthTabParams } from '@/routes/params';
 import { SigninSchema } from '@/schemas/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { SnackbarState } from '@/types/ui';
+import dimensions from '@/constants/dimensions';
 
 function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
   return StyleSheet.create({
@@ -39,7 +41,19 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       flexDirection: 'row',
       justifyContent: 'center',
       marginBottom: 28,
+      backgroundColor: 'transparent',
     },
+    title: {
+      position: 'absolute',
+      top: 100,
+      color: 'white',
+      fontSize: 40,
+      fontWeight: 'bold',
+      textShadowRadius: 1,
+      textShadowColor: 'rgba(0, 0, 0, 0.75)',
+      textShadowOffset: { width: 1, height: 1 },
+    },
+    textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
   });
 }
 
@@ -84,6 +98,18 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
+      <LinearGradient
+        colors={['#aa74c2', '#deabe3']}
+        style={{
+          position: 'absolute',
+          width: dimensions.screen.width,
+          height: dimensions.screen.height,
+        }}
+      />
+      <Image
+        source={require('@/assets/images/logo.png')}
+        style={{ width: 100, height: 100 }}
+      />
       <Title>{i18n.t('auth.signin.title')}</Title>
       <TextInput
         label={i18n.t('form.username.field')}
@@ -104,7 +130,7 @@ export default function SignIn() {
         autoComplete="password"
       />
       <TouchableOpacity onPress={() => navigation.jumpTo('ForgotPassword')}>
-        <Text>{i18n.t('auth.signin.forgotPassword')}</Text>
+        <Text variant="bodyLarge">{i18n.t('auth.signin.forgotPassword')}</Text>
       </TouchableOpacity>
       <Button
         style={styles.button}
@@ -115,9 +141,9 @@ export default function SignIn() {
         {i18n.t('auth.signin.button')}
       </Button>
       <View style={styles.row}>
-        <Text>{i18n.t('auth.signin.noAccount')} </Text>
+        <Text variant="bodyLarge">{i18n.t('auth.signin.noAccount')} </Text>
         <TouchableOpacity onPress={() => navigation.jumpTo('SignUp')}>
-          <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
+          <Text variant="bodyLarge" style={styles.textImportant}>
             {i18n.t('auth.signup.button')}
           </Text>
         </TouchableOpacity>

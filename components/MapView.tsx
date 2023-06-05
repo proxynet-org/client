@@ -43,8 +43,8 @@ type Props = {
 };
 
 const INITIAL_REGION = {
-  latitude: 52.5,
-  longitude: 19.2,
+  latitude: 48.8584,
+  longitude: 2.2944,
   latitudeDelta: 8.5,
   longitudeDelta: 8.5,
 };

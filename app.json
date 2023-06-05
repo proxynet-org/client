@@ -41,7 +41,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.proxynet"
+      "package": "com.proxynet",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/icons/web/favicon.ico"
