@@ -69,15 +69,19 @@ export async function getPublication(id: string) {
 }
 
 export async function createPublication(publication: PublicationPayload) {
+  console.log('Getting Location...');
   const { granted } = await getForegroundPermissionsAsync();
+  console.log('Location Permission Granted:', granted);
   if (!granted) {
+    console.log('Requesting Location Permission...');
     await requestForegroundPermissionsAsync();
   }
   const position = await getCurrentPositionAsync();
+  console.log('Got Location: ', position);
   await updatePosition(position.coords);
 
+  console.log('Creating Publication...', publication);
   const formData = new FormData();
-
   formData.append('title', publication.title);
   formData.append('text', publication.text);
   const uri =
@@ -93,11 +97,9 @@ export async function createPublication(publication: PublicationPayload) {
     name: `image.${ext}`,
     type,
   } as any;
-
-  console.log('Creating Publication...', publication, image);
-
   formData.append('image', image);
 
+  console.log('Sending Publication FormData: ', formData);
   const res = await api.post<Publication>(
     `${PUBLICATION_ENDPOINT}/`,
     formData,
@@ -108,12 +110,14 @@ export async function createPublication(publication: PublicationPayload) {
     },
   );
 
+  console.log('Sending Publication WebSocket Message: ', res.data);
   const ws = new WebSocket(`${BASE_URL_WS}${PUBLICATION_ENDPOINT}/`);
   ws.onopen = () => {
     ws.send(stringifyWebSocketMessage('create', res.data));
     ws.close();
   };
 
+  console.log("Finished creating Publication, it's time to celebrate!");
   return res;
 }
 

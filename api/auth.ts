@@ -10,6 +10,8 @@ export async function singin(data: SignInPayload) {
 
 export async function singup(data: SignUpPayload) {
   console.log('Signing up...');
+  api.defaults.headers.Authorization = '';
+  api.defaults.headers.common.Authorization = '';
   const response = await api.post<Omit<SignUpPayload, 'password'>>(
     '/users/register/',
     data,

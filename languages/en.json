@@ -13,7 +13,8 @@
       "title": "Sign Up",
       "subTitle": "Please sign up to continue",
       "already": "Already have an account?",
-      "button": "Sign Up"
+      "button": "Sign Up",
+      "error": "Unable to sign up"
     },
     "signout": {
       "title": "Sign Out",
@@ -23,7 +24,8 @@
     "forgotPassword": {
       "title": "Forgot Password",
       "subTitle": "Please enter your email address to reset your password",
-      "button": "Reset"
+      "button": "Reset",
+      "contact": "Or contact us"
     }
   },
   "settings": {

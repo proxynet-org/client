@@ -74,14 +74,18 @@ export async function leaveChatroom(id: string) {
 }
 
 export async function createChatroom(chatroom: ChatroomPayload) {
-  console.log('Creating chatroom...');
+  console.log('Getting Location...');
   const { granted } = await getForegroundPermissionsAsync();
+  console.log('Location Permission Granted:', granted);
   if (!granted) {
+    console.log('Requesting Location Permission...');
     await requestForegroundPermissionsAsync();
   }
   const position = await getCurrentPositionAsync();
-  updatePosition(position.coords);
+  console.log('Got Location: ', position);
+  await updatePosition(position.coords);
 
+  console.log('Creating Chatroom...', chatroom);
   const formData = new FormData();
   formData.append('name', chatroom.name);
   formData.append('description', chatroom.description);
@@ -102,6 +106,7 @@ export async function createChatroom(chatroom: ChatroomPayload) {
     type,
   } as any);
 
+  console.log('Sending Chatroom FormData:', formData);
   const res = await api.post<Chatroom>(`${CHATROOMS_ENDPOINT}/`, formData, {
     headers: {
       Accept: 'application/json',
@@ -109,11 +114,13 @@ export async function createChatroom(chatroom: ChatroomPayload) {
     },
   });
 
+  console.log('Sending Chatroom WebSocket Message: ', res.data);
   const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/`);
   ws.onopen = () => {
     ws.send(stringifyWebSocketMessage('create', res.data));
     ws.close();
   };
 
+  console.log("Finished creating Chatroom, it's time to celebrate!");
   return res;
 }

@@ -1,6 +1,7 @@
+import { BASE_URL_API } from '@env';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Linking, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import {
@@ -8,6 +9,7 @@ import {
   Button,
   HelperText,
   MD3Theme,
+  Text,
   TextInput,
   Title,
   useTheme,
@@ -41,6 +43,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       flexDirection: 'row',
       justifyContent: 'center',
       marginBottom: 28,
+      backgroundColor: 'transparent',
     },
     appBar: {
       width: '100%',
@@ -48,6 +51,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       position: 'absolute',
       backgroundColor: 'transparent',
     },
+    textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
   });
 }
 
@@ -127,6 +131,20 @@ export default function ForgotPassword() {
       >
         {i18n.t('auth.forgotPassword.button')}
       </Button>
+      <View style={styles.row}>
+        <Text variant="bodyLarge">
+          {i18n.t('auth.forgotPassword.contact')}{' '}
+        </Text>
+        <TouchableOpacity
+          onPress={async () => {
+            await Linking.openURL(BASE_URL_API.replace('/api', ''));
+          }}
+        >
+          <Text variant="bodyLarge" style={styles.textImportant}>
+            {BASE_URL_API.replace('/api', '')}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

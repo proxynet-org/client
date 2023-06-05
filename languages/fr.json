@@ -13,7 +13,8 @@
       "title": "Inscription",
       "subTitle": "Veuillez vous inscrire pour continuer",
       "already": "Vous avez déjà un compte ?",
-      "button": "S'inscrire"
+      "button": "S'inscrire",
+      "error": "Impossible de créer le compte"
     },
     "signout": {
       "title": "Déconnexion",
@@ -23,7 +24,8 @@
     "forgotPassword": {
       "title": "Mot de passe oublié",
       "subTitle": "Veuillez saisir votre adresse email pour réinitialiser votre mot de passe",
-      "button": "Réinitialiser"
+      "button": "Réinitialiser",
+      "contact": "Ou contactez-nous"
     }
   },
   "settings": {

@@ -10,8 +10,12 @@ const api = axios.create({
 
 export const setAccessToken = async (token: Token) => {
   console.log('Setting access token...', token);
-  api.defaults.headers.Authorization = `Bearer ${token.access}`;
-  api.defaults.headers.common.Authorization = `Bearer ${token.access}`;
+  api.defaults.headers.Authorization = token.access
+    ? `Bearer ${token.access}`
+    : '';
+  api.defaults.headers.common.Authorization = token.access
+    ? `Bearer ${token.access}`
+    : '';
   if (typeof token.refresh === 'string') {
     await setSecureItem('refresh_token', token.refresh);
   }
@@ -37,7 +41,9 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response) {
       const originalRequest = error.config;
+      console.log('Error response:', error.response);
       if (error.response.status === 401 && !originalRequest.retry) {
+        console.log('Unauthorized, auto refreshing token...');
         originalRequest.retry = true;
         await refreshAccessToken();
         originalRequest.headers.Authorization =
