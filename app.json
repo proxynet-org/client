@@ -4,7 +4,7 @@
     "slug": "proxynet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icons/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -28,7 +28,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/android/play_store_512.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -44,7 +44,7 @@
       "package": "com.proxynet"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/icons/web/favicon.ico"
     },
     "plugins": [
       [
