@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +19,7 @@ import i18n from '@/languages';
 import { AuthTabParams } from '@/routes/params';
 import { ForgotPasswordSchema } from '@/schemas/auth';
 import { forgotPassword } from '@/api/auth';
+import dimensions from '@/constants/dimensions';
 
 function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
   return StyleSheet.create({
@@ -30,6 +32,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
     },
     input: {
       width: '80%',
+      backgroundColor: theme.colors.surface,
     },
     button: {
       width: '80%',
@@ -43,6 +46,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       width: '100%',
       top: insets.top,
       position: 'absolute',
+      backgroundColor: 'transparent',
     },
   });
 }
@@ -76,6 +80,14 @@ export default function ForgotPassword() {
 
   return (
     <View style={styles.container}>
+      <LinearGradient
+        colors={['#aa74c2', '#deabe3']}
+        style={{
+          position: 'absolute',
+          width: dimensions.screen.width,
+          height: dimensions.screen.height,
+        }}
+      />
       <Appbar style={styles.appBar}>
         <Appbar.Action
           icon="arrow-left"
@@ -87,7 +99,6 @@ export default function ForgotPassword() {
       <TextInput
         label={i18n.t('form.email.field')}
         style={styles.input}
-        mode="outlined"
         inputMode="email"
         keyboardType="email-address"
         autoCapitalize="none"

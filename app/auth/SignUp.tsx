@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,6 +35,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
     },
     input: {
       width: '80%',
+      backgroundColor: theme.colors.surface,
     },
     button: {
       width: '80%',
@@ -42,7 +44,9 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       flexDirection: 'row',
       justifyContent: 'center',
       marginBottom: 28,
+      backgroundColor: 'transparent',
     },
+    textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
   });
 }
 
@@ -96,31 +100,36 @@ export default function SignUp() {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
+      <LinearGradient
+        colors={['#aa74c2', '#deabe3']}
+        style={{
+          position: 'absolute',
+          width: dimensions.screen.width,
+          height: dimensions.screen.height,
+        }}
+      />
       <Title>{i18n.t('auth.signup.title')}</Title>
       <TextInput
         label={i18n.t('form.firstname.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={handleChange('first_name')}
         value={values.first_name}
       />
       <TextInput
         label={i18n.t('form.lastname.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={handleChange('last_name')}
         value={values.last_name}
       />
       <TextInput
         label={i18n.t('form.username.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={handleChange('username')}
         value={values.username}
       />
-      <View style={styles.input}>
+      <View style={[styles.input, { backgroundColor: 'transparent' }]}>
         <DatePickerInput
-          mode="outlined"
+          style={styles.input}
           locale="en"
           label="Birthdate"
           inputMode="start"
@@ -133,7 +142,6 @@ export default function SignUp() {
       <TextInput
         label={i18n.t('form.email.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={handleChange('email')}
         value={values.email}
         inputMode="email"
@@ -144,7 +152,6 @@ export default function SignUp() {
       <TextInput
         label={i18n.t('form.password.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={handleChange('password')}
         value={values.password}
         secureTextEntry
@@ -154,7 +161,6 @@ export default function SignUp() {
       <TextInput
         label={i18n.t('form.confirmPassword.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={handleChange('confirmPassword')}
         value={values.confirmPassword}
         secureTextEntry
@@ -170,9 +176,9 @@ export default function SignUp() {
         {i18n.t('auth.signup.button')}
       </Button>
       <View style={styles.row}>
-        <Text>{i18n.t('auth.signup.already')} </Text>
+        <Text variant="bodyLarge">{i18n.t('auth.signup.already')} </Text>
         <TouchableOpacity onPress={() => navigation.jumpTo('SignIn')}>
-          <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
+          <Text variant="bodyLarge" style={styles.textImportant}>
             {i18n.t('auth.signin.button')}
           </Text>
         </TouchableOpacity>

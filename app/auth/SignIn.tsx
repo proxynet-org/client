@@ -33,6 +33,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
     },
     input: {
       width: '80%',
+      backgroundColor: theme.colors.surface,
     },
     button: {
       width: '80%',
@@ -114,7 +115,6 @@ export default function SignIn() {
       <TextInput
         label={i18n.t('form.username.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={formik.handleChange('username')}
         value={formik.values.username}
         autoCapitalize="none"
@@ -122,7 +122,6 @@ export default function SignIn() {
       <TextInput
         label={i18n.t('form.password.field')}
         style={styles.input}
-        mode="outlined"
         onChangeText={formik.handleChange('password')}
         value={formik.values.password}
         secureTextEntry
