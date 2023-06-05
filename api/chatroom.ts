@@ -1,6 +1,10 @@
 import { BASE_URL_WS } from '@env';
 import { Platform } from 'react-native';
-import { getCurrentPositionAsync } from 'expo-location';
+import {
+  getCurrentPositionAsync,
+  requestForegroundPermissionsAsync,
+  getForegroundPermissionsAsync,
+} from 'expo-location';
 import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
 import api from './api';
@@ -70,6 +74,10 @@ export async function leaveChatroom(id: string) {
 }
 
 export async function createChatroom(chatroom: ChatroomPayload) {
+  const { granted } = await getForegroundPermissionsAsync();
+  if (!granted) {
+    await requestForegroundPermissionsAsync();
+  }
   const position = await getCurrentPositionAsync();
   updatePosition(position.coords);
 

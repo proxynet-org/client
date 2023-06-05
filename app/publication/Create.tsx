@@ -89,6 +89,7 @@ export default function Create() {
     onSubmit: async (values) => {
       setSending(true);
       try {
+        console.log('Trying to create publication', values);
         const res = await createPublication({ ...values });
         navigation.replace('PublicationPreview', { publication: res.data });
       } catch (error) {

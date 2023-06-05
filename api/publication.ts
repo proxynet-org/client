@@ -1,5 +1,9 @@
 import { BASE_URL_WS } from '@env';
-import { getCurrentPositionAsync } from 'expo-location';
+import {
+  getCurrentPositionAsync,
+  requestForegroundPermissionsAsync,
+  getForegroundPermissionsAsync,
+} from 'expo-location';
 import { Platform } from 'react-native';
 import {
   Publication,
@@ -65,6 +69,10 @@ export async function getPublication(id: string) {
 }
 
 export async function createPublication(publication: PublicationPayload) {
+  const { granted } = await getForegroundPermissionsAsync();
+  if (!granted) {
+    await requestForegroundPermissionsAsync();
+  }
   const position = await getCurrentPositionAsync();
   await updatePosition(position.coords);
 
@@ -80,12 +88,15 @@ export async function createPublication(publication: PublicationPayload) {
   const match = /\.(\w+)$/.exec(filename as string);
   const ext = match?.[1];
   const type = match ? `image/${match[1]}` : `image`;
-
-  formData.append('image', {
+  const image = {
     uri,
     name: `image.${ext}`,
     type,
-  } as any);
+  } as any;
+
+  console.log('Creating Publication...', publication, image);
+
+  formData.append('image', image);
 
   const res = await api.post<Publication>(
     `${PUBLICATION_ENDPOINT}/`,
