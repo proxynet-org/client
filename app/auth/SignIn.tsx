@@ -12,6 +12,7 @@ import {
   Text,
   Button,
   Snackbar,
+  ActivityIndicator,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { View } from '@/components/Themed';
@@ -55,6 +56,14 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       textShadowOffset: { width: 1, height: 1 },
     },
     textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+      zIndex: 1,
+    },
   });
 }
 
@@ -63,6 +72,7 @@ export default function SignIn() {
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => makeStyle(theme, insets), [theme, insets]);
   const { signIn } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const navigation =
     useNavigation<MaterialBottomTabNavigationProp<AuthTabParams>>();
@@ -83,7 +93,9 @@ export default function SignIn() {
     },
     onSubmit: async (values) => {
       try {
+        setLoading(true);
         await signIn(values);
+        setLoading(false);
       } catch (error) {
         setSnackbar({
           open: true,
@@ -99,6 +111,12 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
+      <ActivityIndicator
+        animating={loading}
+        hidesWhenStopped
+        size="large"
+        style={styles.loader}
+      />
       <LinearGradient
         colors={['#aa74c2', '#deabe3']}
         style={{
@@ -134,7 +152,7 @@ export default function SignIn() {
       <Button
         style={styles.button}
         mode="contained"
-        disabled={!isValid}
+        disabled={!isValid || loading}
         onPress={() => handleSubmit()}
       >
         {i18n.t('auth.signin.button')}

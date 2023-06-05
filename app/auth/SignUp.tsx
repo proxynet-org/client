@@ -13,6 +13,7 @@ import {
   Button,
   Text,
   Snackbar,
+  ActivityIndicator,
 } from 'react-native-paper';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { useFormik } from 'formik';
@@ -47,6 +48,14 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       backgroundColor: 'transparent',
     },
     textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
+    loader: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -20,
+      marginTop: -20,
+      zIndex: 1,
+    },
   });
 }
 
@@ -54,6 +63,7 @@ export default function SignUp() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => makeStyle(theme, insets), [theme, insets]);
+  const [loading, setLoading] = useState(false);
 
   const navigation =
     useNavigation<MaterialBottomTabNavigationProp<AuthTabParams>>();
@@ -81,7 +91,9 @@ export default function SignUp() {
     },
     onSubmit: async (values) => {
       try {
+        setLoading(true);
         await signUp(values);
+        setLoading(false);
       } catch (error) {
         setSnackbar({
           open: true,
@@ -100,6 +112,12 @@ export default function SignUp() {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
+      <ActivityIndicator
+        animating={loading}
+        hidesWhenStopped
+        size="large"
+        style={styles.loader}
+      />
       <LinearGradient
         colors={['#aa74c2', '#deabe3']}
         style={{
@@ -170,7 +188,7 @@ export default function SignUp() {
       <Button
         style={styles.button}
         mode="contained"
-        disabled={!isValid}
+        disabled={!isValid || loading}
         onPress={() => handleSubmit()}
       >
         {i18n.t('auth.signup.button')}
