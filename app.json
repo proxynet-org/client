@@ -2,7 +2,7 @@
   "expo": {
     "name": "proxynet",
     "slug": "proxynet",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "scheme": "myapp",
@@ -42,7 +42,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.proxynet",
-      "versionCode": 1
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/icons/web/favicon.ico"
