@@ -171,6 +171,7 @@ export default function MapView({ markers }: Props) {
         toolbarEnabled={false}
         onPanDrag={cancelFollow}
         onUserLocationChange={onUserLocationChange}
+        onClusterPress={cancelFollow}
       >
         {markers
           ?.filter((marker) => marker.coordinates)
