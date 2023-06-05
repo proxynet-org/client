@@ -5,6 +5,10 @@ import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
 import api from './api';
 import { updatePosition } from './map';
+import {
+  parseWebSocketMessage,
+  stringifyWebSocketMessage,
+} from '@/utils/websocket';
 
 export const CHATROOMS_ENDPOINT = '/chatrooms';
 
@@ -24,14 +28,13 @@ export function subscribeChatrooms(onMessage: (message: Chatroom) => void) {
     ws.close();
   }
 
-  function onmessage(e: MessageEvent<string>) {
-    const { message } = JSON.parse(e.data);
-    const data = JSON.parse(message) as Chatroom;
-    console.log('Got Chatroom: ', data);
-    onMessage(data);
-  }
-
-  ws.onmessage = onmessage;
+  ws.onmessage = (event) => {
+    const data = parseWebSocketMessage<Chatroom>(event);
+    if (data && data.type === 'create') {
+      console.log('Got Chatroom: ', data);
+      onMessage(data.data);
+    }
+  };
   ws.onopen = () => {
     console.log('Subscribed Chatrooms');
   };
@@ -100,7 +103,8 @@ export async function createChatroom(chatroom: ChatroomPayload) {
 
   const ws = new WebSocket(`${BASE_URL_WS}${CHATROOMS_ENDPOINT}/`);
   ws.onopen = () => {
-    ws.send(JSON.stringify(res.data));
+    ws.send(stringifyWebSocketMessage('create', res.data));
+    ws.close();
   };
 
   return res;

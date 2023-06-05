@@ -1,3 +1,4 @@
+import { BASE_URL_WS } from '@env';
 import { useMemo, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
@@ -18,11 +19,12 @@ import {
 import i18n from '@/languages';
 import { View } from '@/components/Themed';
 import { RootStackParams } from '@/routes/params';
-import { getChatroom, joinChatroom } from '@/api/chatroom';
+import { joinChatroom } from '@/api/chatroom';
 import { SnackbarState } from '@/types/ui';
 import positionSubject, { PositionObserver } from '@/events/PositionSubject';
 import { distanceInMeters } from '@/utils/distanceInMeters';
 import { RANGE_METERS } from '@/constants/rules';
+import { parseWebSocketMessage } from '@/utils/websocket';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -66,12 +68,29 @@ export default function Preview() {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      getChatroom(chatroom.id).then((lastChatroom) => {
-        setUpdatedChatroom(lastChatroom.data);
-      });
-    }, 5000);
-    return () => clearInterval(interval);
+    const ws = new WebSocket(`${BASE_URL_WS}/chatrooms${chatroom.id}/`);
+    ws.onmessage = (event) => {
+      const data = parseWebSocketMessage(event);
+      if (data) {
+        switch (data.type) {
+          case 'join':
+            setUpdatedChatroom((prev) => ({
+              ...prev,
+              num_people: prev.num_people + 1,
+            }));
+            break;
+          case 'leave':
+            setUpdatedChatroom((prev) => ({
+              ...prev,
+              num_people: prev.num_people - 1,
+            }));
+            break;
+          default:
+            break;
+        }
+      }
+    };
+    return ws.close;
   }, [chatroom]);
 
   const enterChatroom = async () => {

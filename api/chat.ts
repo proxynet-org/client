@@ -1,7 +1,10 @@
 import { BASE_URL_WS } from '@env';
 import api from './api';
-import { WebSocketMessage } from '@/types/websocket';
 import { ChatMessage, ChatMessagePayload } from '@/types/chat';
+import {
+  parseWebSocketMessage,
+  stringifyWebSocketMessage,
+} from '@/utils/websocket';
 
 export const CHAT_ENDPOINT = '/all';
 export const MESSAGES_ENDPOINT = '/messages';
@@ -26,7 +29,7 @@ export function connectToChat(
   async function sendMessage(message: ChatMessagePayload) {
     console.log('Sending message...', message);
     const res = await api.post<ChatMessage>(`${messagesEndpoint}/`, message);
-    ws.send(JSON.stringify(res.data));
+    ws.send(stringifyWebSocketMessage('message', res.data));
   }
 
   function disconnect() {
@@ -34,11 +37,12 @@ export function connectToChat(
     ws.close();
   }
 
-  ws.onmessage = (e: MessageEvent<string>) => {
-    console.log('Message received: ', e.data);
-    const data = JSON.parse(e.data) as WebSocketMessage;
-    const message = JSON.parse(data.message) as ChatMessage;
-    onMessage(message);
+  ws.onmessage = (event) => {
+    console.log('Message received: ', event.data);
+    const data = parseWebSocketMessage<ChatMessage>(event);
+    if (data && data.type === 'message') {
+      onMessage(data.data);
+    }
   };
 
   ws.onopen = async () => {

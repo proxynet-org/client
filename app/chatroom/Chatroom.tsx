@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { BASE_URL_WS } from '@env';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   useNavigation,
   NavigationProp,
@@ -16,6 +17,10 @@ import { leaveChatroom } from '@/api/chatroom';
 import positionSubject, { PositionObserver } from '@/events/PositionSubject';
 import { distanceInMeters } from '@/utils/distanceInMeters';
 import { RANGE_METERS } from '@/constants/rules';
+import {
+  parseWebSocketMessage,
+  stringifyWebSocketMessage,
+} from '@/utils/websocket';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -55,19 +60,52 @@ export default function ChatRoom() {
   const route = useRoute<RouteProp<RootStackParams, 'ChatRoom'>>();
 
   const { chatroom } = route.params;
+  const [updatedChatroom, setUpdatedChatroom] = useState(chatroom);
+
+  useEffect(() => {
+    const ws = new WebSocket(`${BASE_URL_WS}/chatrooms${chatroom.id}/`);
+    ws.onopen = () => {
+      ws.send(stringifyWebSocketMessage('join', ''));
+    };
+    ws.onmessage = (event) => {
+      const data = parseWebSocketMessage(event);
+      if (data) {
+        switch (data.type) {
+          case 'join':
+            setUpdatedChatroom((prev) => ({
+              ...prev,
+              num_people: prev.num_people + 1,
+            }));
+            break;
+          case 'leave':
+            setUpdatedChatroom((prev) => ({
+              ...prev,
+              num_people: prev.num_people - 1,
+            }));
+            break;
+          default:
+            break;
+        }
+      }
+    };
+    return () => {
+      leaveChatroom(chatroom.id);
+      ws.close();
+    };
+  }, [chatroom]);
 
   const headerRight = useCallback(() => {
     return (
       <View style={styles.headerRight}>
         <Text style={styles.text}>
           {i18n.t('chatroom.online', {
-            count: chatroom.num_people,
+            count: updatedChatroom.num_people,
           })}
         </Text>
         <Badge style={styles.badge} size={10} />
       </View>
     );
-  }, [chatroom, styles]);
+  }, [updatedChatroom, styles]);
 
   const headerBackground = useCallback(() => {
     return (
@@ -83,10 +121,6 @@ export default function ChatRoom() {
       headerRight,
       headerBackground,
     });
-
-    return () => {
-      leaveChatroom(chatroom.id);
-    };
   }, [chatroom, headerRight, navigation, headerBackground, styles]);
 
   useEffect(() => {

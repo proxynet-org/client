@@ -10,6 +10,10 @@ import {
 import api from './api';
 
 import { updatePosition } from './map';
+import {
+  parseWebSocketMessage,
+  stringifyWebSocketMessage,
+} from '@/utils/websocket';
 
 export const PUBLICATION_ENDPOINT = '/publications';
 export const COMMENTS_ENDPOINT = '/comment';
@@ -33,14 +37,13 @@ export function subscribePublications(
     ws.close();
   }
 
-  function onmessage(e: MessageEvent<string>) {
-    const { message } = JSON.parse(e.data);
-    const data = JSON.parse(message) as Publication;
-    console.log('Got Publication: ', data);
-    onMessage(data);
-  }
-
-  ws.onmessage = onmessage;
+  ws.onmessage = (event) => {
+    const data = parseWebSocketMessage<Publication>(event);
+    if (data && data.type === 'create') {
+      console.log('Got Publication: ', data);
+      onMessage(data.data);
+    }
+  };
   ws.onopen = () => {
     console.log('Subscribed Publications');
   };
@@ -96,7 +99,8 @@ export async function createPublication(publication: PublicationPayload) {
 
   const ws = new WebSocket(`${BASE_URL_WS}${PUBLICATION_ENDPOINT}/`);
   ws.onopen = () => {
-    ws.send(JSON.stringify(res.data));
+    ws.send(stringifyWebSocketMessage('create', res.data));
+    ws.close();
   };
 
   return res;
