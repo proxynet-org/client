@@ -74,6 +74,7 @@ export async function leaveChatroom(id: string) {
 }
 
 export async function createChatroom(chatroom: ChatroomPayload) {
+  console.log('Creating chatroom...');
   const { granted } = await getForegroundPermissionsAsync();
   if (!granted) {
     await requestForegroundPermissionsAsync();
@@ -81,7 +82,6 @@ export async function createChatroom(chatroom: ChatroomPayload) {
   const position = await getCurrentPositionAsync();
   updatePosition(position.coords);
 
-  console.log('Creating chatroom...');
   const formData = new FormData();
   formData.append('name', chatroom.name);
   formData.append('description', chatroom.description);
