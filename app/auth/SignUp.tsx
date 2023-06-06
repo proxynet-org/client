@@ -90,10 +90,9 @@ export default function SignUp() {
       confirmPassword: '',
     },
     onSubmit: async (values) => {
+      setLoading(true);
       try {
-        setLoading(true);
         await signUp(values);
-        setLoading(false);
       } catch (error) {
         setSnackbar({
           open: true,
@@ -102,6 +101,7 @@ export default function SignUp() {
           duration: 3000,
         });
       }
+      setLoading(false);
     },
   });
 

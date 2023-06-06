@@ -92,10 +92,9 @@ export default function SignIn() {
       password: '',
     },
     onSubmit: async (values) => {
+      setLoading(true);
       try {
-        setLoading(true);
         await signIn(values);
-        setLoading(false);
       } catch (error) {
         setSnackbar({
           open: true,
@@ -104,6 +103,7 @@ export default function SignIn() {
           duration: 3000,
         });
       }
+      setLoading(false);
     },
   });
 
