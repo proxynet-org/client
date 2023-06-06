@@ -5,6 +5,15 @@ export type PositionObserver = (position: LatLng) => void;
 class PositionSubject {
   private observers: PositionObserver[] = [];
 
+  private position: LatLng = {
+    latitude: 0,
+    longitude: 0,
+  };
+
+  public getPosition() {
+    return this.position;
+  }
+
   public subscribe(observer: PositionObserver) {
     this.observers.push(observer);
   }
@@ -14,6 +23,7 @@ class PositionSubject {
   }
 
   public notify(position: LatLng) {
+    this.position = position;
     this.observers.forEach((observer) => observer(position));
   }
 }
