@@ -1,9 +1,9 @@
 import { BASE_URL_WS } from '@env';
 import { Platform } from 'react-native';
 import {
-  getCurrentPositionAsync,
   requestForegroundPermissionsAsync,
   getForegroundPermissionsAsync,
+  getLastKnownPositionAsync,
 } from 'expo-location';
 import { Chatroom, ChatroomPayload } from '@/types/chatroom';
 
@@ -81,9 +81,11 @@ export async function createChatroom(chatroom: ChatroomPayload) {
     console.log('Requesting Location Permission...');
     await requestForegroundPermissionsAsync();
   }
-  const position = await getCurrentPositionAsync();
-  console.log('Got Location: ', position);
-  await updatePosition(position.coords);
+  const position = await getLastKnownPositionAsync();
+  if (position) {
+    console.log('Got Location: ', position);
+    await updatePosition(position.coords);
+  }
 
   console.log('Creating Chatroom...', chatroom);
   const formData = new FormData();

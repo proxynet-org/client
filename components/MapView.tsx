@@ -89,10 +89,12 @@ export default function MapView({ markers }: Props) {
     start();
   }, []);
 
-  const centerOnUser = useCallback(() => {
+  const centerOnUser = useCallback(async () => {
     if (!userLocation.current) {
-      getCurrentPositionAsync({ accuracy: 6 }).then((location) => {
-        if (!location.coords) return;
+      await getCurrentPositionAsync({ accuracy: 6 }).then((location) => {
+        if (!location.coords) {
+          return;
+        }
         const { latitude, longitude } = location.coords;
         userLocation.current = { latitude, longitude };
         centerOnUser();
