@@ -184,5 +184,10 @@
     "join": {
       "error": "Impossible de rejoindre la chatroom"
     }
+  },
+  "permissions":{
+    "location":{
+      "denied": "Vous devez autoriser l'accès à la localisation pour utiliser cette application\nVeuillez modifier les paramètres de votre téléphone"
+    }
   }
 }

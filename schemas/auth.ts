@@ -4,6 +4,7 @@ import * as yup from 'yup';
 export const SignupSchema = yup.object().shape({
   first_name: yup.string().required('form.required'),
   last_name: yup.string().required('form.required'),
+  username: yup.string().required('form.required'),
   birthDate: yup
     .date()
     .test('age', 'form.birthDate.errorAge', (value) => {
@@ -20,10 +21,6 @@ export const SignupSchema = yup.object().shape({
     .matches(
       /^(?=.*[A-Z])(?=.*[!@#$%^&*?])(?=.*[0-9])(?=.*[a-z]).{8,}$/,
       'form.password.errorAll',
-    )
-    .oneOf(
-      [yup.ref('confirmPassword'), undefined],
-      'form.confirmPassword.error',
     )
     .required('form.required'),
   confirmPassword: yup

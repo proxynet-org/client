@@ -5,10 +5,7 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import {
-  Title,
   TextInput,
-  MD3Theme,
-  useTheme,
   Text,
   Button,
   Snackbar,
@@ -22,8 +19,12 @@ import { SigninSchema } from '@/schemas/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { SnackbarState } from '@/types/ui';
 import dimensions from '@/constants/dimensions';
+import themes from '@/themes';
+import { SignInPayload } from '@/types/auth';
+import fieldError from '@/utils/fieldError';
+import TextFieldHelperText from '@/components/TextFieldHelperText';
 
-function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
+function makeStyle(insets: EdgeInsets) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -34,7 +35,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
     },
     input: {
       width: '80%',
-      backgroundColor: theme.colors.surface,
+      backgroundColor: themes.light.paper.colors.surface,
     },
     button: {
       width: '80%',
@@ -45,17 +46,10 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       marginBottom: 28,
       backgroundColor: 'transparent',
     },
-    title: {
-      position: 'absolute',
-      top: 100,
-      color: 'white',
-      fontSize: 40,
+    textImportant: {
+      color: themes.light.paper.colors.primary,
       fontWeight: 'bold',
-      textShadowRadius: 1,
-      textShadowColor: 'rgba(0, 0, 0, 0.75)',
-      textShadowOffset: { width: 1, height: 1 },
     },
-    textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
     loader: {
       position: 'absolute',
       top: '50%',
@@ -68,11 +62,13 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
 }
 
 export default function SignIn() {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => makeStyle(theme, insets), [theme, insets]);
+  const styles = useMemo(() => makeStyle(insets), [insets]);
   const { signIn } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<keyof SignInPayload | null>(
+    null,
+  );
 
   const navigation =
     useNavigation<MaterialBottomTabNavigationProp<AuthTabParams>>();
@@ -84,7 +80,7 @@ export default function SignIn() {
     duration: 3000,
   });
 
-  const formik = useFormik({
+  const formik = useFormik<SignInPayload>({
     validateOnMount: true,
     validationSchema: SigninSchema,
     initialValues: {
@@ -107,7 +103,15 @@ export default function SignIn() {
     },
   });
 
-  const { isValid, handleSubmit } = formik;
+  const {
+    isValid,
+    values,
+    touched,
+    errors,
+    handleChange,
+    handleSubmit,
+    handleBlur,
+  } = formik;
 
   return (
     <View style={styles.container}>
@@ -129,36 +133,64 @@ export default function SignIn() {
         source={require('@/assets/images/logo.png')}
         style={{ width: 100, height: 100 }}
       />
-      <Title>{i18n.t('auth.signin.title')}</Title>
+      <Text theme={themes.light.paper} variant="titleLarge">
+        {i18n.t('auth.signin.title')}
+      </Text>
       <TextInput
-        label={i18n.t('form.username.field')}
-        style={styles.input}
-        onChangeText={formik.handleChange('username')}
-        value={formik.values.username}
         autoCapitalize="none"
+        autoComplete="username"
+        theme={themes.light.paper}
+        style={styles.input}
+        label={i18n.t('form.username.field')}
+        value={values.username}
+        onChangeText={handleChange('username')}
+        error={fieldError('username', errors, touched)}
+        onFocus={() => setFocusedField('username')}
+        onBlur={handleBlur('username')}
+      />
+      <TextFieldHelperText
+        field="username"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <TextInput
-        label={i18n.t('form.password.field')}
-        style={styles.input}
-        onChangeText={formik.handleChange('password')}
-        value={formik.values.password}
         secureTextEntry
         autoCapitalize="none"
         autoComplete="password"
+        theme={themes.light.paper}
+        style={styles.input}
+        label={i18n.t('form.password.field')}
+        value={values.password}
+        onChangeText={handleChange('password')}
+        error={fieldError('password', errors, touched)}
+        onFocus={() => setFocusedField('password')}
+        onBlur={handleBlur('password')}
+      />
+      <TextFieldHelperText
+        field="password"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <TouchableOpacity onPress={() => navigation.jumpTo('ForgotPassword')}>
-        <Text variant="bodyLarge">{i18n.t('auth.signin.forgotPassword')}</Text>
+        <Text theme={themes.light.paper} variant="bodyLarge">
+          {i18n.t('auth.signin.forgotPassword')}
+        </Text>
       </TouchableOpacity>
       <Button
         style={styles.button}
         mode="contained"
         disabled={!isValid || loading}
         onPress={() => handleSubmit()}
+        theme={themes.light.paper}
       >
         {i18n.t('auth.signin.button')}
       </Button>
       <View style={styles.row}>
-        <Text variant="bodyLarge">{i18n.t('auth.signin.noAccount')} </Text>
+        <Text theme={themes.light.paper} variant="bodyLarge">
+          {i18n.t('auth.signin.noAccount')}{' '}
+        </Text>
         <TouchableOpacity onPress={() => navigation.jumpTo('SignUp')}>
           <Text variant="bodyLarge" style={styles.textImportant}>
             {i18n.t('auth.signup.button')}

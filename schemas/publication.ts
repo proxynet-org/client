@@ -6,6 +6,7 @@ const CreatePublicationSchema = [
   }),
   yup.object().shape({
     title: yup.string().required('form.required'),
+    text: yup.string().required('form.required').max(100, 'form.max'),
   }),
 ];
 

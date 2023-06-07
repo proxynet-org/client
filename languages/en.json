@@ -183,5 +183,10 @@
     "join": {
       "error": "Unable to join chatroom"
     }
+  },
+  "permissions": {
+    "location": {
+      "denied": "You must enable location permissions to use this application.\nPlease enable them in your settings"
+    }
   }
 }

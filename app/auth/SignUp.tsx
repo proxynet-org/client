@@ -6,10 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
-  Title,
   TextInput,
-  MD3Theme,
-  useTheme,
   Button,
   Text,
   Snackbar,
@@ -24,8 +21,12 @@ import dimensions from '@/constants/dimensions';
 import { SignupSchema } from '@/schemas/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { SnackbarState } from '@/types/ui';
+import themes from '@/themes';
+import { SignUpPayload } from '@/types/auth';
+import TextFieldHelperText from '@/components/TextFieldHelperText';
+import fieldError from '@/utils/fieldError';
 
-function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
+function makeStyle(insets: EdgeInsets) {
   return StyleSheet.create({
     container: {
       height: dimensions.window.height,
@@ -36,7 +37,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
     },
     input: {
       width: '80%',
-      backgroundColor: theme.colors.surface,
+      backgroundColor: themes.light.paper.colors.surface,
     },
     button: {
       width: '80%',
@@ -47,7 +48,10 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       marginBottom: 28,
       backgroundColor: 'transparent',
     },
-    textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
+    textImportant: {
+      color: themes.light.paper.colors.primary,
+      fontWeight: 'bold',
+    },
     loader: {
       position: 'absolute',
       top: '50%',
@@ -60,10 +64,12 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
 }
 
 export default function SignUp() {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => makeStyle(theme, insets), [theme, insets]);
+  const styles = useMemo(() => makeStyle(insets), [insets]);
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<keyof SignUpPayload | null>(
+    null,
+  );
 
   const navigation =
     useNavigation<MaterialBottomTabNavigationProp<AuthTabParams>>();
@@ -77,7 +83,7 @@ export default function SignUp() {
     duration: 3000,
   });
 
-  const formik = useFormik({
+  const formik = useFormik<SignUpPayload>({
     validateOnMount: true,
     validationSchema: SignupSchema,
     initialValues: {
@@ -105,7 +111,16 @@ export default function SignUp() {
     },
   });
 
-  const { isValid, handleChange, values, handleSubmit } = formik;
+  const {
+    isValid,
+    values,
+    touched,
+    errors,
+    setFieldTouched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+  } = formik;
 
   return (
     <KeyboardAwareScrollView
@@ -126,75 +141,152 @@ export default function SignUp() {
           height: dimensions.screen.height,
         }}
       />
-      <Title>{i18n.t('auth.signup.title')}</Title>
+      <Text theme={themes.light.paper} variant="titleLarge">
+        {i18n.t('auth.signup.title')}
+      </Text>
       <TextInput
+        theme={themes.light.paper}
+        style={styles.input}
         label={i18n.t('form.firstname.field')}
-        style={styles.input}
-        onChangeText={handleChange('first_name')}
         value={values.first_name}
+        onChangeText={handleChange('first_name')}
+        error={fieldError('first_name', errors, touched)}
+        onFocus={() => setFocusedField('first_name')}
+        onBlur={handleBlur('first_name')}
+      />
+      <TextFieldHelperText
+        field="first_name"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <TextInput
+        theme={themes.light.paper}
+        style={styles.input}
         label={i18n.t('form.lastname.field')}
-        style={styles.input}
-        onChangeText={handleChange('last_name')}
         value={values.last_name}
+        onChangeText={handleChange('last_name')}
+        error={fieldError('last_name', errors, touched)}
+        onFocus={() => setFocusedField('last_name')}
+        onBlur={handleBlur('last_name')}
+      />
+      <TextFieldHelperText
+        field="last_name"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <TextInput
-        label={i18n.t('form.username.field')}
+        theme={themes.light.paper}
         style={styles.input}
-        onChangeText={handleChange('username')}
+        label={i18n.t('form.username.field')}
         value={values.username}
+        onChangeText={handleChange('username')}
+        error={fieldError('username', errors, touched)}
+        onFocus={() => setFocusedField('username')}
+        onBlur={handleBlur('username')}
+      />
+      <TextFieldHelperText
+        field="username"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <View style={[styles.input, { backgroundColor: 'transparent' }]}>
         <DatePickerInput
-          style={styles.input}
           locale="en"
-          label="Birthdate"
           inputMode="start"
-          onChange={(value) =>
-            formik.setFieldValue('birthDate', value?.toISOString())
-          }
+          theme={themes.light.paper}
+          style={styles.input}
+          label={i18n.t('form.birthDate.field')}
           value={new Date(formik.values.birthDate || Date.now())}
+          onChange={(value) => {
+            setFieldTouched('birthDate', true);
+            formik.setFieldValue('birthDate', value?.toISOString());
+          }}
+          error={fieldError('birthDate', errors, touched)}
+          hasError={fieldError('birthDate', errors, touched)}
+          onFocus={() => setFocusedField('birthDate')}
+          onBlur={handleBlur('birthDate')}
+        />
+        <TextFieldHelperText
+          field="birthDate"
+          errors={errors}
+          touched={touched}
+          focusedField={focusedField}
         />
       </View>
       <TextInput
-        label={i18n.t('form.email.field')}
-        style={styles.input}
-        onChangeText={handleChange('email')}
-        value={values.email}
         inputMode="email"
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
+        theme={themes.light.paper}
+        style={styles.input}
+        label={i18n.t('form.email.field')}
+        value={values.email}
+        onChangeText={handleChange('email')}
+        error={fieldError('email', errors, touched)}
+        onFocus={() => setFocusedField('email')}
+        onBlur={handleBlur('email')}
+      />
+      <TextFieldHelperText
+        field="email"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <TextInput
+        secureTextEntry
+        autoCapitalize="none"
+        autoComplete="password-new"
+        theme={themes.light.paper}
+        style={styles.input}
         label={i18n.t('form.password.field')}
-        style={styles.input}
-        onChangeText={handleChange('password')}
         value={values.password}
-        secureTextEntry
-        autoCapitalize="none"
-        autoComplete="password-new"
+        onChangeText={handleChange('password')}
+        error={fieldError('password', errors, touched)}
+        onBlur={handleBlur('password')}
+        onFocus={() => setFocusedField('password')}
+      />
+      <TextFieldHelperText
+        field="password"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <TextInput
-        label={i18n.t('form.confirmPassword.field')}
-        style={styles.input}
-        onChangeText={handleChange('confirmPassword')}
-        value={values.confirmPassword}
         secureTextEntry
         autoCapitalize="none"
         autoComplete="password-new"
+        theme={themes.light.paper}
+        style={styles.input}
+        label={i18n.t('form.confirmPassword.field')}
+        value={values.confirmPassword}
+        onChangeText={handleChange('confirmPassword')}
+        error={fieldError('confirmPassword', errors, touched)}
+        onBlur={handleBlur('confirmPassword')}
+        onFocus={() => setFocusedField('confirmPassword')}
+      />
+      <TextFieldHelperText
+        field="confirmPassword"
+        errors={errors}
+        touched={touched}
+        focusedField={focusedField}
       />
       <Button
         style={styles.button}
         mode="contained"
         disabled={!isValid || loading}
         onPress={() => handleSubmit()}
+        theme={themes.light.paper}
       >
         {i18n.t('auth.signup.button')}
       </Button>
       <View style={styles.row}>
-        <Text variant="bodyLarge">{i18n.t('auth.signup.already')} </Text>
+        <Text theme={themes.light.paper} variant="bodyLarge">
+          {i18n.t('auth.signup.already')}{' '}
+        </Text>
         <TouchableOpacity onPress={() => navigation.jumpTo('SignIn')}>
           <Text variant="bodyLarge" style={styles.textImportant}>
             {i18n.t('auth.signin.button')}

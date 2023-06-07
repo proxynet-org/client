@@ -8,11 +8,8 @@ import {
   Appbar,
   Button,
   HelperText,
-  MD3Theme,
   Text,
   TextInput,
-  Title,
-  useTheme,
 } from 'react-native-paper';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFormik } from 'formik';
@@ -22,8 +19,9 @@ import { AuthTabParams } from '@/routes/params';
 import { ForgotPasswordSchema } from '@/schemas/auth';
 import { forgotPassword } from '@/api/auth';
 import dimensions from '@/constants/dimensions';
+import themes from '@/themes';
 
-function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
+function makeStyle(insets: EdgeInsets) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -34,7 +32,7 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
     },
     input: {
       width: '80%',
-      backgroundColor: theme.colors.surface,
+      backgroundColor: themes.light.paper.colors.surface,
     },
     button: {
       width: '80%',
@@ -51,14 +49,16 @@ function makeStyle(theme: MD3Theme, insets: EdgeInsets) {
       position: 'absolute',
       backgroundColor: 'transparent',
     },
-    textImportant: { color: theme.colors.primary, fontWeight: 'bold' },
+    textImportant: {
+      color: themes.light.paper.colors.primary,
+      fontWeight: 'bold',
+    },
   });
 }
 
 export default function ForgotPassword() {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const styles = useMemo(() => makeStyle(theme, insets), [theme, insets]);
+  const styles = useMemo(() => makeStyle(insets), [insets]);
 
   const navigation =
     useNavigation<MaterialBottomTabNavigationProp<AuthTabParams>>();
@@ -92,14 +92,16 @@ export default function ForgotPassword() {
           height: dimensions.screen.height,
         }}
       />
-      <Appbar style={styles.appBar}>
+      <Appbar style={styles.appBar} theme={themes.light.paper}>
         <Appbar.Action
           icon="arrow-left"
           onPress={() => navigation.jumpTo('SignIn')}
         />
         <Appbar.Content title={i18n.t('auth.signin.title')} />
       </Appbar>
-      <Title>{i18n.t('auth.forgotPassword.title')}</Title>
+      <Text theme={themes.light.paper} variant="titleLarge">
+        {i18n.t('auth.forgotPassword.title')}
+      </Text>
       <TextInput
         label={i18n.t('form.email.field')}
         style={styles.input}
@@ -111,6 +113,7 @@ export default function ForgotPassword() {
         onBlur={handleBlur('email')}
         value={values.email}
         error={Boolean(errors.email && touched.email)}
+        theme={themes.light.paper}
       />
       {errors.email && touched.email && (
         <HelperText
@@ -128,11 +131,12 @@ export default function ForgotPassword() {
         mode="contained"
         onPress={() => handleSubmit()}
         disabled={!isValid}
+        theme={themes.light.paper}
       >
         {i18n.t('auth.forgotPassword.button')}
       </Button>
       <View style={styles.row}>
-        <Text variant="bodyLarge">
+        <Text variant="bodyLarge" theme={themes.light.paper}>
           {i18n.t('auth.forgotPassword.contact')}{' '}
         </Text>
         <TouchableOpacity
