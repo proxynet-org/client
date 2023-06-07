@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Linking, StyleSheet, Alert } from 'react-native';
 import DefaultMapView, {
   LatLng,
   Marker,
@@ -21,6 +21,7 @@ import dimensions from '@/constants/dimensions';
 import { MapMarker } from '@/types/ui';
 import { distanceInMeters } from '@/utils/distanceInMeters';
 import positionSubject from '@/events/PositionSubject';
+import i18n from '@/languages';
 
 export const DISTANCE_METERS_TO_UPDATE = 1000;
 const POSITION_KEY = 'position';
@@ -69,7 +70,21 @@ export default function MapView({ markers }: Props) {
       const { granted } = await getForegroundPermissionsAsync();
 
       if (!granted) {
-        await requestForegroundPermissionsAsync();
+        const res = await requestForegroundPermissionsAsync();
+        if (!res.granted) {
+          Alert.alert('', i18n.t('permissions.location.denied'), [
+            {
+              text: 'OK',
+              onPress: async () => {
+                await Linking.openSettings();
+                setTimeout(() => {
+                  start();
+                }, 1000);
+              },
+            },
+          ]);
+          return;
+        }
       }
 
       if (!location) {
