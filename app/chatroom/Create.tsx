@@ -26,6 +26,8 @@ import { createChatroom, joinChatroom } from '@/api/chatroom';
 import CreateChatroomSchema from '@/schemas/chatroom';
 import useToggle from '@/hooks/useToggle';
 import { SnackbarState } from '@/types/ui';
+import { ChatroomPayload } from '@/types/chatroom';
+import fieldError from '@/utils/fieldError';
 
 const makeStyle = (theme: MD3Theme) =>
   StyleSheet.create({
@@ -41,6 +43,7 @@ const makeStyle = (theme: MD3Theme) =>
       backgroundColor: theme.colors.background,
       borderRadius: 5,
       borderWidth: 1,
+      borderColor: theme.colors.onBackground,
     },
     sliderView: {
       padding: 10,
@@ -83,7 +86,7 @@ export default function Create() {
     duration: 3000,
   });
 
-  const formik = useFormik({
+  const formik = useFormik<ChatroomPayload>({
     validateOnMount: true,
     validationSchema: CreateChatroomSchema,
     initialValues: {
@@ -116,7 +119,15 @@ export default function Create() {
     },
   });
 
-  const { setFieldValue, handleSubmit, isValid, values } = formik;
+  const {
+    isValid,
+    values,
+    errors,
+    touched,
+    setFieldValue,
+    handleSubmit,
+    handleBlur,
+  } = formik;
   const [openGallery, toggleGallery] = useToggle(false);
 
   const headerRight = useCallback(
@@ -211,19 +222,23 @@ export default function Create() {
         )}
 
         <TextInput
-          label={i18n.t('form.name.field')}
           mode="outlined"
-          onChangeText={formik.handleChange('name')}
+          label={i18n.t('form.name.field')}
           value={values.name}
+          onChangeText={formik.handleChange('name')}
+          error={fieldError('name', errors, touched)}
+          onBlur={handleBlur('name')}
         />
         <TextInput
-          label={i18n.t('form.description.field')}
           mode="outlined"
           multiline
           numberOfLines={5}
-          onChangeText={formik.handleChange('description')}
-          value={values.description}
           right={<TextInput.Affix text={`${values.description.length}/100`} />}
+          label={i18n.t('form.description.field')}
+          value={values.description}
+          onChangeText={formik.handleChange('description')}
+          error={fieldError('description', errors, touched)}
+          onBlur={handleBlur('description')}
         />
         <Slider
           label={i18n.t('form.lifetime.field')}

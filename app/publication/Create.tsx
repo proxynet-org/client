@@ -10,7 +10,6 @@ import {
   useTheme,
   Snackbar,
 } from 'react-native-paper';
-import * as yup from 'yup';
 import { View } from '@/components/Themed';
 import Gallery from '@/components/Gallery';
 import useFormikMultiStep from '@/hooks/useFormikMultiStep';
@@ -20,15 +19,7 @@ import { createPublication } from '@/api/publication';
 import { PublicationPayload } from '@/types/publications';
 import { SnackbarState } from '@/types/ui';
 import i18n from '@/languages';
-
-export const CreatePublicationSchema = [
-  yup.object().shape({
-    image: yup.mixed().required('form.required'),
-  }),
-  yup.object().shape({
-    title: yup.string().required('form.required'),
-  }),
-];
+import CreatePublicationSchema from '@/schemas/publication';
 
 const makeStyle = (theme: MD3Theme) =>
   StyleSheet.create({
@@ -162,21 +153,25 @@ export default function Create() {
               style={styles.image}
             />
             <TextInput
-              label="Title"
+              label={i18n.t('form.title.field')}
               style={styles.textInput}
-              onChangeText={formik.handleChange('title')}
               value={formik.values.title}
+              onChangeText={formik.handleChange('title')}
+              error={!!formik.errors.title && !!formik.touched.title}
+              onBlur={formik.handleBlur('title')}
             />
           </View>
           <TextInput
             label={i18n.t('form.caption.field')}
             multiline
             numberOfLines={5}
-            onChangeText={formik.handleChange('text')}
             value={formik.values.text}
+            onChangeText={formik.handleChange('text')}
+            error={!!formik.errors.text && !!formik.touched.text}
             right={
               <TextInput.Affix text={`${formik.values.text.length}/100`} />
             }
+            onBlur={formik.handleBlur('text')}
           />
         </View>
       )}
