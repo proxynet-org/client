@@ -2,12 +2,13 @@ import { useMemo, useState, useEffect } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import { ActivityIndicator, MD3Theme, useTheme } from 'react-native-paper';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
 import { View } from '@/components/Themed';
 import { connectToChat } from '@/api/chat';
 import { RootStackParams } from '@/routes/params';
 import { useAuth } from '@/contexts/AuthContext';
 import { ChatMessage } from '@/types/chat';
+import i18n from '@/languages';
 
 function makeStyle(theme: MD3Theme) {
   return StyleSheet.create({
@@ -117,6 +118,13 @@ export default function ChatView({ chatEndpoint, messagesEndpoint }: Props) {
         }}
         textInputProps={{
           disabled: connecting,
+        }}
+        placeholder={i18n.t('chat.placeholder')}
+        renderSend={(props) => {
+          if (connecting) {
+            return null;
+          }
+          return <Send {...props} text={i18n.t('chat.button')} />;
         }}
       />
     </View>
