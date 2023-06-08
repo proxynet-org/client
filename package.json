@@ -16,7 +16,10 @@
     "server": "json-server --watch --port 3001 --host 192.168.1.15 ./mocks/db.json ",
     "build": "eas build --platform all",
     "build:android": "eas build --platform android",
-    "build:ios": "eas build --platform ios"
+    "build:ios": "eas build --platform ios",
+    "preview": "eas build --platform all --profile preview",
+    "preview:android": "eas build --platform android --profile preview",
+    "preview:ios": "eas build --platform ios --profile preview"
   },
   "dependencies": {
     "@expo/ngrok": "^4.1.0",
