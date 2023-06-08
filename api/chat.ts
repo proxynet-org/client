@@ -5,6 +5,8 @@ import {
   parseWebSocketMessage,
   stringifyWebSocketMessage,
 } from '@/utils/websocket';
+import { RANGE_METERS } from '@/constants/rules';
+import positionSubject from '@/events/PositionSubject';
 
 export const CHAT_ENDPOINT = '/all';
 export const MESSAGES_ENDPOINT = '/messages';
@@ -41,7 +43,10 @@ export function connectToChat(
     console.log('Message received: ', event.data);
     const data = parseWebSocketMessage<ChatMessage>(event);
     if (data && data.type === 'message') {
-      onMessage(data.data);
+      const message = data.data;
+      const distance = positionSubject.getDistanceInMeters(message.coordinates);
+      if (distance > RANGE_METERS) return;
+      onMessage(message);
     }
   };
 

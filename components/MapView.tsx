@@ -22,8 +22,8 @@ import { MapMarker } from '@/types/ui';
 import { distanceInMeters } from '@/utils/distanceInMeters';
 import positionSubject from '@/events/PositionSubject';
 import i18n from '@/languages';
+import { RANGE_METERS_HALF } from '@/constants/rules';
 
-export const DISTANCE_METERS_TO_UPDATE = 1000;
 const POSITION_KEY = 'position';
 
 const styles = StyleSheet.create({
@@ -155,7 +155,7 @@ export default function MapView({ markers }: Props) {
       await asyncStore.setItem(POSITION_KEY, JSON.stringify(newPosition));
       distance.current += distanceInMeters(oldPosition, newPosition);
 
-      if (distance.current >= DISTANCE_METERS_TO_UPDATE) {
+      if (distance.current >= RANGE_METERS_HALF) {
         positionSubject.notify(newPosition);
         distance.current = 0;
       }

@@ -1,4 +1,5 @@
 import { LatLng } from 'react-native-maps';
+import { distanceInMeters } from '@/utils/distanceInMeters';
 
 export type PositionObserver = (position: LatLng) => void;
 
@@ -12,6 +13,10 @@ class PositionSubject {
 
   public getPosition() {
     return this.position;
+  }
+
+  public getDistanceInMeters(position: LatLng) {
+    return distanceInMeters(this.position, position);
   }
 
   public subscribe(observer: PositionObserver) {
