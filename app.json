@@ -2,7 +2,7 @@
   "expo": {
     "name": "proxynet",
     "slug": "proxynet",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "scheme": "myapp",
@@ -45,7 +45,7 @@
         }
       },
       "package": "com.proxynet",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/icons/favicon.png"
