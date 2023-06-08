@@ -124,7 +124,7 @@ export default function ChatView({ chatEndpoint, messagesEndpoint }: Props) {
           if (connecting) {
             return null;
           }
-          return <Send {...props} text={i18n.t('chat.button')} />;
+          return <Send {...props} label={i18n.t('chat.button')} />;
         }}
       />
     </View>
