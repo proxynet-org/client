@@ -140,6 +140,7 @@ export default function SignIn() {
       <TextInput
         autoCapitalize="none"
         autoComplete="username"
+        autoCorrect={false}
         theme={themes.light.paper}
         style={styles.input}
         label={i18n.t('form.username.field')}
