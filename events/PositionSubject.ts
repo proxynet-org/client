@@ -20,14 +20,17 @@ class PositionSubject {
   }
 
   public subscribe(observer: PositionObserver) {
+    console.log('subscribe to position');
     this.observers.push(observer);
   }
 
   public unsubscribe(observer: PositionObserver) {
+    console.log('unsubscribe to position');
     this.observers = this.observers.filter((obs) => obs !== observer);
   }
 
   public notify(position: LatLng) {
+    console.log('notify position', position);
     this.position = position;
     this.observers.forEach((observer) => observer(position));
   }

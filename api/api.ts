@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import axios from 'axios';
 import { BASE_URL_API } from '@env';
 
@@ -41,10 +42,10 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response) {
       const originalRequest = error.config;
-      console.log('Error response:', error.response);
-      if (error.response.status === 401 && !originalRequest.retry) {
+      console.log('Error in request:', originalRequest);
+      if (error.response.status === 401 && !originalRequest._retry) {
         console.log('Unauthorized, auto refreshing token...');
-        originalRequest.retry = true;
+        originalRequest._retry = true;
         await refreshAccessToken();
         originalRequest.headers.Authorization =
           api.defaults.headers.Authorization;
