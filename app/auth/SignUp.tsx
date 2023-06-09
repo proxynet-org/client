@@ -25,6 +25,7 @@ import themes from '@/themes';
 import { SignUpPayload } from '@/types/auth';
 import TextFieldHelperText from '@/components/TextFieldHelperText';
 import fieldError from '@/utils/fieldError';
+import SecureTextInput from '@/components/SecureTextInput';
 
 function makeStyle(insets: EdgeInsets) {
   return StyleSheet.create({
@@ -236,9 +237,7 @@ export default function SignUp() {
         touched={touched}
         focusedField={focusedField}
       />
-      <TextInput
-        secureTextEntry
-        autoCapitalize="none"
+      <SecureTextInput
         autoComplete="password-new"
         theme={themes.light.paper}
         style={styles.input}
@@ -255,9 +254,7 @@ export default function SignUp() {
         touched={touched}
         focusedField={focusedField}
       />
-      <TextInput
-        secureTextEntry
-        autoCapitalize="none"
+      <SecureTextInput
         autoComplete="password-new"
         theme={themes.light.paper}
         style={styles.input}

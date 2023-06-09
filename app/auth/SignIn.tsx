@@ -23,6 +23,7 @@ import themes from '@/themes';
 import { SignInPayload } from '@/types/auth';
 import fieldError from '@/utils/fieldError';
 import TextFieldHelperText from '@/components/TextFieldHelperText';
+import SecureTextInput from '@/components/SecureTextInput';
 
 function makeStyle(insets: EdgeInsets) {
   return StyleSheet.create({
@@ -154,9 +155,7 @@ export default function SignIn() {
         touched={touched}
         focusedField={focusedField}
       />
-      <TextInput
-        secureTextEntry
-        autoCapitalize="none"
+      <SecureTextInput
         autoComplete="password"
         theme={themes.light.paper}
         style={styles.input}
