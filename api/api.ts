@@ -42,8 +42,13 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response) {
       const originalRequest = error.config;
+      const wasRefreshed = originalRequest.url === '/token/refresh/';
       console.log('Error in request:', originalRequest);
-      if (error.response.status === 401 && !originalRequest._retry) {
+      if (
+        error.response.status === 401 &&
+        !originalRequest._retry &&
+        !wasRefreshed
+      ) {
         console.log('Unauthorized, auto refreshing token...');
         originalRequest._retry = true;
         await refreshAccessToken();
