@@ -42,16 +42,15 @@ const dotEnvProduction = [
   },
 ];
 
-module.exports = function (api) {
+module.exports = function config(api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    plugins: [
-      'react-native-reanimated/plugin',
-      moduleResolver,
-      dotEnvDevelopment,
-    ],
+    plugins: ['react-native-reanimated/plugin', moduleResolver],
     env: {
+      development: {
+        plugins: [dotEnvDevelopment],
+      },
       production: {
         plugins: [
           'react-native-paper/babel',
